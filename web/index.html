@@ -375,6 +375,22 @@ ul.checks li.on label{color:var(--ink-3); text-decoration:line-through; text-dec
   .stats{margin-left:0; gap:14px}
   .step-hd .when{margin-left:0; width:100%}
 }
+
+/* ── 인쇄 ─────────────────────────────── */
+@media print{
+  body{background:#fff}
+  header.top{position:static; background:none; backdrop-filter:none; border-bottom:2px solid #000}
+  .whoami, nav.tabs, .tools, details.paste, .banner, .provisional, .toast, #entry,
+  .viewpick, .ev-tools, .critedit, button.btn, button.estart{display:none !important}
+  .wrap{padding-block:0; max-width:none}
+  .card, .tablewrap, .evcard, .deptform, .inboxsubj, .step, .allclear{
+    box-shadow:none; border-color:#999; break-inside:avoid;
+  }
+  td input, td select, table.ev td input{
+    border:none; background:none; color:#000; -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  section.panel[hidden]{display:none !important}
+}
 </style>
 
 <header class="top">
@@ -387,6 +403,7 @@ ul.checks li.on label{color:var(--ink-3); text-decoration:line-through; text-dec
       <span id="whoText"></span>
       <button class="btn ghost" id="whoSwitch">바꾸기</button>
     </div>
+    <button class="btn" id="printBtn" hidden>🖶 인쇄</button>
     <div class="stats" id="stats"></div>
   </div>
   <nav class="tabs" id="tabs" role="tablist">
@@ -395,6 +412,8 @@ ul.checks li.on label{color:var(--ink-3); text-decoration:line-through; text-dec
     <button role="tab" data-tab="check" aria-selected="false">자동 점검</button>
     <button role="tab" data-tab="inbox" aria-selected="false">교사 제출 점수</button>
     <button role="tab" data-tab="forms" aria-selected="false">서식 생성</button>
+    <button role="tab" data-tab="form2" aria-selected="false">서식2</button>
+    <button role="tab" data-tab="form3" aria-selected="false">서식3</button>
     <button role="tab" data-tab="steps" aria-selected="false">절차 체크리스트</button>
   </nav>
 </header>
@@ -618,6 +637,16 @@ ul.checks li.on label{color:var(--ink-3); text-decoration:line-through; text-dec
   </div>
 
   <p class="viewnote">절차의 단계 구분과 일정은 시·도교육청과 학교 여건에 따라 달라질 수 있습니다. 위 일정 칸은 우리 학교 계획에 맞게 직접 고쳐 쓰는 자리입니다.</p>
+</section>
+
+<!-- ══ 서식2 · 서식3 (교과부장 전용, 준비 중) ══ -->
+<section class="panel" id="p-form2" hidden>
+  <div class="bar"><h2>서식2</h2><span class="formtag">교과부장 작성</span></div>
+  <div class="evempty">아직 서식이 들어오지 않았습니다. hwpx 서식을 받으면 이 화면에 그 양식대로 반영됩니다.</div>
+</section>
+<section class="panel" id="p-form3" hidden>
+  <div class="bar"><h2>서식3</h2><span class="formtag">교과부장 작성</span></div>
+  <div class="evempty">아직 서식이 들어오지 않았습니다. hwpx 서식을 받으면 이 화면에 그 양식대로 반영됩니다.</div>
 </section>
 
 <!-- ══ 교사 제출 ══ -->
@@ -1297,6 +1326,7 @@ function route(){
   document.getElementById("stats").hidden = !chief;
   var w=document.getElementById("whoami");
   w.hidden=!signed;
+  document.getElementById("printBtn").hidden=!signed;
   if(signed){
     document.getElementById("whoText").innerHTML=
       esc(state.me.dept)+' · <b>'+esc(state.me.name)+'</b> <span class="rl">'+(chief?"교과부장":"교과 교사")+'</span>';
@@ -1449,9 +1479,13 @@ document.getElementById("tabs").addEventListener("click",function(e){
   Array.prototype.forEach.call(this.querySelectorAll("button"),function(x){
     x.setAttribute("aria-selected", x.dataset.tab===tab?"true":"false");
   });
-  ["input","eval","inbox","check","forms","steps"].forEach(function(t){
+  ["input","eval","inbox","check","forms","steps","form2","form3"].forEach(function(t){
     document.getElementById("p-"+t).hidden = (t!==tab);
   });
+});
+
+document.getElementById("printBtn").addEventListener("click",function(){
+  window.print();
 });
 
 document.getElementById("gridBody").addEventListener("input",function(e){
