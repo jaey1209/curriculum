@@ -221,16 +221,8 @@ table.sigbox td.mark{width:112px; color:var(--ink-3); text-align:center; font-si
 input.ename{width:100%; font:inherit; font-size:15px; padding:11px 13px; border:1px solid var(--line);
   border-radius:8px; background:var(--surface-2); color:var(--ink)}
 input.ename:focus{outline:2px solid var(--accent); outline-offset:-1px; background:var(--surface)}
-.rolepick{display:grid; grid-template-columns:1fr 1fr; gap:9px}
-.rolepick button{appearance:none; font:inherit; cursor:pointer; text-align:left; padding:13px 15px;
-  border-radius:10px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink-2)}
-.rolepick button b{display:block; font-size:14px; color:var(--ink); margin-bottom:3px}
-.rolepick button span{font-size:11.5px; line-height:1.5; display:block}
-.rolepick button[aria-pressed="true"]{border-color:var(--accent); background:var(--accent-soft)}
-.rolepick button[aria-pressed="true"] b{color:var(--accent-ink)}
-.rolepick button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 button.estart{width:100%; margin-top:20px; padding:12px; font-size:14.5px; font-weight:600}
-@media (max-width:520px){ .rolepick{grid-template-columns:1fr} .entrycard{padding:24px 18px} }
+@media (max-width:520px){ .entrycard{padding:24px 18px} }
 
 /* ── 교사 과목 목록 ───────────────────── */
 .subjcard{display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--surface);
@@ -421,18 +413,8 @@ ul.checks li.on label{color:var(--ink-3); text-decoration:line-through; text-dec
     <p class="elabel" style="margin-top:18px"><label for="myName">성명</label></p>
     <input class="ename" id="myName" placeholder="예: 김수학" autocomplete="off">
 
-    <p class="elabel" style="margin-top:18px">역할</p>
-    <div class="rolepick">
-      <button id="roleTeacher" data-role="teacher" aria-pressed="true">
-        <b>교과 교사</b><span>배정된 과목의 점수를 매깁니다. [서식1]만 작성합니다.</span>
-      </button>
-      <button id="roleChief" data-role="chief" aria-pressed="false">
-        <b>교과부장</b><span>우리 교과 선생님들이 매긴 점수를 모아 보고, 서식을 만듭니다.</span>
-      </button>
-    </div>
-
     <button class="btn primary estart" id="startBtn">시작하기</button>
-    <p class="note" style="margin:12px 0 0">역할은 본인이 고르는 것이고 따로 인증하지 않습니다. 이 화면은 화면 구성을 나누기 위한 것이지 접근을 막는 장치가 아닙니다.</p>
+    <p class="note" style="margin:12px 0 0">교과부장 명단과 성명을 대조해 화면을 자동으로 나눕니다. 별도 인증 장치는 아닙니다.</p>
   </div>
 </section>
 
@@ -678,6 +660,11 @@ ul.checks li.on label{color:var(--ink-3); text-decoration:line-through; text-dec
 /* ───────── 열 정의 ───────── */
 var DEPTS = ["국어과","수학과","영어과","사회과","과학과","생활교양과","예체능과"];
 
+var DEPT_CHIEFS = {
+  "국어과":"김민석", "수학과":"이재영", "영어과":"이민우",
+  "생활교양과":"진나현", "예체능과":"류선희", "사회과":"나경숙", "과학과":"박무근"
+};
+
 var COLS = [
   {k:"gun",      t:"교과",           w:92, sel:[""].concat(DEPTS)},
   {k:"subject",  t:"과목명",         w:118},
@@ -762,6 +749,7 @@ function load(){
         state.evals=Array.isArray(d.evals)?d.evals:[];
         state.inbox=Array.isArray(d.inbox)?d.inbox:[];
         state.me=d.me||null; state.sample=!!d.sample;
+        if(state.me) state.me.role=roleFor(state.me.dept, state.me.name);
         return;
       }
     }catch(e){}
@@ -1537,22 +1525,16 @@ document.getElementById("viewPick").addEventListener("click",function(e){
 });
 
 /* ── 시작 화면 ────────────────────────── */
-var pickDept="", pickRole="teacher";
+var pickDept="";
+function roleFor(dept, name){ return DEPT_CHIEFS[dept]===name ? "chief" : "teacher"; }
 function renderEntry(){
   document.getElementById("deptPick").innerHTML=DEPTS.map(function(d){
     return '<button data-dp="'+esc(d)+'" aria-pressed="'+(pickDept===d)+'">'+esc(d)+'</button>';
   }).join("");
-  document.getElementById("roleTeacher").setAttribute("aria-pressed", pickRole==="teacher");
-  document.getElementById("roleChief").setAttribute("aria-pressed", pickRole==="chief");
 }
 document.getElementById("deptPick").addEventListener("click",function(e){
   var b=e.target.closest("button[data-dp]"); if(!b) return;
   pickDept=b.dataset.dp; renderEntry();
-});
-["roleTeacher","roleChief"].forEach(function(id){
-  document.getElementById(id).addEventListener("click",function(){
-    pickRole=this.dataset.role; renderEntry();
-  });
 });
 document.getElementById("myName").addEventListener("keydown",function(e){
   if(e.key==="Enter") document.getElementById("startBtn").click();
@@ -1561,11 +1543,11 @@ document.getElementById("startBtn").addEventListener("click",function(){
   var name=nz(document.getElementById("myName").value);
   if(!pickDept){ toast("교과를 골라 주세요."); return; }
   if(!name){ toast("성명을 입력해 주세요."); document.getElementById("myName").focus(); return; }
-  state.me={dept:pickDept, name:name, role:pickRole};
+  state.me={dept:pickDept, name:name, role:roleFor(pickDept, name)};
   save(); route();
 });
 document.getElementById("whoSwitch").addEventListener("click",function(){
-  pickDept=state.me?state.me.dept:""; pickRole=state.me?state.me.role:"teacher";
+  pickDept=state.me?state.me.dept:"";
   document.getElementById("myName").value=state.me?state.me.name:"";
   state.me=null; tCur=null; save(); renderEntry(); route();
 });
@@ -1963,7 +1945,7 @@ document.getElementById("fileIn").addEventListener("change",function(e){
 /* ───────── 시작 ───────── */
 load();
 if(!state.rows.length) state.rows=[blank()];
-if(state.me){ pickDept=state.me.dept; pickRole=state.me.role; }
+if(state.me){ pickDept=state.me.dept; }
 renderHead();
 renderEntry();
 renderAll();
