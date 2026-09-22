@@ -28,6 +28,11 @@ cd web && python3 -m http.server 8000
 # http://localhost:8000 접속
 ```
 
+## 배포 (Google Apps Script)
+
+`deploy/appsscript/`에 Google Apps Script 웹앱으로 배포하기 위한 파일과 단계별
+가이드가 준비되어 있습니다. 자세한 내용은 [`deploy/appsscript/README.md`](deploy/appsscript/README.md)를 참고하세요.
+
 ## 법적 근거
 
 절차 체크리스트와 공정성 확인 사항은 「교과용도서에 관한 규정」, 「초·중등교육법」을 참고 자료로
