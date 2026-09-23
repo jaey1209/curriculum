@@ -468,6 +468,7 @@ table.f1tbl th{font-weight:600; background:#f3f3f3; -webkit-print-color-adjust:e
     <div class="stats" id="stats"></div>
   </div>
   <nav class="tabs" id="tabs" role="tablist">
+    <button role="tab" data-tab="myeval" aria-selected="false">과목 평가</button>
     <button role="tab" data-tab="forms" aria-selected="true">서식 생성</button>
     <button role="tab" data-tab="form2" aria-selected="false">서식2</button>
     <button role="tab" data-tab="form3" aria-selected="false">서식3</button>
@@ -1136,14 +1137,26 @@ function renderSteps(){
 
 /* ── 화면 전환 ────────────────────────── */
 function isChief(){ return !!(state.me && state.me.role==="chief"); }
+function showingEval(){ return !isChief() || tab==="myeval"; }
+function renderTabView(){
+  var chief=isChief();
+  Array.prototype.forEach.call(document.getElementById("tabs").querySelectorAll("button"),function(x){
+    x.setAttribute("aria-selected", x.dataset.tab===tab?"true":"false");
+  });
+  ["forms","form2","form3","steps"].forEach(function(t){
+    document.getElementById("p-"+t).hidden = (t!==tab);
+  });
+  document.getElementById("teacherApp").hidden = !showingEval();
+  document.getElementById("chiefApp").hidden = !chief || tab==="myeval";
+  document.getElementById("stats").hidden = !chief || tab==="myeval";
+  if(showingEval()){ ensureDeptEvals(state.me.dept); save(); renderTeacher(); }
+  else { renderAll(); }
+}
 function route(){
   var signed=!!state.me;
   var chief=isChief();
   document.getElementById("entry").hidden = signed;
-  document.getElementById("teacherApp").hidden = !signed || chief;
-  document.getElementById("chiefApp").hidden = !signed || !chief;
   document.getElementById("tabs").hidden = !chief;
-  document.getElementById("stats").hidden = !chief;
   var w=document.getElementById("whoami");
   w.hidden=!signed;
   document.getElementById("printBtn").hidden=!signed;
@@ -1151,8 +1164,7 @@ function route(){
     document.getElementById("whoText").innerHTML=
       esc(state.me.dept)+' · <b>'+esc(state.me.name)+'</b> <span class="rl">'+(chief?"교과부장":"교과 교사")+'</span>';
   }
-  if(signed && !chief){ ensureDeptEvals(state.me.dept); save(); renderTeacher(); }
-  if(signed && chief) renderAll();
+  if(signed) renderTabView();
 }
 
 /* ── 교사 화면 ────────────────────────── */
@@ -1267,16 +1279,11 @@ function copyNode(node, okMsg){
 document.getElementById("tabs").addEventListener("click",function(e){
   var b=e.target.closest("button[data-tab]"); if(!b) return;
   tab=b.dataset.tab;
-  Array.prototype.forEach.call(this.querySelectorAll("button"),function(x){
-    x.setAttribute("aria-selected", x.dataset.tab===tab?"true":"false");
-  });
-  ["forms","form2","form3","steps"].forEach(function(t){
-    document.getElementById("p-"+t).hidden = (t!==tab);
-  });
+  renderTabView();
 });
 
 document.getElementById("printBtn").addEventListener("click",function(){
-  var ev=(!isChief() && tCur)?state.evals.filter(function(e){return e.id===tCur;})[0]:null;
+  var ev=(showingEval() && tCur)?state.evals.filter(function(e){return e.id===tCur;})[0]:null;
   if(ev && ev.modeChosen && (ev.mode!=="winner"||ev.winnerId)){
     var box=document.getElementById("printForm1");
     box.innerHTML=form1PrintHTML(ev);
