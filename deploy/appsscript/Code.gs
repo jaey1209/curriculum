@@ -9,6 +9,9 @@
  *              요약이고, 앱은 마지막 '자료(JSON)' 칸만 읽는다.
  * 시트 '절차' — 교과부장 자료(절차 체크리스트·[서식3] 추천 의견, 교과마다 한 줄).
  *
+ * 과목 평가의 [AI 초안]은 apiDraftOpinion 이 Claude API 로 종합의견 초안을 만든다(스크립트 속성
+ * ANTHROPIC_API_KEY 가 있을 때만, 없으면 화면에 들어 있는 기본 초안 기능을 쓴다).
+ *
  * 로그인하면 서명한 출입증(token)을 주고, 이후 모든 요청은 출입증의 교과·성명으로만 처리한다.
  * 교사는 자기 평가만 읽고 쓸 수 있고, 교과 전체 제출분은 그 교과의 교과부장만 받는다.
  */
@@ -149,6 +152,73 @@ function apiSave(token, json) {
     lock.releaseLock();
   }
   return JSON.stringify({ ok: true, newer: newer });
+}
+
+/* ── AI 초안: 종합의견 및 추천의견 ──
+ * 스크립트 속성 ANTHROPIC_API_KEY 가 있으면 Claude 로 초안을 쓰고, 없으면 {text:null} 을 돌려준다
+ * (그때 화면은 평가 점수와 평가 기준 문구로 만든 기본 초안을 쓴다). 한 사람당 1시간에 30번까지. */
+var AI_MODEL = "claude-opus-5";
+var AI_MAX_PER_HOUR = 30;
+var AI_RUBRIC = [
+  "Ⅰ. 교육 과정 — 교육과정 부합성(시·도 및 학교 교육과정의 성격·목표 부합), 학습 분량의 적절성(단원별 균형, 수업시수 대비 적정)",
+  "Ⅱ·Ⅲ. 학습 내용(선정·조직) — 내용 수준의 적정성, 정확성(검증된 자료·최신 통계), 중립성(균형적 관점), 학습동기 유발, 효과성(학습 요소 구성·시각 자료 배치), 단원·학년 간 연계 및 계열성, 자기 주도적 학습 지원",
+  "Ⅳ. 교수·학습 활동 — 다양한 교수·학습 활동(개별·소그룹·토의·토론·실험·실습), 실생활 문제 해결 활동의 유용성, 학습 참고 자료(부록·용어해설·전자저작물)의 충실성",
+  "Ⅴ. 학습 평가 — 다양한 평가 활동(진단·형성·총괄, 선택형·서답형·수행평가), 종합적 사고력(문제해결력·논리적·창의적 사고력) 평가, 자기 점검 평가 안내",
+  "Ⅵ. 표현·표기 및 외형 체제 — 표현·표기의 정확성 및 가독성(어법·용어·도량형), 편집 디자인(지면 구성) 및 내구성(종이 질·제책)",
+  "Ⅶ. 재정적 부분 — 동일 교과목 도서 대비 및 내용·품질 대비 가격의 적정성"
+].join("\n");
+var AI_SYSTEM = [
+  "당신은 고등학교 교과협의회 위원(교사)으로서 「검·인정도서 선정 평가표」의 '종합의견 및 추천의견' 칸을 작성한다.",
+  "교육공무원이 쓰는 공문서의 전문적인 어투로 쓴다: 평서형 '~함', '~임', '~됨', '~판단됨'으로 문장을 끝맺고, 구어체·감탄·과장·광고성 표현을 쓰지 않는다.",
+  "제공된 평가 점수에서 드러나는 강점을 아래 평가 기준의 용어로 서술하고, 가장 높게 평가한 도서를 추천한다. 필요하면 다른 도서와의 차이를 한 구절로 덧붙인다.",
+  "점수에 근거하지 않은 구체적 사실(단원명, 쪽수, 수록 내용, 집필진 등)은 지어내지 않는다. 출판사명은 주어진 그대로 쓴다.",
+  "한 문단, 3~4문장, 공백 포함 180~220자. 줄바꿈·머리말·따옴표·목록 기호 없이 본문만 출력한다.",
+  "",
+  "[평가 기준]",
+  AI_RUBRIC
+].join("\n");
+
+function apiDraftOpinion(token, json) {
+  var user = auth_(token);
+  var key = PropertiesService.getScriptProperties().getProperty("ANTHROPIC_API_KEY");
+  if (!key) return JSON.stringify({ text: null, reason: "nokey" });
+  var cache = CacheService.getScriptCache(), countKey = "ai:" + user.dept + "|" + user.name;
+  var used = Number(cache.get(countKey) || 0);
+  if (used >= AI_MAX_PER_HOUR) throw new Error("AI 초안은 1시간에 " + AI_MAX_PER_HOUR + "번까지 만들 수 있습니다. 잠시 뒤 다시 해 주세요.");
+  cache.put(countKey, String(used + 1), 3600);
+  var req = JSON.parse(json || "{}");
+  var lines = (req.cands || []).map(function (c) {
+    return "- " + c.pub + " (가격 " + (c.price || "미상") + "원): 총점 " + c.total + "점, " + c.rank + "위 / 항목별 " +
+      (req.crit || []).map(function (k, i) { return k.name + " " + (c.scores[i] == null ? "-" : c.scores[i]) + "/" + k.w; }).join(", ");
+  });
+  var prompt = "교과: " + user.dept + "\n과목: " + clean_(req.subject) + "\n\n내가 매긴 평가 점수:\n" + lines.join("\n") +
+    (req.current ? "\n\n지금까지 써 둔 의견(참고해 다듬을 것):\n" + String(req.current).slice(0, 600) : "") +
+    "\n\n위 평가를 바탕으로 종합의견 및 추천의견을 작성하시오.";
+  var res = UrlFetchApp.fetch("https://api.anthropic.com/v1/messages", {
+    method: "post",
+    contentType: "application/json",
+    muteHttpExceptions: true,
+    headers: {
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-beta": "server-side-fallback-2026-07-01"
+    },
+    payload: JSON.stringify({
+      model: AI_MODEL,
+      max_tokens: 4000,
+      fallbacks: "default",              // 안전 분류기가 거절하면 권장 모델로 다시 시도
+      output_config: { effort: "low" },  // 짧은 글이라 낮은 노력으로 충분
+      system: AI_SYSTEM,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  var status = res.getResponseCode();
+  if (status !== 200) throw new Error("AI 초안을 만들지 못했습니다 (HTTP " + status + ").");
+  var body = JSON.parse(res.getContentText());
+  if (body.stop_reason === "refusal") return JSON.stringify({ text: null, reason: "refusal" });
+  var text = (body.content || []).filter(function (b) { return b.type === "text"; })
+    .map(function (b) { return b.text; }).join("").replace(/\s+/g, " ").trim();
+  return JSON.stringify({ text: text || null, reason: text ? "" : "empty" });
 }
 
 /* ── 내부 도우미 ── */
