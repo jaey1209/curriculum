@@ -9,8 +9,8 @@
  *              요약이고, 앱은 마지막 '자료(JSON)' 칸만 읽는다.
  * 시트 '절차' — 교과부장 자료(절차 체크리스트·[서식3] 추천 의견, 교과마다 한 줄).
  *
- * 과목 평가의 [AI 초안]은 apiDraftOpinion 이 Claude API 로 종합의견 초안을 만든다(스크립트 속성
- * ANTHROPIC_API_KEY 가 있을 때만, 없으면 화면에 들어 있는 기본 초안 기능을 쓴다).
+ * 과목 평가의 [AI 초안]은 apiDraftOpinion 이 Gemini(GEMINI_API_KEY, 무료 등급 가능) 또는 Claude
+ * (ANTHROPIC_API_KEY)로 종합의견 초안을 만든다. 키가 없으면 화면에 들어 있는 기본 초안 기능을 쓴다.
  *
  * 로그인하면 서명한 출입증(token)을 주고, 이후 모든 요청은 출입증의 교과·성명으로만 처리한다.
  * 교사는 자기 평가만 읽고 쓸 수 있고, 교과 전체 제출분은 그 교과의 교과부장만 받는다.
@@ -155,8 +155,10 @@ function apiSave(token, json) {
 }
 
 /* ── AI 초안: 종합의견 및 추천의견 ──
- * 스크립트 속성 ANTHROPIC_API_KEY 가 있으면 Claude 로 초안을 쓰고, 없으면 {text:null} 을 돌려준다
- * (그때 화면은 평가 점수와 평가 기준 문구로 만든 기본 초안을 쓴다). 한 사람당 1시간에 30번까지. */
+ * 스크립트 속성에 GEMINI_API_KEY(무료 등급 가능)가 있으면 Gemini, 없고 ANTHROPIC_API_KEY 가 있으면 Claude 로
+ * 초안을 쓴다. 둘 다 없으면 {text:null} 을 돌려주고, 화면은 평가 점수와 평가 기준 문구로 만든 기본 초안을 쓴다.
+ * 한 사람당 1시간에 30번까지. */
+var GEMINI_MODEL = "gemini-flash-latest";   // 최신 Flash 별칭. 스크립트 속성 GEMINI_MODEL 로 바꿀 수 있음
 var AI_MODEL = "claude-opus-5";
 var AI_MAX_PER_HOUR = 30;
 var AI_RUBRIC = [
@@ -180,8 +182,9 @@ var AI_SYSTEM = [
 
 function apiDraftOpinion(token, json) {
   var user = auth_(token);
-  var key = PropertiesService.getScriptProperties().getProperty("ANTHROPIC_API_KEY");
-  if (!key) return JSON.stringify({ text: null, reason: "nokey" });
+  var props = PropertiesService.getScriptProperties();
+  var geminiKey = props.getProperty("GEMINI_API_KEY"), claudeKey = props.getProperty("ANTHROPIC_API_KEY");
+  if (!geminiKey && !claudeKey) return JSON.stringify({ text: null, reason: "nokey" });
   var cache = CacheService.getScriptCache(), countKey = "ai:" + user.dept + "|" + user.name;
   var used = Number(cache.get(countKey) || 0);
   if (used >= AI_MAX_PER_HOUR) throw new Error("AI 초안은 1시간에 " + AI_MAX_PER_HOUR + "번까지 만들 수 있습니다. 잠시 뒤 다시 해 주세요.");
@@ -194,6 +197,40 @@ function apiDraftOpinion(token, json) {
   var prompt = "교과: " + user.dept + "\n과목: " + clean_(req.subject) + "\n\n내가 매긴 평가 점수:\n" + lines.join("\n") +
     (req.current ? "\n\n지금까지 써 둔 의견(참고해 다듬을 것):\n" + String(req.current).slice(0, 600) : "") +
     "\n\n위 평가를 바탕으로 종합의견 및 추천의견을 작성하시오.";
+  var out = geminiKey ? gemini_(geminiKey, props.getProperty("GEMINI_MODEL") || GEMINI_MODEL, prompt)
+                      : claude_(claudeKey, prompt);
+  if (out.refused) return JSON.stringify({ text: null, reason: "refusal" });
+  var text = String(out.text || "").replace(/\s+/g, " ").trim();
+  return JSON.stringify({ text: text || null, reason: text ? "" : "empty" });
+}
+
+/* Gemini API (Google AI Studio 키). 무료 등급은 분당·하루 요청 수 제한이 있다. */
+function gemini_(key, model, prompt) {
+  var res = UrlFetchApp.fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent", {
+    method: "post",
+    contentType: "application/json",
+    muteHttpExceptions: true,
+    headers: { "x-goog-api-key": key },
+    payload: JSON.stringify({
+      systemInstruction: { parts: [{ text: AI_SYSTEM }] },
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 4096, temperature: 0.7 }
+    })
+  });
+  var status = res.getResponseCode();
+  if (status === 429) throw new Error("Gemini 무료 사용량을 넘었습니다. 1분쯤 뒤 다시 해 주세요.");
+  if (status !== 200) throw new Error("AI 초안을 만들지 못했습니다 (Gemini HTTP " + status + ").");
+  var body = JSON.parse(res.getContentText());
+  if (body.promptFeedback && body.promptFeedback.blockReason) return { refused: true };
+  var cand = (body.candidates || [])[0];
+  if (!cand) return { text: "" };
+  if (/SAFETY|PROHIBITED|BLOCKLIST|SPII/.test(cand.finishReason || "")) return { refused: true };
+  var parts = (cand.content && cand.content.parts) || [];
+  return { text: parts.filter(function (p) { return p.text && !p.thought; }).map(function (p) { return p.text; }).join("") };
+}
+
+/* Claude API (사용량만큼 요금) */
+function claude_(key, prompt) {
   var res = UrlFetchApp.fetch("https://api.anthropic.com/v1/messages", {
     method: "post",
     contentType: "application/json",
@@ -215,10 +252,8 @@ function apiDraftOpinion(token, json) {
   var status = res.getResponseCode();
   if (status !== 200) throw new Error("AI 초안을 만들지 못했습니다 (HTTP " + status + ").");
   var body = JSON.parse(res.getContentText());
-  if (body.stop_reason === "refusal") return JSON.stringify({ text: null, reason: "refusal" });
-  var text = (body.content || []).filter(function (b) { return b.type === "text"; })
-    .map(function (b) { return b.text; }).join("").replace(/\s+/g, " ").trim();
-  return JSON.stringify({ text: text || null, reason: text ? "" : "empty" });
+  if (body.stop_reason === "refusal") return { refused: true };
+  return { text: (body.content || []).filter(function (b) { return b.type === "text"; }).map(function (b) { return b.text; }).join("") };
 }
 
 /* ── 내부 도우미 ── */
