@@ -194,9 +194,6 @@ table.sigbox td{border:1px solid var(--line); padding:11px 14px}
 table.sigbox td.role{background:var(--surface-2); font-weight:600; white-space:nowrap; text-align:center; width:96px; letter-spacing:.3em}
 table.sigbox td.who{min-width:110px; text-align:center}
 table.sigbox td.mark{width:112px; color:var(--ink-3); text-align:center; font-size:11px}
-#sigBody input{width:100%; border:0; background:none; font:inherit; font-size:13px; color:var(--ink); padding:7px 10px}
-#sigBody input:focus{outline:2px solid var(--accent); outline-offset:-2px; border-radius:3px; background:var(--surface)}
-#sigBody td.dn{padding:7px 10px; font-weight:500}
 
 /* ── 시작 화면 ────────────────────────── */
 .whoami{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-2);
@@ -469,7 +466,7 @@ table.f1tbl th{font-weight:600; background:#f3f3f3; -webkit-print-color-adjust:e
   </div>
   <nav class="tabs" id="tabs" role="tablist">
     <button role="tab" data-tab="myeval" aria-selected="false">과목 평가</button>
-    <button role="tab" data-tab="forms" aria-selected="true">서식 생성</button>
+    <button role="tab" data-tab="forms" aria-selected="true">서식1</button>
     <button role="tab" data-tab="form2" aria-selected="false">서식2</button>
     <button role="tab" data-tab="form3" aria-selected="false">서식3</button>
     <button role="tab" data-tab="steps" aria-selected="false">절차 체크리스트</button>
@@ -500,6 +497,11 @@ table.f1tbl th{font-weight:600; background:#f3f3f3; -webkit-print-color-adjust:e
 
   <!-- 과목 고르기 + 채점 -->
   <section class="panel" id="t-list">
+    <div class="bar">
+      <h2>과목 평가</h2>
+      <span class="sub">과목마다 [서식1] 평가표를 작성합니다. 점수를 모두 매긴 과목은 ‘완료’로 표시됩니다.</span>
+      <button class="btn primary" id="genForm1">서식1 생성</button>
+    </div>
     <div class="tsplit">
       <aside class="tsidebar">
         <div class="tsidebar-hd">평가할 과목</div>
@@ -510,6 +512,7 @@ table.f1tbl th{font-weight:600; background:#f3f3f3; -webkit-print-color-adjust:e
         <div id="tScoreCard"></div>
         <div class="tools">
           <button class="btn primary" id="tSubmit">제출</button>
+          <button class="btn" id="tCancelSubmit" hidden>제출취소</button>
         </div>
       </div>
     </div>
@@ -518,56 +521,14 @@ table.f1tbl th{font-weight:600; background:#f3f3f3; -webkit-print-color-adjust:e
 
 <div id="chiefApp" hidden>
 
-<!-- ══ 서식 ══ -->
+<!-- ══ 서식1 ══ -->
 <section class="panel" id="p-forms">
   <div class="bar">
-    <h2>서식 생성</h2>
-    <span class="sub">같은 입력에서 용도별 표를 만듭니다.</span>
+    <h2>서식1</h2>
+    <span class="sub">[과목 평가]에서 <b>서식1 생성</b>(또는 제출)한 과목의 검·인정도서 선정 평가표가 자동으로 채워집니다.</span>
+    <button class="btn" id="copyAllForm1">전체 서식 복사</button>
   </div>
-  <div class="viewpick" id="viewPick">
-    <button data-v="dept" aria-pressed="true">교과별 · 제출 서식</button>
-    <button data-v="subject" aria-pressed="false">과목별 · 학운위 심의안</button>
-    <button data-v="book" aria-pressed="false">도서명별 · 주문 집계</button>
-    <button data-v="teacher" aria-pressed="false">교사별 · 확인표</button>
-    <button data-v="public" aria-pressed="false">공개용 · 홈페이지 게시</button>
-  </div>
-
-  <!-- 단일 표 뷰 -->
-  <div id="singleWrap">
-    <div class="bar" style="margin-bottom:10px">
-      <span class="sub" id="viewDesc"></span>
-      <button class="btn primary" id="copyTable">표 복사 (한글 붙여넣기)</button>
-      <button class="btn" id="dlCsv">CSV 내려받기</button>
-    </div>
-    <div class="tablewrap"><table class="out" id="outTable"></table></div>
-    <p class="viewnote" id="viewNote"></p>
-  </div>
-
-  <!-- 교과별 서식 뷰 -->
-  <div id="deptWrap" hidden>
-    <p class="viewnote" style="margin:0 0 14px">교과마다 한 장씩 나옵니다. 신청 내역이 없는 교과는 <b>빈 서식</b>으로 나오니 그대로 복사해 교과부장께 돌리시면 되고, 내역이 들어오면 같은 자리에 자동으로 채워집니다. 각 장의 <b>서식 복사</b>를 누르면 제목·표·서명란이 한글에 통째로 붙습니다.</p>
-
-    <details class="paste" id="sigSetup">
-      <summary>교과부장 · 총무 성명 입력</summary>
-      <div class="paste-body">
-        <p class="note" style="margin:0">성명을 넣어 두면 각 서식의 서명란에 인쇄됩니다. 비워 두면 빈칸으로 나옵니다.</p>
-        <div class="tablewrap" style="box-shadow:none">
-          <table id="sigTable"><thead><tr><th style="min-width:110px">교과</th><th style="min-width:150px">교과부장</th><th style="min-width:150px">총무</th></tr></thead><tbody id="sigBody"></tbody></table>
-        </div>
-        <label class="note" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
-          제출일
-          <input id="submitDate" placeholder="2026년        월        일"
-            style="font:inherit; font-family:var(--mono); font-size:12px; padding:6px 9px; border:1px solid var(--line); border-radius:6px; background:var(--surface); color:var(--ink); min-width:210px">
-        </label>
-      </div>
-    </details>
-
-    <div class="bar" style="margin:16px 0 12px">
-      <span class="sub">서식 제목·문안은 우리 학교 양식에 맞게 한글에서 고쳐 쓰시면 됩니다.</span>
-      <button class="btn" id="copyAllDept">전체 서식 복사</button>
-    </div>
-    <div id="deptForms"></div>
-  </div>
+  <div id="form1List"></div>
 </section>
 
 <!-- ══ 절차 ══ -->
@@ -652,19 +613,19 @@ var STEPS = [
   { id:"s1", n:"1단계", title:"의견 수렴", who:"교과협의회 등 소속 교원", plan:"예: 9/2 ~ 9/19",
     basis:"「교과용도서에 관한 규정」 제3조제4항 — 학교의 장은 교과용도서를 선정할 때 미리 소속 교원의 의견을 수렴한 후 학교운영위원회의 심의를 거쳐야 한다.",
     items:["교과별 협의회 구성 및 회의록 작성","전시본 확인 및 교과별 평가 기준표 마련",
-           "교과별 평가 점수·순위 산출 및 근거 기록 보존","교과별 신청 내역 취합 (→ 신청 입력 탭)",
+           "교과별 평가 점수·순위 산출 및 근거 기록 보존 (→ 과목 평가)","과목별 [서식1] 생성·취합 (→ 서식1 탭)",
            "협의 과정에 참여한 교원 명단 확인"] },
   { id:"s2", n:"2단계", title:"안건 상정", who:"학교장", plan:"예: 9/20",
     basis:"교원의 의견을 반영한 교과용도서 선정 심의(안)을 작성하여 학교운영위원회에 제출합니다.",
-    items:["선정 심의(안) 작성 (→ 서식 생성 · 과목별 심의안)","자동 점검 항목 모두 해소 확인",
+    items:["선정 심의(안) 작성","자동 점검 항목 모두 해소 확인",
            "선정 절차·기준을 심의(안)에 명시","학교운영위원회 안건 제출 및 접수 확인"] },
   { id:"s3", n:"3단계", title:"심의", who:"학교운영위원회", plan:"예: 9/30까지",
     basis:"「교과용도서에 관한 규정」 제3조제4항에 따른 학교운영위원회 심의. 학교운영위원회의 심의 기능은 「초·중등교육법」 제32조에 규정되어 있습니다.",
     items:["선정 절차의 적정성 심의","선정 기준의 적정성 심의","심의 결과를 학교장에게 이송","회의록 작성 및 보존"] },
   { id:"s4", n:"4단계", title:"확정 및 공개", who:"학교장", plan:"예: 10/10",
     basis:"「교과용도서에 관한 규정」 제3조제1항 — 학교에서 사용할 교과용도서는 학교의 장이 선정한다.",
-    items:["선정 도서 최종 확정","학교 홈페이지에 선정 결과 공개 (→ 서식 생성 · 공개용)",
-           "교과별 담당교사에게 확정 결과 통보 (→ 교사별 확인표)","교과서 주문 (→ 도서명별 주문 집계)",
+    items:["선정 도서 최종 확정","학교 홈페이지에 선정 결과 공개",
+           "교과별 담당교사에게 확정 결과 통보","교과서 주문",
            "선정 관련 서류 일괄 보존"] }
 ];
 
@@ -698,7 +659,7 @@ function sampleRows(){
 /* ───────── 상태 ───────── */
 var KEY="tb-ledger-2027-v1";
 var state={rows:[],steps:{},depts:{},date:"",evals:[],me:null,sample:true};
-var tab="forms", view="dept", tCur=null;
+var tab="forms", tCur=null;
 
 function uid(){ return "r"+Math.random().toString(36).slice(2,9); }
 function blank(){ var o={id:uid()}; COLS.forEach(function(c){o[c.k]="";}); return o; }
@@ -756,96 +717,14 @@ function save(){
 /* ───────── 유틸 ───────── */
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 function nz(s){ return (s||"").trim(); }
-function teachersOf(r){ return nz(r.teachers).split(/[,、·\/]+/).map(nz).filter(Boolean); }
-function filled(r){ return COLS.some(function(c){ return nz(r[c.k]); }); }
-/* 교과부장은 자신의 교과 행만 본다 */
+/* 교과부장은 자신의 교과 과목만 본다 */
 function deptScope(){ return state.me?state.me.dept:""; }
-function realRows(){
-  var d=deptScope();
-  return state.rows.filter(function(r){ return filled(r) && (!d || nz(r.gun)===d); });
-}
 
 var toastT;
 function toast(msg){
   var el=document.getElementById("toast");
   el.textContent=msg; el.classList.add("show");
   clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove("show"); },2100);
-}
-
-/* ───────── 서식 뷰 ───────── */
-var VIEWS={
-  subject:{
-    desc:"학교운영위원회 심의(안) 첨부용. 과목 단위로 한 줄씩.",
-    note:"이 표를 학교운영위원회 심의(안)의 별지로 붙입니다. 심의는 개별 도서의 우열이 아니라 선정 절차와 기준의 적정성을 보는 자리이므로, 표와 함께 교과별 평가 기준·점수 산출 방식을 요약해 첨부하세요.",
-    head:["연번","교과","과목명","과목 구분","학점","학년","도서명","출판사","대표저자","가격(원)","도서 구분"],
-    rows:function(){
-      return realRows().slice().sort(cmpGunSubj).map(function(r,i){
-        return [String(i+1), nz(r.gun), nz(r.subject), nz(r.type), nz(r.credit), nz(r.grade), nz(r.book), nz(r.pub), nz(r.author), fmtWon(won(r.price)), nz(r.kind)];
-      });
-    },
-    nums:[0,4,5,9]
-  },
-  book:{
-    desc:"주문·발주용. 같은 도서는 한 줄로 묶고 적용 과목을 모읍니다.",
-    note:"도서명과 출판사가 같으면 한 줄로 묶입니다. 실제 주문 부수는 과목별 수강 인원이 확정된 뒤 채워 넣으세요 — 이 표는 품목 확정용입니다.",
-    head:["연번","도서명","출판사","도서 구분","ISBN · 인정번호","가격(원)","적용 과목","대상 학년","과목 수"],
-    rows:function(){
-      var m={}, ord=[];
-      realRows().forEach(function(r){
-        var b=nz(r.book); if(!b) return;
-        var k=b+"§"+nz(r.pub);
-        if(!m[k]){ m[k]={book:b,pub:nz(r.pub),kind:nz(r.kind),code:nz(r.code),price:0,subs:[],grades:{}}; ord.push(k); }
-        if(nz(r.subject)) m[k].subs.push(nz(r.subject));
-        if(nz(r.grade)) m[k].grades[nz(r.grade)]=1;
-        if(!m[k].kind) m[k].kind=nz(r.kind);
-        if(!m[k].code) m[k].code=nz(r.code);
-        if(!m[k].price) m[k].price=won(r.price);
-      });
-      ord.sort(function(a,b){ return m[a].book.localeCompare(m[b].book,"ko"); });
-      return ord.map(function(k,i){
-        var o=m[k];
-        var g=Object.keys(o.grades).sort().join(", ");
-        return [String(i+1), o.book, o.pub, o.kind, o.code, fmtWon(o.price), o.subs.join(", "), g, String(o.subs.length)];
-      });
-    },
-    nums:[0,4,5,7,8]
-  },
-  teacher:{
-    desc:"교사별 확인·서명용. 담당 과목과 선정 도서를 모읍니다.",
-    note:"확정 결과를 교과 담당교사에게 통보하고 확인받는 데 씁니다. 인쇄해 서명을 받거나, 표만 복사해 메신저로 보내 확인 회신을 받아 두면 나중에 '못 들었다'는 이야기가 나오지 않습니다.",
-    head:["연번","담당교사","담당 과목","선정 도서 (출판사)","과목 수","확인"],
-    rows:function(){
-      var m={}, ord=[];
-      realRows().forEach(function(r){
-        teachersOf(r).forEach(function(t){
-          if(!m[t]){ m[t]={subs:[],books:[]}; ord.push(t); }
-          if(nz(r.subject)) m[t].subs.push(nz(r.subject));
-          if(nz(r.book)) m[t].books.push(nz(r.book)+(nz(r.pub)?" ("+nz(r.pub)+")":""));
-        });
-      });
-      ord.sort(function(a,b){ return a.localeCompare(b,"ko"); });
-      return ord.map(function(t,i){
-        return [String(i+1), t, m[t].subs.join(", "), m[t].books.join("\n"), String(m[t].subs.length), ""];
-      });
-    },
-    nums:[0,4], sign:5
-  },
-  "public":{
-    desc:"학교 홈페이지 게시용. 담당교사 이름은 일부러 빼 두었습니다.",
-    note:"선정 결과는 학교 홈페이지에 공개합니다. 공개본에는 담당교사 성명을 넣지 않았습니다 — 개인정보이기도 하고, 특정 교사와 특정 출판사를 연결짓는 민원이 생길 소지가 있기 때문입니다. 게시 날짜와 함께 갈무리해 보존해 두세요.",
-    head:["연번","교과","과목명","학년","도서명","출판사","가격(원)","도서 구분"],
-    rows:function(){
-      return realRows().slice().sort(cmpGunSubj).map(function(r,i){
-        return [String(i+1), nz(r.gun), nz(r.subject), nz(r.grade), nz(r.book), nz(r.pub), fmtWon(won(r.price)), nz(r.kind)];
-      });
-    },
-    nums:[0,3,6]
-  }
-};
-function cmpGunSubj(a,b){
-  var g=nz(a.gun).localeCompare(nz(b.gun),"ko"); if(g) return g;
-  var gr=nz(a.grade).localeCompare(nz(b.grade),"ko"); if(gr) return gr;
-  return nz(a.subject).localeCompare(nz(b.subject),"ko");
 }
 
 /* ───────── 렌더 ───────── */
@@ -889,10 +768,15 @@ function bookCandsFor(dept, subject){
   });
   return out;
 }
+/* 출판사 자료가 하나도 없는 과목(교과서 없음)은 선정 대상이 아님 */
+function hasRealBooks(dept, subject){
+  return (SUBJECT_BOOKS[dept+"|"+subject]||[]).some(function(m){ return nz(m[0]); });
+}
 /* 교과의 2027학년도 고정 과목 목록에 대해 평가표가 없으면 만들어 둠 */
 function ensureDeptEvals(dept){
   var subs=SUBJECT_CATALOG[dept]||[];
   subs.forEach(function(s){
+    if(!hasRealBooks(dept, s)) return;
     var ex=state.evals.filter(function(e){ return nz(e.gun)===dept && nz(e.subject)===s; })[0];
     if(ex) return;
     var ev=newEval(dept, s);
@@ -1004,8 +888,8 @@ function evTableHTML(ev){
   return '<div style="overflow-x:auto"><table class="ev"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
 }
 
-/* [서식1] 검·인정도서 선정 평가표 — 인쇄용 (실제 서식 레이아웃) */
-function form1PrintHTML(ev){
+/* [서식1] 검·인정도서 선정 평가표 (실제 서식 레이아웃) */
+function form1BodyHTML(ev){
   var live=ev.cands.filter(function(c){ return nz(c.book)||nz(c.pub); });
   var colCount=3+live.length;
   var head='<tr><th rowspan="2" style="width:11%">평가 영역</th><th rowspan="2" style="width:26%">평가 기준</th><th rowspan="2" style="width:6%">배점</th>'+
@@ -1019,101 +903,37 @@ function form1PrintHTML(ev){
   var total='<tr><td colspan="2" style="text-align:right">합&nbsp;&nbsp;계</td><td>'+evWsum(ev)+'</td>'+
     live.map(function(c){ return '<td style="font-weight:700">'+(nz(c.book)||nz(c.pub)?evTotal(ev,c):"")+'</td>'; }).join("")+'</tr>';
   var opinion='<tr class="f1opinion"><td colspan="'+colCount+'"><b>종합의견 및 추천의견</b></td></tr>';
-  return '<div class="f1close"><button class="btn" data-f1close="1">닫기</button></div>'+
-    '<div class="f1title">【서식1】</div>'+
+  return '<div class="f1title">【서식1】</div>'+
     '<div class="f1sub">검·인정도서 선정 평가표</div>'+
     '<div class="f1meta"><span>과&nbsp;&nbsp;목 : '+esc(nz(ev.subject))+'</span>'+
       '<span>과 위원 : '+esc(state.me?state.me.name:"")+'&nbsp;&nbsp;&nbsp;(인)</span></div>'+
     '<table class="f1tbl"><thead>'+head+'</thead><tbody>'+body+total+opinion+'</tbody></table>';
 }
-
-/* ── 교과별 서식 ── */
-var DF_HEAD=["연번","과목명","과목 구분","학점","학년","도서명","출판사","대표저자","가격(원)","도서 구분","ISBN · 인정번호","담당교사"];
-function dfRow(r,i){
-  return [String(i+1), nz(r.subject), nz(r.type), nz(r.credit), nz(r.grade), nz(r.book),
-          nz(r.pub), nz(r.author), fmtWon(won(r.price)), nz(r.kind), nz(r.code), nz(r.teachers)];
-}
-function renderSigTable(){
-  document.getElementById("sigBody").innerHTML=[deptScope()].map(function(d){
-    var s=state.depts[d]||{};
-    return '<tr><td class="dn">'+esc(d)+'</td>'+
-      '<td><input data-dept="'+esc(d)+'" data-f="head" value="'+esc(s.head||"")+'" placeholder="성명" aria-label="'+esc(d)+' 교과부장"></td>'+
-      '<td><input data-dept="'+esc(d)+'" data-f="mgr" value="'+esc(s.mgr||"")+'" placeholder="성명" aria-label="'+esc(d)+' 총무"></td></tr>';
-  }).join("");
-  document.getElementById("submitDate").value=state.date||"";
-}
-function renderDeptForms(){
-  var byD={};
-  realRows().forEach(function(r){ var g=nz(r.gun); if(!g) return; (byD[g]=byD[g]||[]).push(r); });
-  var names=[deptScope()];
-
-  document.getElementById("deptForms").innerHTML=names.map(function(d){
-    var rows=(byD[d]||[]).slice().sort(function(a,b){
-      var g=nz(a.grade).localeCompare(nz(b.grade),"ko"); if(g) return g;
-      return nz(a.subject).localeCompare(nz(b.subject),"ko");
-    });
-    var sig=state.depts[d]||{};
-    var sum=rows.reduce(function(a,r){ return a+won(r.price); },0);
-    var body;
-    if(rows.length){
-      body=rows.map(function(r,i){
-        var c=dfRow(r,i);
-        return '<tr>'+c.map(function(v,j){
-          var cls=(j===0||j===3||j===4||j===8)?"n":((j===1||j===5||j===11)?"l":"");
-          return '<td'+(cls?' class="'+cls+'"':'')+'>'+esc(v)+'</td>';
-        }).join("")+'</tr>';
-      }).join("")+
-      '<tr><td class="n" colspan="8" style="text-align:right; font-weight:600">교과 합계</td>'+
-      '<td class="n" style="font-weight:600">'+esc(fmtWon(sum))+'</td><td colspan="3"></td></tr>';
-    } else {
-      var blanks="";
-      for(var i=0;i<6;i++){
-        blanks+='<tr class="blank"><td class="n">'+(i+1)+'</td>'+
-          new Array(DF_HEAD.length).join("</td><td>").replace(/^/,"<td>")+'</td></tr>';
-      }
-      body=blanks;
-    }
-    var cnt=rows.length;
-    return '<div class="deptform" data-dept="'+esc(d)+'">'+
-      '<div class="df-hd"><span class="nm">'+esc(d)+'</span>'+
-        '<span class="ct'+(cnt?"":" empty")+'">'+(cnt?cnt+"개 과목 · 교과 합계 "+fmtWon(sum)+"원":"신청 내역 없음 — 빈 서식")+'</span>'+
-        '<button class="btn" data-copydept="'+esc(d)+'">서식 복사</button></div>'+
-      '<div class="dfbody">'+
-        '<h3 class="dftitle">2027학년도 교과용 도서 선정 신청서</h3>'+
-        '<p class="dfsub">'+esc(d)+'</p>'+
-        '<div style="overflow-x:auto"><table class="dfgrid"><thead><tr>'+
-          DF_HEAD.map(function(h){return '<th>'+esc(h)+'</th>';}).join("")+
-        '</tr></thead><tbody>'+body+'</tbody></table></div>'+
-        '<p class="dfstmt">위와 같이 2027학년도에 사용할 교과용 도서를 선정하여 제출합니다.</p>'+
-        '<p class="dfdate">'+esc(state.date||"2026년          월          일")+'</p>'+
-        '<div class="dfsig"><table class="sigbox"><tbody>'+
-          '<tr><td class="role">교과부장</td><td class="who">'+esc(sig.head||"")+'</td><td class="mark">(서명 또는 인)</td></tr>'+
-          '<tr><td class="role">총　　무</td><td class="who">'+esc(sig.mgr||"")+'</td><td class="mark">(서명 또는 인)</td></tr>'+
-        '</tbody></table></div>'+
-      '</div></div>';
-  }).join("");
+function form1PrintHTML(ev){
+  return '<div class="f1close"><button class="btn" data-f1close="1">닫기</button></div>'+form1BodyHTML(ev);
 }
 
-function renderView(){
-  var isDept = (view==="dept");
-  document.getElementById("singleWrap").hidden=isDept;
-  document.getElementById("deptWrap").hidden=!isDept;
-  if(isDept){ renderSigTable(); renderDeptForms(); return; }
-  var V=VIEWS[view], rows=V.rows();
-  document.getElementById("viewDesc").textContent=V.desc;
-  document.getElementById("viewNote").textContent=V.note;
-  var t=document.getElementById("outTable");
-  if(!rows.length){
-    t.innerHTML='<tbody><tr><td style="padding:28px; text-align:center; color:var(--ink-3)">입력된 내용이 없습니다.</td></tr></tbody>';
+/* ── [서식1] 탭: 제출(생성)된 과목의 평가표를 모아 보여 줌 ── */
+function deptEvalsInOrder(dept){
+  return (SUBJECT_CATALOG[dept]||[]).filter(function(s){ return hasRealBooks(dept, s); }).map(function(s){
+    return state.evals.filter(function(e){ return nz(e.gun)===dept && nz(e.subject)===s; })[0];
+  }).filter(Boolean);
+}
+function renderForm1Tab(){
+  var el=document.getElementById("form1List");
+  var evs=deptEvalsInOrder(deptScope()).filter(function(e){ return e.submitted; });
+  document.getElementById("copyAllForm1").hidden=!evs.length;
+  if(!evs.length){
+    el.innerHTML='<div class="evempty">아직 생성된 [서식1]이 없습니다. [과목 평가]에서 점수를 모두 매긴 뒤 <b>서식1 생성</b>을 눌러 주세요.</div>';
     return;
   }
-  t.innerHTML='<thead><tr>'+V.head.map(function(h){return '<th>'+esc(h)+'</th>';}).join("")+'</tr></thead>'+
-    '<tbody>'+rows.map(function(r){
-      return '<tr>'+r.map(function(c,i){
-        var cls=V.nums&&V.nums.indexOf(i)>=0?' class="n"':(V.sign===i?' class="sign"':"");
-        return '<td'+cls+'>'+esc(c).replace(/\n/g,"<br>")+'</td>';
-      }).join("")+'</tr>';
-    }).join("")+'</tbody>';
+  el.innerHTML=evs.map(function(ev){
+    return '<div class="deptform" data-ev="'+ev.id+'">'+
+      '<div class="df-hd"><span class="nm">'+esc(nz(ev.subject))+'</span>'+
+        '<span class="ct">후보 '+ev.cands.filter(function(c){ return nz(c.book)||nz(c.pub); }).length+'종</span>'+
+        '<button class="btn" data-copyf1="'+ev.id+'">서식 복사</button></div>'+
+      '<div class="dfbody">'+form1BodyHTML(ev)+'</div></div>';
+  }).join("");
 }
 
 function renderSteps(){
@@ -1171,7 +991,9 @@ function route(){
 function myEvals(){
   var d=state.me?state.me.dept:"";
   var subs=SUBJECT_CATALOG[d]||[];
-  var all=state.evals.filter(function(e){ return !nz(e.gun) || nz(e.gun)===d; });
+  var all=state.evals.filter(function(e){
+    return nz(e.gun)===d && nz(e.subject) && hasRealBooks(d, nz(e.subject));
+  });
   return all.slice().sort(function(a,b){
     var ia=subs.indexOf(nz(a.subject)); if(ia<0) ia=999;
     var ib=subs.indexOf(nz(b.subject)); if(ib<0) ib=999;
@@ -1185,31 +1007,35 @@ function evScored(ev){
   live.forEach(function(c){ if(ev.crit.some(function(k){ return c.sc[k.id]!=null && c.sc[k.id]!==""; })) n++; });
   return n===live.length?2:(n?1:0);
 }
-function renderTeacher(){
+/* 왼쪽 과목 목록만 다시 그림 (채점 칸의 입력 포커스를 건드리지 않음) */
+function renderSubjectList(){
   var list=myEvals();
   var el=document.getElementById("tSubjects");
+  if(tCur && !list.some(function(e){return e.id===tCur;})) tCur=null;
+  if(!tCur && list.length) tCur=list[0].id;
   if(!list.length){
-    el.innerHTML='<div class="evempty">평가할 과목이 아직 없습니다. <b>＋ 과목 직접 추가</b>로 만드세요.</div>';
+    el.innerHTML='<div class="evempty">평가할 과목이 없습니다.</div>';
   } else {
-    if(!tCur) tCur=list[0].id;
     el.innerHTML=list.map(function(ev){
       var st=evScored(ev);
       var cn=ev.cands.filter(function(c){ return nz(c.book)||nz(c.pub); }).length;
       return '<div class="subjcard'+(ev.id===tCur?" active":"")+'">'+
         '<button class="go" data-open="'+ev.id+'">'+
-          '<div class="sc-n">'+esc(nz(ev.subject)||"(과목명 없음)")+'</div>'+
+          '<div class="sc-n">'+esc(nz(ev.subject))+'</div>'+
           '<div class="sc-m">후보 '+cn+'종</div>'+
         '</button>'+
         '<span class="sc-s '+(ev.submitted?"done":(st===2?"todo":"todo"))+'">'+(ev.submitted?"제출완료":(st===2?"완료":st===1?"작성중":"미작성"))+'</span>'+
       '</div>';
     }).join("");
   }
-  if(tCur && !list.some(function(e){return e.id===tCur;})) tCur=list.length?list[0].id:null;
-  renderTeacherScore();
 }
+function renderTeacher(){ renderSubjectList(); renderTeacherScore(); }
 function renderTeacherScore(){
   var ev=tCur?state.evals.filter(function(e){return e.id===tCur;})[0]:null;
   var box=document.getElementById("tScoreCard");
+  var sent=!!(ev && ev.submitted);
+  document.getElementById("tSubmit").hidden=sent;
+  document.getElementById("tCancelSubmit").hidden=!sent;
   if(!ev){ box.innerHTML='<div class="evempty">왼쪽에서 평가할 과목을 골라 주세요.</div>'; return; }
 
   if(!ev.modeChosen){
@@ -1260,7 +1086,7 @@ function renderTeacherScore(){
       '</div></div></div>';
 }
 
-function renderAll(){ renderStats(); renderView(); renderSteps(); }
+function renderAll(){ renderStats(); renderForm1Tab(); renderSteps(); }
 
 /* DOM 영역을 선택해 서식 그대로 복사 */
 function copyNode(node, okMsg){
@@ -1299,15 +1125,6 @@ document.getElementById("printForm1").addEventListener("click",function(e){
   if(e.target.closest("button[data-f1close]")) document.body.classList.remove("printing-form1");
 });
 
-
-document.getElementById("viewPick").addEventListener("click",function(e){
-  var b=e.target.closest("button[data-v]"); if(!b) return;
-  view=b.dataset.v;
-  Array.prototype.forEach.call(this.querySelectorAll("button"),function(x){
-    x.setAttribute("aria-pressed", x.dataset.v===view?"true":"false");
-  });
-  renderView();
-});
 
 /* ── 시작 화면 ────────────────────────── */
 var pickDept="";
@@ -1355,7 +1172,7 @@ document.getElementById("tScoreCard").addEventListener("input",function(e){
   var c=ev.cands.filter(function(x){return x.id===tr.dataset.cand;})[0]; if(!c) return;
   if(el.dataset.sc) c.sc[el.dataset.sc]= el.value===""?"":(parseFloat(el.value)||0);
   else if(el.dataset.f) c[el.dataset.f]=el.value;
-  save(); liveTotalsIn(document.getElementById("tScoreCard"), ev);
+  save(); liveTotalsIn(document.getElementById("tScoreCard"), ev); renderSubjectList();
 });
 document.getElementById("tScoreCard").addEventListener("click",function(e){
   var b=e.target.closest("button"); if(!b) return;
@@ -1364,16 +1181,16 @@ document.getElementById("tScoreCard").addEventListener("click",function(e){
   if(d.choosemode){
     ev.mode=d.choosemode; ev.modeChosen=true;
     if(d.choosemode==="item") ev.cands.forEach(function(c){ c.sc={}; });
-    save(); renderTeacherScore(); return;
+    save(); renderTeacher(); return;
   }
-  if(d.modeback){ ev.modeChosen=false; ev.winnerId=null; save(); renderTeacherScore(); return; }
-  if(d.rewinner){ ev.winnerId=null; ev.cands.forEach(function(c){ c.sc={}; }); save(); renderTeacherScore(); return; }
-  if(d.pickwinner){ winnerRandomFill(ev, d.pickwinner); save(); renderTeacherScore(); return; }
-  if(d.pricefill){ toast(fillFromPrice(ev)); save(); renderTeacherScore(); return; }
+  if(d.modeback){ ev.modeChosen=false; ev.winnerId=null; save(); renderTeacher(); return; }
+  if(d.rewinner){ ev.winnerId=null; ev.cands.forEach(function(c){ c.sc={}; }); save(); renderTeacher(); return; }
+  if(d.pickwinner){ winnerRandomFill(ev, d.pickwinner); save(); renderTeacher(); return; }
+  if(d.pricefill){ toast(fillFromPrice(ev)); save(); renderTeacher(); return; }
   if(d.delcand){
     ev.cands=ev.cands.filter(function(c){return c.id!==d.delcand;});
     if(!ev.cands.length) ev.cands=[newCand()];
-    save(); renderTeacherScore(); return;
+    save(); renderTeacher(); return;
   }
 });
 
@@ -1390,6 +1207,27 @@ document.getElementById("tSubmit").addEventListener("click",function(){
   window.print();
 });
 
+document.getElementById("tCancelSubmit").addEventListener("click",function(){
+  var ev=tCur?state.evals.filter(function(e){return e.id===tCur;})[0]:null;
+  if(!ev || !ev.submitted) return;
+  ev.submitted=false; save(); renderTeacher();
+  toast(nz(ev.subject)+" 제출을 취소했습니다. 점수를 고친 뒤 다시 제출해 주세요.");
+});
+
+/* 서식1 생성 — 점수를 모두 매긴(완료) 과목을 확인받고 한꺼번에 제출 처리 → [서식1] 탭에 채워짐 */
+document.getElementById("genForm1").addEventListener("click",function(){
+  var ready=deptEvalsInOrder(state.me.dept).filter(function(e){ return evScored(e)===2; });
+  if(!ready.length){ toast("점수를 모두 매긴 과목이 아직 없습니다."); return; }
+  var msg="점수 입력을 완료한 과목 "+ready.length+"개입니다.\n\n"+
+    ready.map(function(e){ return "· "+nz(e.subject)+(e.submitted?" (제출완료)":""); }).join("\n")+
+    "\n\n[서식1] 생성하시겠습니까?";
+  if(!window.confirm(msg)) return;
+  ready.forEach(function(e){ e.submitted=true; });
+  save(); renderTeacher();
+  if(isChief()){ tab="forms"; renderTabView(); window.scrollTo(0,0); }
+  toast("[서식1] "+ready.length+"개를 생성했습니다."+(isChief()?"":" 교과부장 화면의 [서식1] 탭에서 모아 볼 수 있습니다."));
+});
+
 /* 점수만 바뀐 경우 전체를 다시 그리지 않고 총점·순위만 갱신 (입력 포커스 유지) */
 function liveTotalsIn(card, ev){
   if(!card) return;
@@ -1402,25 +1240,15 @@ function liveTotalsIn(card, ev){
     tr.classList.toggle("win", p===1);
   });
 }
-/* 교과부장·총무 성명, 제출일 */
-document.getElementById("sigBody").addEventListener("input",function(e){
-  var d=e.target.dataset.dept, f=e.target.dataset.f; if(!d||!f) return;
-  state.depts[d]=state.depts[d]||{};
-  state.depts[d][f]=e.target.value;
-  save(); renderDeptForms();
-});
-document.getElementById("submitDate").addEventListener("input",function(e){
-  state.date=e.target.value; save(); renderDeptForms();
-});
-
-/* 교과별 서식 복사 */
-document.getElementById("deptForms").addEventListener("click",function(e){
-  var b=e.target.closest("button[data-copydept]"); if(!b) return;
+/* [서식1] 복사 */
+document.getElementById("form1List").addEventListener("click",function(e){
+  var b=e.target.closest("button[data-copyf1]"); if(!b) return;
   var card=b.closest(".deptform");
-  copyNode(card.querySelector(".dfbody"), b.dataset.copydept+" 서식을 복사했습니다. 한글에 붙여넣으세요.");
+  copyNode(card.querySelector(".dfbody"), card.querySelector(".nm").textContent+" [서식1]을 복사했습니다. 한글에 붙여넣으세요.");
 });
-document.getElementById("copyAllDept").addEventListener("click",function(){
-  var n=document.querySelectorAll(".deptform .dfbody");
+document.getElementById("copyAllForm1").addEventListener("click",function(){
+  var n=document.querySelectorAll("#form1List .dfbody");
+  if(!n.length) return;
   var holder=document.createElement("div");
   holder.style.cssText="position:fixed; left:-10000px; top:0; width:900px; background:#fff; color:#000";
   Array.prototype.forEach.call(n,function(b,i){
@@ -1428,7 +1256,7 @@ document.getElementById("copyAllDept").addEventListener("click",function(){
     if(i<n.length-1){ var br=document.createElement("p"); br.innerHTML="&nbsp;"; holder.appendChild(br); }
   });
   document.body.appendChild(holder);
-  copyNode(holder, "교과 "+n.length+"개 서식을 모두 복사했습니다.");
+  copyNode(holder, "[서식1] "+n.length+"개를 모두 복사했습니다.");
   document.body.removeChild(holder);
 });
 
@@ -1440,53 +1268,6 @@ document.getElementById("stepList").addEventListener("change",function(e){
 document.getElementById("stepList").addEventListener("input",function(e){
   var d=e.target.dataset.date; if(!d) return;
   state.steps[d+"-date"]=e.target.value; save();
-});
-
-/* 표 복사 — 한글/엑셀에 표 형태로 붙도록 DOM 선택 후 복사 */
-document.getElementById("copyTable").addEventListener("click",function(){
-  var t=document.getElementById("outTable");
-  var ok=false;
-  try{
-    var sel=window.getSelection(); sel.removeAllRanges();
-    var rg=document.createRange(); rg.selectNode(t); sel.addRange(rg);
-    ok=document.execCommand("copy");
-    sel.removeAllRanges();
-  }catch(e){ ok=false; }
-  if(ok){ toast("표를 복사했습니다. 한글·엑셀에 붙여넣으세요."); return; }
-  var V=VIEWS[view];
-  var tsv=[V.head.join("\t")].concat(V.rows().map(function(r){
-    return r.map(function(c){ return String(c).replace(/\n/g," / "); }).join("\t");
-  })).join("\n");
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(tsv).then(function(){ toast("표를 텍스트로 복사했습니다."); },
-      function(){ toast("복사에 실패했습니다. 표를 직접 끌어서 선택해 주세요."); });
-  } else toast("복사에 실패했습니다. 표를 직접 끌어서 선택해 주세요.");
-});
-
-/* CSV */
-function csvOf(head,rows){
-  function q(s){ s=String(s==null?"":s).replace(/\n/g," / "); return /[",]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
-  return "﻿"+[head.map(q).join(",")].concat(rows.map(function(r){return r.map(q).join(",");})).join("\r\n");
-}
-var VNAME={subject:"과목별_심의안",book:"도서명별_주문집계",teacher:"교사별_확인표","public":"공개용_선정결과"};
-async function offer(filename, text, mime){
-  var dl=null;
-  try{ dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null; }catch(e){ dl=null; }
-  if(dl){
-    try{ await dl.save({filename:filename, data:text}); toast("저장했습니다 — "+filename); return; }
-    catch(err){ if(err && err.code==="declined") return; }
-  }
-  try{
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      await navigator.clipboard.writeText(text);
-      toast("내려받기를 쓸 수 없어 클립보드에 복사했습니다."); return;
-    }
-  }catch(e){}
-  toast("이 화면에서는 파일 저장을 쓸 수 없습니다. 표 복사를 이용해 주세요.");
-}
-document.getElementById("dlCsv").addEventListener("click",function(){
-  var V=VIEWS[view];
-  offer("2027_"+VNAME[view]+".csv", csvOf(V.head,V.rows()));
 });
 
 /* ───────── 시작 ───────── */
