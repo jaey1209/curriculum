@@ -271,9 +271,30 @@ function ai_(system, prompt, json) {
                    : claude_(claudeKey, prompt, system);
 }
 
-/* Gemini API (Google AI Studio 키). 무료 등급은 분당·하루 요청 수 제한이 있다. */
+/* Gemini API (Google AI Studio 키). 무료 등급은 모델마다 분당·하루 요청 수 제한이 있다.
+ * 서버가 붐비면(503 등) 잠깐 기다렸다 한 번 더 하고, 그래도 안 되거나 그 모델의 무료 사용량을 넘었으면(429)
+ * 다음 모델로 넘어간다: 지정한 모델 → GEMINI_FALLBACKS 순서. 키가 틀린 경우(400·401·403)는 바로 알린다. */
+var GEMINI_FALLBACKS = ["gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
 function gemini_(key, model, prompt, system, json) {
-  var res = UrlFetchApp.fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent", {
+  var models = [model].concat(GEMINI_FALLBACKS).filter(function (m, i, a) { return m && a.indexOf(m) === i; });
+  var busy = false, quota = false;
+  for (var i = 0; i < models.length; i++) {
+    for (var attempt = 0; attempt < 2; attempt++) {
+      var res = geminiCall_(key, models[i], prompt, system, json), status = res.getResponseCode();
+      if (status === 200) return geminiText_(JSON.parse(res.getContentText()));
+      if (status === 429) { quota = true; break; }                       // 이 모델 사용량 초과 → 다음 모델
+      if (status === 404) break;                                         // 없는 모델 이름 → 다음 모델
+      if (status >= 500) { busy = true; if (attempt === 0) Utilities.sleep(1500); continue; }   // 붐빔 → 한 번 더
+      if (status === 400 && !/API key|API_KEY/i.test(res.getContentText())) break;             // 이 모델이 요청을 못 받음 → 다음 모델
+      throw new Error("Gemini 키를 확인해 주세요 (HTTP " + status + "). 스크립트 속성 GEMINI_API_KEY 값이 맞는지 봐 주세요.");
+    }
+  }
+  if (busy) throw new Error("Gemini 서버가 지금 붐빕니다. 잠시 뒤 다시 눌러 주세요.");
+  if (quota) throw new Error("Gemini 무료 사용량을 넘었습니다. 1분쯤 뒤 다시 해 주세요.");
+  throw new Error("AI 초안을 만들지 못했습니다 (Gemini 모델을 찾지 못함).");
+}
+function geminiCall_(key, model, prompt, system, json) {
+  return UrlFetchApp.fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent", {
     method: "post",
     contentType: "application/json",
     muteHttpExceptions: true,
@@ -285,10 +306,8 @@ function gemini_(key, model, prompt, system, json) {
                              : { maxOutputTokens: 4096, temperature: 0.7 }
     })
   });
-  var status = res.getResponseCode();
-  if (status === 429) throw new Error("Gemini 무료 사용량을 넘었습니다. 1분쯤 뒤 다시 해 주세요.");
-  if (status !== 200) throw new Error("AI 초안을 만들지 못했습니다 (Gemini HTTP " + status + ").");
-  var body = JSON.parse(res.getContentText());
+}
+function geminiText_(body) {
   if (body.promptFeedback && body.promptFeedback.blockReason) return { refused: true };
   var cand = (body.candidates || [])[0];
   if (!cand) return { text: "" };
