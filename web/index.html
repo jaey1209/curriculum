@@ -463,32 +463,35 @@ table.f3tbl td.f3op{padding:6px}
 .errnote{border:1px solid var(--crit); color:var(--crit); background:var(--crit-soft); border-radius:8px; padding:9px 13px;
   font-size:13px; margin-bottom:14px}
 
-/* ══ 디자인 B · Liquid Glass (유리알) ═════════════════════════
-   Apple Liquid Glass 느낌: 색 번짐이 있는 바탕 위에 두껍고 맑은 유리. 모든 유리 면은
-   ① 반투명 흰 채움 ② 윗면 광택(위→아래로 사라지는 흰 빛) ③ 가장자리 빛 반사(안쪽 1px 흰 선)
-   ④ 부드러운 그림자로 만든다. 버튼·탭·칩은 동그란 유리알(위쪽이 밝게 맺힌 광택).
-   라이트 한 가지만 쓴다. 한글파일 서식 미리보기(.deptform .dfbody)는 흰 종이 그대로. */
+/* ══ 디자인 B · Clear Glass (투명 유리알) ═════════════════════
+   색감은 B 그대로(은은한 하늘·보라·청록 바탕, 인디고 강조). 모든 면은 속이 비치는 맑은 유리:
+   ① 아주 옅은 채움 ② 윗면에 맺힌 반사광 ③ 아래쪽에 모이는 빛(커스틱) ④ 가장자리 흰 테두리.
+   뿌연 흰 채움 대신 반사광·테두리로 유리알 모양을 만든다. 라이트 한 가지만 쓴다.
+   한글파일 서식 미리보기(.deptform .dfbody)는 흰 종이 그대로. */
 :root{
-  --glass:linear-gradient(180deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.18) 42%, rgba(255,255,255,0) 60%),
-          linear-gradient(135deg, rgba(255,255,255,.66), rgba(255,255,255,.36));
-  --glass-rim:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(255,255,255,.35),
-              inset 1px 0 0 rgba(255,255,255,.55), inset -1px 0 0 rgba(255,255,255,.35);
-  --glass-drop:0 12px 36px -10px rgba(45,45,120,.22), 0 2px 6px rgba(45,45,120,.06);
-  --bead:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.98) 0%, rgba(255,255,255,.55) 45%, rgba(255,255,255,.28) 100%);
-  --bead-rim:inset 0 1px 1px rgba(255,255,255,1), inset 0 -2px 5px rgba(88,86,214,.10), inset 0 0 0 1px rgba(255,255,255,.55);
-  --bead-drop:0 4px 14px -4px rgba(45,45,120,.22);
-  --gem:radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 52%), linear-gradient(180deg,#7472F2 0%,#5553D8 55%,#4644C4 100%);
-  --gem-rim:inset 0 1px 0 rgba(255,255,255,.65), inset 0 -3px 8px rgba(20,10,90,.28), inset 0 0 0 1px rgba(255,255,255,.18);
-  --gem-drop:0 10px 22px -8px rgba(88,86,214,.7);
-  --blur:blur(28px) saturate(185%);
+  --glass:linear-gradient(180deg, rgba(255,255,255,.58) 0%, rgba(255,255,255,.12) 22%, rgba(255,255,255,0) 48%),
+          radial-gradient(120% 60% at 50% 100%, rgba(255,255,255,.28) 0%, rgba(255,255,255,0) 70%),
+          rgba(255,255,255,.30);
+  --glass-rim:inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(255,255,255,.62),
+              inset 0 -1px 0 rgba(255,255,255,.7), inset 0 -14px 24px -18px rgba(255,255,255,.9);
+  --glass-drop:0 14px 34px -14px rgba(60,60,140,.26), 0 1px 3px rgba(60,60,140,.06);
+  --bead:radial-gradient(85% 55% at 50% 0%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.35) 55%, rgba(255,255,255,0) 100%),
+         radial-gradient(70% 45% at 50% 100%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 75%),
+         rgba(255,255,255,.14);
+  --bead-rim:inset 0 1px 1px rgba(255,255,255,1), inset 0 0 0 1px rgba(255,255,255,.75), inset 0 -2px 3px rgba(88,86,214,.10);
+  --bead-drop:0 5px 14px -6px rgba(60,60,140,.30);
+  --gem:radial-gradient(85% 55% at 50% 0%, rgba(255,255,255,.62) 0%, rgba(255,255,255,.12) 55%, rgba(255,255,255,0) 100%),
+        radial-gradient(70% 45% at 50% 100%, rgba(190,188,255,.55) 0%, rgba(190,188,255,0) 75%),
+        linear-gradient(180deg, rgba(104,102,232,.80), rgba(80,78,210,.86));
+  --gem-rim:inset 0 1px 0 rgba(255,255,255,.75), inset 0 0 0 1px rgba(255,255,255,.28), inset 0 -2px 6px rgba(30,20,110,.22);
+  --gem-drop:0 10px 22px -8px rgba(88,86,214,.6);
+  --blur:blur(16px) saturate(170%);
 }
 body{font-size:14.5px; letter-spacing:-.01em;
   background:
-    radial-gradient(640px 460px at 6% 4%, rgba(122,162,255,.55) 0, transparent 70%),
-    radial-gradient(560px 420px at 94% 10%, rgba(196,150,255,.50) 0, transparent 70%),
-    radial-gradient(620px 440px at 78% 92%, rgba(255,164,206,.42) 0, transparent 70%),
-    radial-gradient(700px 480px at 14% 96%, rgba(120,226,214,.40) 0, transparent 70%),
-    linear-gradient(180deg,#F4F6FC,#EEF0F9);
+    radial-gradient(900px 520px at 8% -8%, var(--glow-1) 0, transparent 62%),
+    radial-gradient(760px 480px at 96% 4%, var(--glow-2) 0, transparent 58%),
+    radial-gradient(900px 600px at 50% 110%, var(--glow-3) 0, transparent 60%), var(--paper);
   background-attachment:fixed}
 td.n, .tot, .pos, td input, .wsum, .syncchip, .sc-s, .cnt, .df-hd .ct, .ib-hd .mt{font-variant-numeric:tabular-nums}
 .eyebrow,.ekicker,.formtag,.tag{text-transform:none; letter-spacing:0}
@@ -501,17 +504,17 @@ header.top{background:var(--glass); backdrop-filter:var(--blur); -webkit-backdro
 .eyebrow{font-size:12px; color:var(--accent); font-weight:600}
 h1{font-size:21px; font-weight:700}
 nav.tabs{width:max-content; max-width:calc(100% - 32px); margin:10px 0 12px max(16px, calc((100% - 1120px) / 2 + 16px));
-  padding:4px; gap:2px; border-radius:980px; background:rgba(255,255,255,.35);
+  padding:4px; gap:2px; border-radius:980px; background:rgba(255,255,255,.18);
   box-shadow:inset 0 1px 2px rgba(45,45,120,.10), inset 0 0 0 1px rgba(255,255,255,.6)}
 nav.tabs button{border:0; border-radius:980px; padding:7px 18px; font-size:13.5px; color:var(--ink-2)}
-nav.tabs button:hover{background:rgba(255,255,255,.4); color:var(--ink)}
+nav.tabs button:hover{background:rgba(255,255,255,.28); color:var(--ink)}
 nav.tabs button[aria-selected="true"]{background:var(--bead); color:var(--accent-ink); font-weight:700;
   box-shadow:var(--bead-rim), var(--bead-drop)}
 .whoami{background:var(--bead); border:0; box-shadow:var(--bead-rim), var(--bead-drop)}
 .whoami .rl{background:var(--accent-soft); color:var(--accent-ink)}
 .syncchip{border:0; border-radius:980px; padding:5px 11px; font-size:12px; background:var(--bead); box-shadow:var(--bead-rim)}
-.syncchip.ok{background:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.9), rgba(52,199,89,.22)); color:var(--ok)}
-.syncchip.bad{background:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.9), rgba(255,59,48,.2))}
+.syncchip.ok{background:linear-gradient(180deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 55%), var(--ok-soft); color:var(--ok)}
+.syncchip.bad{background:linear-gradient(180deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 55%), var(--crit-soft)}
 
 /* 제목 줄 */
 section.panel{padding-top:28px}
@@ -546,7 +549,7 @@ button.btn.ghost:hover{background:rgba(255,255,255,.5); color:var(--accent-ink)}
 .deptpick button:hover{transform:translateY(-1px); color:var(--ink)}
 .deptpick button[aria-pressed="true"]{background:var(--gem); color:#fff; font-weight:700; box-shadow:var(--gem-rim), var(--gem-drop)}
 /* 입력 칸: 유리에 파인 홈 */
-input.ename{border:0; border-radius:16px; background:rgba(255,255,255,.42); font-size:16px; padding:13px 15px;
+input.ename{border:0; border-radius:16px; background:rgba(255,255,255,.26); font-size:16px; padding:13px 15px;
   box-shadow:inset 0 1px 3px rgba(45,45,120,.14), inset 0 0 0 1px rgba(255,255,255,.7)}
 input.ename:focus{outline:none; background:rgba(255,255,255,.85); box-shadow:inset 0 1px 2px rgba(45,45,120,.1), 0 0 0 4px rgba(88,86,214,.22)}
 button.estart{border-radius:16px; padding:14px; font-size:16px; margin-top:26px}
@@ -556,16 +559,16 @@ button.estart{border-radius:16px; padding:14px; font-size:16px; margin-top:26px}
 .tsidebar-hd{font-size:15px}
 .tsidebar .subjcard{padding:11px 13px; border-radius:18px; transition:transform .15s, box-shadow .15s}
 .tsidebar .subjcard:hover{transform:translateY(-1px)}
-.tsidebar .subjcard.active{background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.7));
+.tsidebar .subjcard.active{background:var(--glass), rgba(255,255,255,.34);
   box-shadow:var(--glass-rim), 0 0 0 2px rgba(88,86,214,.75), 0 14px 30px -12px rgba(88,86,214,.45)}
 .subjcard:hover{border-color:rgba(255,255,255,.9)}
 .subjcard .sc-s{border-radius:980px; font-size:11.5px; font-weight:700; padding:3px 10px; box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
-.sc-s.done{background:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.9), rgba(52,199,89,.28)); color:var(--ok)}
-.sc-s.todo{background:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.9), rgba(255,149,0,.26)); color:var(--warn)}
+.sc-s.done{background:linear-gradient(180deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 55%), var(--ok-soft); color:var(--ok)}
+.sc-s.todo{background:linear-gradient(180deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 55%), var(--warn-soft); color:var(--warn)}
 .formtag{border-radius:980px; background:var(--accent-soft)}
 
 /* 평가표 */
-table.ev{background:rgba(255,255,255,.45); border-radius:14px}
+table.ev{background:rgba(255,255,255,.34); border-radius:14px}
 table.ev th,table.ev td{border-color:rgba(45,45,120,.08)}
 table.ev thead th{background:rgba(255,255,255,.5); color:var(--ink-3); border-color:rgba(45,45,120,.08)}
 table.ev td.tot, table.ev td.pos{background:rgba(255,255,255,.4)}
@@ -581,7 +584,7 @@ tbody tr:hover{background:rgba(255,255,255,.4)}
 .provisional,.banner{border-radius:14px}
 
 /* 종합의견·AI */
-.opinion textarea{border-radius:16px; background:rgba(255,255,255,.55) !important; border-color:rgba(255,255,255,.8) !important;
+.opinion textarea{border-radius:16px; background:rgba(255,255,255,.4) !important; border-color:rgba(255,255,255,.8) !important;
   box-shadow:inset 0 1px 3px rgba(45,45,120,.12)}
 .aibtn{border:0; border-radius:980px; color:#fff; font-weight:700; text-shadow:0 1px 1px rgba(60,20,90,.3);
   background:radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 55%), var(--ai);
@@ -593,7 +596,7 @@ tbody tr:hover{background:rgba(255,255,255,.4)}
   backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:980px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 10px 30px -10px rgba(0,0,0,.4)}
 .modal{background:rgba(40,40,90,.14); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px)}
-.modal-box{background:var(--glass), rgba(255,255,255,.5); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+.modal-box{background:var(--glass), rgba(255,255,255,.62); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
   border:1px solid rgba(255,255,255,.7); border-radius:26px; box-shadow:var(--glass-rim), 0 30px 70px -20px rgba(40,40,110,.45)}
 .errpanel{border-radius:20px; border-width:1px}
 .errnote{border-radius:14px}
