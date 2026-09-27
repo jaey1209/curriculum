@@ -1598,23 +1598,25 @@ function form1Evals(){
     });
 }
 function renderForm1Tab(){
-  var el=document.getElementById("form1List");
-  var waiting=SERVER && !(sync.dept && sync.dept.dept===deptScope());
+  var el=document.getElementById("form1List"), chief=isChief();
+  var waiting=chief && SERVER && !(sync.dept && sync.dept.dept===deptScope());
   var evs=form1Evals();
   document.getElementById("copyAllForm1").hidden=!evs.length;
-  Array.prototype.forEach.call(document.querySelectorAll("[data-reloadforms]"), function(b){ b.hidden=!SERVER; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-reloadforms]"), function(b){ b.hidden=!(SERVER && chief); });
   var sub=document.getElementById("form1Sub");
-  sub.innerHTML=SERVER
+  sub.innerHTML=!chief
+    ? '내가 [과목 평가]에서 제출(또는 <b>서식1 생성</b>)한 과목의 검·인정도서 선정 평가표입니다. 다른 선생님의 평가는 보이지 않습니다.'
+    : SERVER
     ? (sync.deptErr ? '<span style="color:var(--crit)">다른 선생님의 제출분을 불러오지 못했습니다 ('+esc(sync.deptErr)+'). [새로고침]을 눌러 주세요.</span>'
        : waiting ? '교과 선생님들이 제출한 [서식1]을 불러오는 중…'
        : '교과 선생님 전원이 [과목 평가]에서 제출(서식1 생성)한 평가표입니다 · '+esc(hhmm(sync.dept.at))+' 기준')
     : '[과목 평가]에서 <b>서식1 생성</b>(또는 제출)한 과목의 검·인정도서 선정 평가표가 자동으로 채워집니다.';
   /* 평가자가 3명 미만인 과목이 있으면 [서식2]·[서식3]을 만들 수 없음을 여기서도 알림 */
-  var short=waiting?[]:subjectAggs().filter(function(a){ return !a.ok; });
+  var short=(waiting || !chief)?[]:subjectAggs().filter(function(a){ return !a.ok; });
   var note=short.length?'<div class="errnote" role="alert">평가자가 '+MIN_EVALUATORS+'명 미만인 과목이 '+short.length+'개 있습니다: '+
     esc(short.map(function(a){ return a.subject+" "+a.evs.length+"명"; }).join(", "))+'. 자세한 내용은 [서식2] 탭에서 확인하세요.</div>':'';
   if(!evs.length){
-    el.innerHTML=note+'<div class="evempty">'+(waiting?'불러오는 중…':'아직 생성된 [서식1]이 없습니다. [과목 평가]에서 점수와 종합의견을 모두 쓴 뒤 <b>서식1 생성</b>을 눌러 주세요.')+'</div>';
+    el.innerHTML=note+'<div class="evempty">'+(waiting?'불러오는 중…':'아직 생성된 [서식1]이 없습니다. [과목 평가]에서 점수와 종합의견을 모두 쓴 뒤 <b>제출</b>하거나 <b>서식1 생성</b>을 눌러 주세요.')+'</div>';
     return;
   }
   el.innerHTML=note+evs.map(function(ev){
@@ -1810,8 +1812,10 @@ function renderFormNTab(n){
 }
 /* 교과부장 서식 탭: 보고 있는 탭만 다시 그림 (서식3 추천 의견을 쓰는 중이면 건드리지 않음) */
 function renderFormTabs(){
+  if(!state.me || isAdmin()) return;
+  if(tab==="forms") renderForm1Tab();   /* 교사는 본인 [서식1]만 */
   if(!isChief()) return;
-  if(tab==="forms") renderForm1Tab();
+  if(tab==="forms") return;
   else if(tab==="form2") renderFormNTab(2);
   else if(tab==="form3"){
     var a=document.activeElement;
@@ -1825,7 +1829,10 @@ function hhmm(d){ d=new Date(d); return ("0"+d.getHours()).slice(-2)+":"+("0"+d.
 /* ── 화면 전환 ────────────────────────── */
 function isChief(){ return !!(state.me && state.me.role==="chief"); }
 var FORM_TABS=["forms","form2","form3"];
-function showingEval(){ return !isChief() || tab==="myeval"; }
+function showingEval(){ return tab==="myeval"; }
+/* 교사는 [과목 평가]·[서식1](본인 것)만, 교과부장은 [서식2]·[서식3]까지 */
+function allowedTabs(){ return isChief() ? ["myeval","forms","form2","form3"] : ["myeval","forms"]; }
+var tabFor="";
 function renderTabView(){
   var chief=isChief();
   Array.prototype.forEach.call(document.getElementById("tabs").querySelectorAll("button"),function(x){
@@ -1835,8 +1842,8 @@ function renderTabView(){
     document.getElementById("p-"+t).hidden = (t!==tab);
   });
   document.getElementById("teacherApp").hidden = !showingEval();
-  document.getElementById("chiefApp").hidden = !chief || tab==="myeval";
-  var onForms = chief && FORM_TABS.indexOf(tab)>=0;   /* 서식1·2·3: 헤더에 [한글파일 저장] */
+  document.getElementById("chiefApp").hidden = tab==="myeval";
+  var onForms = FORM_TABS.indexOf(tab)>=0;   /* 서식1·2·3: 헤더에 [한글파일 저장] */
   document.getElementById("hwpxBtn").hidden = !onForms;
   if(showingEval()){ ensureDeptEvals(state.me.dept); save(); renderTeacher(); }
   else { renderAll(); }
@@ -1847,7 +1854,15 @@ function route(){
   var signed=!!state.me;
   var chief=isChief(), adm=isAdmin();
   document.getElementById("entry").hidden = signed;
-  document.getElementById("tabs").hidden = !chief;
+  document.getElementById("tabs").hidden = !signed || adm;
+  if(signed && !adm){
+    /* 로그인하면 교과부장은 [서식1], 교사는 [과목 평가]부터 */
+    if(tabFor!==meKey()){ tab=chief?"forms":"myeval"; tabFor=meKey(); }
+    if(allowedTabs().indexOf(tab)<0) tab="myeval";
+    Array.prototype.forEach.call(document.getElementById("tabs").querySelectorAll("button"), function(b){
+      b.hidden = allowedTabs().indexOf(b.dataset.tab)<0;
+    });
+  }
   document.getElementById("adminApp").hidden = !adm;
   var w=document.getElementById("whoami");
   w.hidden=!signed;
@@ -2244,7 +2259,7 @@ function copyNode(node, okMsg){
 document.getElementById("tabs").addEventListener("click",function(e){
   var b=e.target.closest("button[data-tab]"); if(!b) return;
   tab=b.dataset.tab;
-  renderTabView();
+  renderTabView(); window.scrollTo(0,0);
 });
 
 
@@ -2297,7 +2312,7 @@ document.getElementById("startBtn").addEventListener("click",function(){
 /* 로그아웃: 아직 못 올린 내용을 먼저 올리고(지금 출입증으로 바로 보냄) 시작 화면으로 */
 document.getElementById("whoSwitch").addEventListener("click",function(){
   if(state.me && !isAdmin()) flush();
-  pickDept=""; entryAdmin=false;
+  pickDept=""; entryAdmin=false; tabFor="";
   ["myName","myCode","adminCode"].forEach(function(id){ document.getElementById(id).value=""; });
   state.me=null; tCur=null; sync.loadedFor=""; sync.dept=null;
   admin.data=null; admin.sel=null; admin.dept=""; admin.err="";
@@ -2398,7 +2413,7 @@ document.getElementById("tSubmit").addEventListener("click",function(){
     return;
   }
   ev.submitted=true; ev.by=state.me.name; changed(ev, true); renderTeacher();
-  toast(nz(ev.subject)+" 평가를 제출했습니다.");
+  toast(nz(ev.subject)+" 평가를 제출했습니다. [서식1] 탭에서 평가표를 볼 수 있습니다.");
 });
 
 document.getElementById("tCancelSubmit").addEventListener("click",function(){
@@ -2428,8 +2443,8 @@ document.getElementById("genForm1").addEventListener("click",function(){
   askConfirm("서식1 생성", body, "생성", function(){
     ready.forEach(function(e){ if(!e.submitted){ e.submitted=true; e.by=state.me.name; changed(e, true); } });
     renderTeacher();
-    if(isChief()){ tab="forms"; renderTabView(); window.scrollTo(0,0); }
-    toast("[서식1] "+ready.length+"개를 생성했습니다."+(isChief()?"":" 교과부장 화면의 [서식1] 탭에서 모아 볼 수 있습니다."));
+    tab="forms"; renderTabView(); window.scrollTo(0,0);
+    toast("[서식1] "+ready.length+"개를 생성했습니다."+(isChief()?"":" 교과부장에게도 전달됩니다."));
   }, true);
 });
 
@@ -2447,7 +2462,7 @@ function liveTotalsIn(card, ev){
 }
 /* [서식1] 한글파일 저장 — 제출된 과목마다 한 쪽씩 .hwpx 하나로 */
 document.getElementById("hwpxBtn").addEventListener("click",function(){
-  if(SERVER && !(sync.dept && sync.dept.dept===deptScope())){
+  if(isChief() && SERVER && !(sync.dept && sync.dept.dept===deptScope())){
     toast(sync.deptErr ? "교과 선생님들의 [서식1]을 불러오지 못했습니다. [새로고침]을 눌러 주세요."
                        : "교과 선생님들의 [서식1]을 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요.");
     return;
@@ -2470,7 +2485,7 @@ document.getElementById("hwpxBtn").addEventListener("click",function(){
     }
     blob=n===2?form2Hwpx(aggs):form3Hwpx(aggs); count=aggs.length;
   }
-  saveHwpx(blob, "2027_서식"+n+"_"+deptScope()+".hwpx", n, count);
+  saveHwpx(blob, "2027_서식"+n+"_"+deptScope()+(isChief()?"":"_"+state.me.name)+".hwpx", n, count);
 });
 function saveHwpx(blob, filename, n, count){
   var a=document.createElement("a");
