@@ -823,7 +823,7 @@ function sampleRows(){
 /* ───────── 상태 ───────── */
 var KEY="tb-ledger-2027-v1";
 var state={rows:[],steps:{},f3:{},stepsAt:0,stepsDept:"",depts:{},date:"",evals:[],me:null,sample:true};
-var tab="forms", tCur=null;
+var tab="myeval", tCur=null;
 
 function uid(){ return "r"+Math.random().toString(36).slice(2,9); }
 function blank(){ var o={id:uid()}; COLS.forEach(function(c){o[c.k]="";}); return o; }
@@ -1859,8 +1859,8 @@ function route(){
   document.getElementById("entry").hidden = signed;
   document.getElementById("tabs").hidden = !signed || adm;
   if(signed && !adm){
-    /* 로그인하면 교과부장은 [서식1], 교사는 [과목 평가]부터 */
-    if(tabFor!==meKey()){ tab=chief?"forms":"myeval"; tabFor=meKey(); }
+    /* 로그인하면 누구나 [과목 평가]부터 */
+    if(tabFor!==meKey()){ tab="myeval"; tabFor=meKey(); }
     if(allowedTabs().indexOf(tab)<0) tab="myeval";
     Array.prototype.forEach.call(document.getElementById("tabs").querySelectorAll("button"), function(b){
       b.hidden = allowedTabs().indexOf(b.dataset.tab)<0;
