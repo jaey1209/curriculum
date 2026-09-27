@@ -432,12 +432,6 @@ table.ev td.del button:hover{color:var(--crit); background:var(--crit-soft)}
    화면에 미리 보일 때와 실제 인쇄될 때 모두 같은 모양이 나오도록,
    서식 자체의 스타일은 @media print 밖에 둔다 (인쇄 전용 스타일이면
    화면 미리보기에서는 테두리 없이 깨져 보인다). */
-#printForm1{display:none}
-body.printing-form1 #printForm1{
-  display:block; max-width:960px; margin:22px auto; padding:22px 26px;
-  background:#fff; color:#141413; border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow);
-}
-.f1close{display:flex; justify-content:flex-end; margin-bottom:10px}
 .f1title{text-align:center; font-family:var(--serif); font-size:15px; font-weight:700; margin:0}
 .f1sub{text-align:center; font-family:var(--serif); font-size:19px; font-weight:700; margin:2px 0 14px}
 .f1meta{display:flex; justify-content:space-between; font-size:13px; margin:0 4px 10px}
@@ -468,6 +462,8 @@ table.f3tbl td.f3op{padding:6px}
 .f3op.over textarea{border:1px solid var(--crit)}
 .f3op .op-meta{color:#666}
 .f3op.over .op-meta{color:var(--crit)}
+.f3tools{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px; font-size:12px}
+.f3tools .dim{color:var(--ink-3)}
 .f3ref{margin-top:14px; font-size:12.5px}
 .f3ref summary{cursor:pointer; font-weight:600}
 .f3ref ul{margin:8px 0 0; padding-left:18px; line-height:1.6}
@@ -481,15 +477,6 @@ table.f3tbl td.f3op{padding:6px}
 .errpanel td.bad{color:var(--crit); font-weight:700}
 .errnote{border:1px solid var(--crit); color:var(--crit); background:var(--crit-soft); border-radius:8px; padding:9px 13px;
   font-size:13px; margin-bottom:14px}
-@media print{
-  body.printing-form1 .wrap>*:not(#printForm1),
-  body.printing-form1 header.top{display:none !important}
-  body.printing-form1 #printForm1{
-    display:block !important; max-width:none; margin:0; padding:14px 4px;
-    border:none; box-shadow:none; border-radius:0;
-  }
-  .f1close{display:none !important}
-}
 </style>
 
 <header class="top">
@@ -597,7 +584,6 @@ table.f3tbl td.f3op{padding:6px}
 </div>
 
 </div>
-<div id="printForm1"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="modal" id="modal" hidden>
   <div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalBody">
@@ -1181,9 +1167,6 @@ function form1BodyHTML(ev){
       '<span>'+esc(nz(ev.gun))+' 위원 : '+esc(evaluatorOf(ev))+'&nbsp;&nbsp;&nbsp;(인)</span></div>'+
     '<table class="f1tbl"><thead>'+head+'</thead><tbody>'+body+total+opinion+'</tbody></table>';
 }
-function form1PrintHTML(ev){
-  return '<div class="f1close"><button class="btn" data-f1close="1">닫기</button></div>'+form1BodyHTML(ev);
-}
 
 /* ── [서식1] 한글(.hwpx) 저장 ──────────────
    templates/form1.hwpx(학교 [서식1] 원본)의 header.xml·구역 설정을 그대로 쓰고(#hwpxTpl),
@@ -1524,11 +1507,56 @@ function subjectAggs(){
             ok:evs.length>=MIN_EVALUATORS};
   });
 }
-/* [서식3] 추천 의견: 교과부장이 고친 글(교과부장 자료에 저장) 또는 평가 결과로 만든 기본 문장 */
+/* [서식3] 추천 의견: 교과부장이 고친 글·AI로 종합한 글(교과부장 자료에 저장) 또는
+   위원들의 종합의견을 합쳐 만든 기본 문장(f3Merge) */
 function f3Key(a, p){ return a.subject+"|"+p.name; }
-function f3Default(a, p){
-  return "위원 "+a.evs.length+"명의 평균 "+fmtAvg(p.avg)+"점으로 "+p.rank+"순위입니다."+
-    (p.top?" 위원 "+p.top+"명이 가장 높은 점수를 주었습니다.":"");
+function f3Default(a, p){ return f3Merge(a, p); }
+/* 위원 의견 융합(키가 없거나 AI 연결이 안 될 때): 이 도서를 가리키는 문장을 모아 출판사명 머리·중복·
+   추천 맺음말을 걷어내고, 평균·순위 문장과 새 맺음말로 감싸 [서식3] 칸(F3_LINES줄)에 맞춘다. */
+function f3Sents(t){
+  return (String(t||"").replace(/\s+/g," ").match(/[^.!?。]+[.!?。]?/g)||[]).map(function(x){ return x.trim(); }).filter(Boolean);
+}
+function f3Bigrams(t){ var o={}, s2=t.replace(/[^가-힣A-Za-z0-9]/g,""); for(var i=0;i<s2.length-1;i++) o[s2.substr(i,2)]=1; return o; }
+function f3Similar(a, b){
+  var x=f3Bigrams(a), y=f3Bigrams(b), n=0, ka=Object.keys(x), kb=Object.keys(y);
+  ka.forEach(function(k){ if(y[k]) n++; });
+  return ka.length && kb.length ? n/Math.min(ka.length, kb.length) : 0;
+}
+function f3Merge(a, p){
+  var nameCore=p.name.replace(/\(주\)|㈜|주식회사/g,"").trim();
+  var others=a.pubs.filter(function(q){ return q!==p; }).map(function(q){ return q.name.replace(/\(주\)|㈜|주식회사/g,"").trim(); }).filter(Boolean);
+  var picked=[];
+  a.evs.forEach(function(ev, j){
+    var best=a.pubs.filter(function(q){ return q.scores[j]!=null; }).sort(function(x, y){ return y.scores[j]-x.scores[j]; })[0];
+    f3Sents(ev.opinion).forEach(function(t){
+      var mine=nameCore && t.indexOf(nameCore)>=0, other=others.some(function(o){ return t.indexOf(o)>=0; });
+      if(!(mine || (best===p && !other))) return;
+      if(/추천/.test(t)) return;   /* 추천 맺음말은 새로 씀 */
+      t=t.replace(/^((검토|종합 평가|평가) 결과\s*|(또한|아울러|이에|특히|다만|한편|그리고|그러나|반면)\s*,?\s*)+/,"")
+         .replace(new RegExp("^"+nameCore.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*(\\(주\\)|㈜)?\\s*(교과서|도서|교재)?(은|는|이|가)\\s*"),"")
+         .replace(/[.!?。]?$/,".");
+      if(t.length<8) return;
+      if(picked.some(function(x){ return f3Similar(x, t)>=0.55; })) return;
+      picked.push(t);
+    });
+  });
+  var lead="위원 "+a.evs.length+"명의 평가 결과 평균 "+fmtAvg(p.avg)+"점으로 "+p.rank+"순위임"+(p.top?"(최고점 부여 위원 "+p.top+"명)":"")+".";
+  if(!picked.length) picked=[p.rank===1?"교육과정 부합성과 학습 내용 구성 등 평가 영역 전반에서 고르게 우수하게 평가됨."
+                                        :"평가 영역 전반에서 양호하게 평가되었으나 1순위 도서에 비해 상대적으로 낮게 평가됨."];
+  var tail=p.rank===1?"이에 "+a.subject+" 교과용 도서로 가장 적합하다고 판단되어 1순위로 추천함."
+                     :p.rank+"순위 도서로 추천함.";
+  var body=picked.slice();
+  while(body.length>1 && f3Lines([lead].concat(body, [tail]).join(" "))>F3_LINES) body.pop();
+  var t=[lead].concat(body, [tail]).join(" ");
+  return f3Lines(t)>F3_LINES ? f3Fit(t) : t;
+}
+/* 추천 의견이 너무 길면 문장 단위로 줄여 F3_LINES줄에 맞춤 (맺음말은 남김) */
+function f3Fit(t){
+  var sents=f3Sents(t);
+  while(sents.length>2 && f3Lines(sents.join(" "))>F3_LINES) sents.splice(sents.length-2, 1);
+  t=sents.join(" ");
+  while(t && f3Lines(t)>F3_LINES) t=t.slice(0, -2).trim();
+  return t;
 }
 function f3Text(a, p){ var t=(state.f3||{})[f3Key(a, p)]; return t==null?f3Default(a, p):t; }
 function f3Lines(t){ return opinionParas(t).reduce(function(x, l){ return x+hwpLines(l, 30555); }, 0); }
@@ -1592,7 +1620,10 @@ function form3BodyHTML(a){
     return '<li><b>'+esc(evaluatorOf(ev))+'</b>'+(best?' <span class="dim">(최고점: '+esc(best.name)+')</span>':'')+
       '<div>'+esc(nz(ev.opinion)||"—")+'</div></li>';
   }).join("");
-  return '<div class="f1title">【서식3】</div><div class="f1sub">추천 검·인정도서 및 추천 의견서</div>'+
+  return '<div class="f3tools"><button type="button" class="aibtn" data-f3ai="'+esc(a.subject)+'" title="위원들의 종합의견을 융합해 1~3순위 추천 의견을 새로 씁니다">'+
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/></svg>'+
+      '<span>AI 추천의견 종합</span></button><span class="dim">위원 '+a.evs.length+'명의 종합의견을 합쳐 도서별 추천 의견을 새로 씁니다</span></div>'+
+    '<div class="f1title">【서식3】</div><div class="f1sub">추천 검·인정도서 및 추천 의견서</div>'+
     '<div class="f1meta"><span>과&nbsp;&nbsp;목 : '+esc(a.subject)+'</span></div>'+
     '<table class="f1tbl f3tbl"><thead><tr><th style="width:9%">순위</th><th style="width:16%">출판사명</th><th style="width:11%">가격</th><th>추 천 의 견</th></tr></thead>'+
       '<tbody>'+rows+'</tbody></table>'+
@@ -1912,10 +1943,6 @@ document.getElementById("tabs").addEventListener("click",function(e){
   renderTabView();
 });
 
-window.addEventListener("afterprint",function(){ document.body.classList.remove("printing-form1"); });
-document.getElementById("printForm1").addEventListener("click",function(e){
-  if(e.target.closest("button[data-f1close]")) document.body.classList.remove("printing-form1");
-});
 
 
 /* ── 시작 화면 ────────────────────────── */
@@ -2016,7 +2043,7 @@ document.getElementById("tScoreCard").addEventListener("click",function(e){
   }
 });
 
-/* 제출 — [서식1]을 생성해 인쇄 미리보기로 엽니다 */
+/* 제출 — 제출 표시만 함 (미리보기·인쇄 없음. [서식1]은 [서식1] 탭에서 봄) */
 document.getElementById("tSubmit").addEventListener("click",function(){
   var ev=tCur?state.evals.filter(function(e){return e.id===tCur;})[0]:null;
   if(!ev){ toast("먼저 왼쪽에서 과목을 골라 주세요."); return; }
@@ -2029,11 +2056,7 @@ document.getElementById("tSubmit").addEventListener("click",function(){
     return;
   }
   ev.submitted=true; ev.by=state.me.name; changed(ev, true); renderTeacher();
-  var box=document.getElementById("printForm1");
-  box.innerHTML=form1PrintHTML(ev);
-  document.body.classList.add("printing-form1");
-  box.scrollIntoView({behavior:"smooth", block:"start"});
-  window.print();
+  toast(nz(ev.subject)+" 평가를 제출했습니다.");
 });
 
 document.getElementById("tCancelSubmit").addEventListener("click",function(){
@@ -2137,6 +2160,42 @@ document.getElementById("copyAllForm1").addEventListener("click",function(){
 
 Array.prototype.forEach.call(document.querySelectorAll("[data-reloadforms]"), function(b){
   b.addEventListener("click", function(){ loadDeptForms(true); });
+});
+/* [서식3] AI 추천의견 종합: 과목 하나의 1~3순위 추천 의견을 위원 의견을 융합해 새로 씀 */
+function f3AiDraft(btn, subject){
+  var a=subjectAggs().filter(function(x){ return x.subject===subject && x.ok; })[0];
+  if(!a || !a.top3.length) return;
+  var go=function(){
+    var put=function(texts, how){
+      if(!state.f3) state.f3={};
+      a.top3.forEach(function(p, i){
+        var t=texts&&texts[i] ? f3Fit(String(texts[i]).replace(/\s+/g," ").trim()) : f3Merge(a, p);
+        state.f3[f3Key(a, p)]=t;
+      });
+      stepsChanged(); renderFormNTab(3);
+      toast(how+" 내용을 확인하고 필요하면 고쳐 쓰세요.");
+    };
+    if(!SERVER){ put(null, "위원 의견을 합친 기본 추천 의견을 넣었습니다."); return; }
+    btn.disabled=true; btn.classList.add("busy"); btn.querySelector("span").textContent="작성 중…";
+    var done=function(){ btn.disabled=false; btn.classList.remove("busy"); btn.querySelector("span").textContent="AI 추천의견 종합"; };
+    var ctx={subject:a.subject, pubs:a.top3.map(function(p){ return {name:p.name, rank:p.rank, avg:p.avg, price:p.price||0, top:p.top}; })};
+    gasCall("apiDraftF3", [token(), JSON.stringify(ctx)], function(res){
+      done();
+      if(res && res.texts) put(res.texts, "AI가 위원 의견을 종합한 추천 의견을 넣었습니다.");
+      else put(null, res && res.reason==="nokey" ? "AI 키가 없어 위원 의견을 합친 기본 추천 의견을 넣었습니다."
+                                                : "AI가 글을 쓰지 못해 위원 의견을 합친 기본 추천 의견을 넣었습니다.");
+    }, function(msg){
+      done();
+      put(null, "AI 연결에 실패해 위원 의견을 합친 기본 추천 의견을 넣었습니다("+msg+").");
+    });
+  };
+  var edited=a.top3.some(function(p){ return state.f3 && state.f3[f3Key(a, p)]!=null; });
+  if(edited) askConfirm("AI 추천의견 종합", a.subject+"의 추천 의견을 새로 쓴 글로 바꿀까요? 지금 칸에 쓴 내용은 없어집니다.", "바꾸기", go);
+  else go();
+}
+document.getElementById("form3List").addEventListener("click",function(e){
+  var b=e.target.closest("button[data-f3ai]"); if(!b || b.disabled) return;
+  f3AiDraft(b, b.dataset.f3ai);
 });
 /* [서식3] 추천 의견 고쳐 쓰기 → 교과부장 자료로 저장 */
 document.getElementById("form3List").addEventListener("input",function(e){

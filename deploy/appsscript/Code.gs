@@ -9,8 +9,9 @@
  *              요약이고, 앱은 마지막 '자료(JSON)' 칸만 읽는다.
  * 시트 '절차' — 교과부장 자료(절차 체크리스트·[서식3] 추천 의견, 교과마다 한 줄).
  *
- * 과목 평가의 [AI 초안]은 apiDraftOpinion 이 Gemini(GEMINI_API_KEY, 무료 등급 가능) 또는 Claude
- * (ANTHROPIC_API_KEY)로 종합의견 초안을 만든다. 키가 없으면 화면에 들어 있는 기본 초안 기능을 쓴다.
+ * 과목 평가의 [AI 초안]은 apiDraftOpinion 이, [서식3]의 [AI 추천의견 종합]은 apiDraftF3 가
+ * Gemini(GEMINI_API_KEY, 무료 등급 가능) 또는 Claude(ANTHROPIC_API_KEY)로 글을 쓴다.
+ * 키가 없으면 화면에 들어 있는 기본 초안 기능을 쓴다.
  *
  * 로그인하면 서명한 출입증(token)을 주고, 이후 모든 요청은 출입증의 교과·성명으로만 처리한다.
  * 교사는 자기 평가만 읽고 쓸 수 있고, 교과 전체 제출분은 그 교과의 교과부장만 받는다.
@@ -182,13 +183,8 @@ var AI_SYSTEM = [
 
 function apiDraftOpinion(token, json) {
   var user = auth_(token);
-  var props = PropertiesService.getScriptProperties();
-  var geminiKey = props.getProperty("GEMINI_API_KEY"), claudeKey = props.getProperty("ANTHROPIC_API_KEY");
-  if (!geminiKey && !claudeKey) return JSON.stringify({ text: null, reason: "nokey" });
-  var cache = CacheService.getScriptCache(), countKey = "ai:" + user.dept + "|" + user.name;
-  var used = Number(cache.get(countKey) || 0);
-  if (used >= AI_MAX_PER_HOUR) throw new Error("AI 초안은 1시간에 " + AI_MAX_PER_HOUR + "번까지 만들 수 있습니다. 잠시 뒤 다시 해 주세요.");
-  cache.put(countKey, String(used + 1), 3600);
+  if (!aiKeys_()) return JSON.stringify({ text: null, reason: "nokey" });
+  aiQuota_(user);
   var req = JSON.parse(json || "{}");
   var lines = (req.cands || []).map(function (c) {
     return "- " + c.pub + " (가격 " + (c.price || "미상") + "원): 총점 " + c.total + "점, " + c.rank + "위 / 항목별 " +
@@ -197,24 +193,96 @@ function apiDraftOpinion(token, json) {
   var prompt = "교과: " + user.dept + "\n과목: " + clean_(req.subject) + "\n\n내가 매긴 평가 점수:\n" + lines.join("\n") +
     (req.current ? "\n\n지금까지 써 둔 의견(참고해 다듬을 것):\n" + String(req.current).slice(0, 600) : "") +
     "\n\n위 평가를 바탕으로 종합의견 및 추천의견을 작성하시오.";
-  var out = geminiKey ? gemini_(geminiKey, props.getProperty("GEMINI_MODEL") || GEMINI_MODEL, prompt)
-                      : claude_(claudeKey, prompt);
+  var out = ai_(AI_SYSTEM, prompt, false);
   if (out.refused) return JSON.stringify({ text: null, reason: "refusal" });
   var text = String(out.text || "").replace(/\s+/g, " ").trim();
   return JSON.stringify({ text: text || null, reason: text ? "" : "empty" });
 }
 
+/* [서식3] 추천 의견 (교과부장 전용): 한 과목에 대해 위원들이 제출한 종합의견을 시트에서 직접 읽어
+ * 평균 상위 3개 도서마다 하나로 융합한 추천 의견을 쓴다. 위원 이름은 보내지 않는다(위원 1, 위원 2 …).
+ * json = {subject, pubs:[{name, rank, avg, price, top}]} (평균 순위는 화면에서 계산한 것)
+ * 돌려줌: {texts:[1순위, 2순위, 3순위 의견] | null, reason} */
+var F3_SYSTEM = [
+  "당신은 고등학교 교과협의회 대표교사(교과부장)로서 「추천 검·인정도서 및 추천 의견서」(서식3)의 '추천 의견' 칸을 작성한다.",
+  "교과협의회 위원들이 각자 쓴 종합의견을 읽고, 도서마다 위원들의 의견을 하나로 융합·정리한 추천 의견을 새로 쓴다.",
+  "특정 위원의 문장을 그대로 옮겨 적지 말고, 여러 위원이 공통으로 든 강점을 중심으로 평가 기준의 용어를 써서 다시 서술한다.",
+  "교육공무원이 쓰는 공문서의 전문적인 어투로 쓴다: 평서형 '~함', '~임', '~됨'으로 끝맺고 구어체·과장·광고성 표현을 쓰지 않는다.",
+  "위원 의견과 평가 점수에 없는 구체적 사실(단원명, 쪽수, 수록 내용 등)은 지어내지 않는다. 출판사명은 주어진 그대로 쓴다.",
+  "그 도서를 직접 언급한 의견이 적으면 평균 점수·순위와 다른 도서와의 비교로 간결하게 쓴다.",
+  "1순위 도서는 추천 사유가 분명히 드러나게, 2·3순위 도서는 강점과 1순위 대비 아쉬운 점을 균형 있게 쓴다.",
+  "도서 하나당 2~3문장, 공백 포함 110~150자. 줄바꿈·머리말·목록 기호 없이 쓴다.",
+  "반드시 JSON 한 개만 출력한다: {\"opinions\": [\"1순위 도서 의견\", \"2순위 도서 의견\", \"3순위 도서 의견\"]} (주어진 도서 수만큼, 주어진 순서대로)",
+  "",
+  "[평가 기준]",
+  AI_RUBRIC
+].join("\n");
+
+function apiDraftF3(token, json) {
+  var user = auth_(token);
+  if (user.role !== "chief") throw new Error("교과부장만 쓸 수 있습니다.");
+  var req = JSON.parse(json || "{}"), subject = clean_(req.subject);
+  var pubs = (Array.isArray(req.pubs) ? req.pubs : []).slice(0, 3).map(function (p) {
+    return { name: clean_(p.name), rank: Number(p.rank) || 0, avg: Number(p.avg) || 0, price: Number(p.price) || 0, top: Number(p.top) || 0 };
+  }).filter(function (p) { return p.name; });
+  if (!subject || !pubs.length) throw new Error("과목과 도서를 알 수 없습니다.");
+  var ops = [];
+  rows_(EVAL_SHEET, EVAL_HEAD).forEach(function (r) {
+    if (String(r[0]).indexOf(user.dept + "|") !== 0) return;
+    var ev = parse_(r[8]);
+    if (ev && ev.submitted && clean_(ev.subject) === subject && String(ev.opinion || "").trim()) ops.push(String(ev.opinion).trim().slice(0, 600));
+  });
+  if (!ops.length) return JSON.stringify({ texts: null, reason: "noop" });
+  if (!aiKeys_()) return JSON.stringify({ texts: null, reason: "nokey" });
+  aiQuota_(user);
+  var prompt = "교과: " + user.dept + "\n과목: " + subject + "\n위원 수: " + ops.length + "명\n\n" +
+    "평균 상위 도서(순서대로 의견을 쓸 것):\n" + pubs.map(function (p) {
+      return "- " + p.rank + "순위 " + p.name + " (가격 " + (p.price || "미상") + "원): 위원 평균 " + p.avg.toFixed(1) + "점, 최고점을 준 위원 " + p.top + "명";
+    }).join("\n") +
+    "\n\n위원별 종합의견 및 추천의견:\n" + ops.map(function (t, i) { return "[위원 " + (i + 1) + "] " + t.replace(/\s+/g, " "); }).join("\n") +
+    "\n\n위 의견들을 융합하여 도서별 추천 의견을 JSON으로 작성하시오.";
+  var out = ai_(F3_SYSTEM, prompt, true);
+  if (out.refused) return JSON.stringify({ texts: null, reason: "refusal" });
+  var texts = null;
+  try {
+    var m = String(out.text || "").match(/\{[\s\S]*\}/);
+    var o = JSON.parse(m ? m[0] : "{}");
+    if (Array.isArray(o.opinions)) texts = o.opinions.slice(0, pubs.length).map(function (t) { return String(t || "").replace(/\s+/g, " ").trim(); });
+  } catch (e) { texts = null; }
+  if (!texts || !texts.some(function (t) { return t; })) return JSON.stringify({ texts: null, reason: "empty" });
+  return JSON.stringify({ texts: texts, reason: "" });
+}
+
+/* AI 공통: 키 확인, 한 사람당 횟수 제한, Gemini 우선 호출 */
+function aiKeys_() {
+  var props = PropertiesService.getScriptProperties();
+  return !!(props.getProperty("GEMINI_API_KEY") || props.getProperty("ANTHROPIC_API_KEY"));
+}
+function aiQuota_(user) {
+  var cache = CacheService.getScriptCache(), countKey = "ai:" + user.dept + "|" + user.name;
+  var used = Number(cache.get(countKey) || 0);
+  if (used >= AI_MAX_PER_HOUR) throw new Error("AI 초안은 1시간에 " + AI_MAX_PER_HOUR + "번까지 만들 수 있습니다. 잠시 뒤 다시 해 주세요.");
+  cache.put(countKey, String(used + 1), 3600);
+}
+function ai_(system, prompt, json) {
+  var props = PropertiesService.getScriptProperties();
+  var geminiKey = props.getProperty("GEMINI_API_KEY"), claudeKey = props.getProperty("ANTHROPIC_API_KEY");
+  return geminiKey ? gemini_(geminiKey, props.getProperty("GEMINI_MODEL") || GEMINI_MODEL, prompt, system, json)
+                   : claude_(claudeKey, prompt, system);
+}
+
 /* Gemini API (Google AI Studio 키). 무료 등급은 분당·하루 요청 수 제한이 있다. */
-function gemini_(key, model, prompt) {
+function gemini_(key, model, prompt, system, json) {
   var res = UrlFetchApp.fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent", {
     method: "post",
     contentType: "application/json",
     muteHttpExceptions: true,
     headers: { "x-goog-api-key": key },
     payload: JSON.stringify({
-      systemInstruction: { parts: [{ text: AI_SYSTEM }] },
+      systemInstruction: { parts: [{ text: system || AI_SYSTEM }] },
       contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 4096, temperature: 0.7 }
+      generationConfig: json ? { maxOutputTokens: 4096, temperature: 0.7, responseMimeType: "application/json" }
+                             : { maxOutputTokens: 4096, temperature: 0.7 }
     })
   });
   var status = res.getResponseCode();
@@ -230,7 +298,7 @@ function gemini_(key, model, prompt) {
 }
 
 /* Claude API (사용량만큼 요금) */
-function claude_(key, prompt) {
+function claude_(key, prompt, system) {
   var res = UrlFetchApp.fetch("https://api.anthropic.com/v1/messages", {
     method: "post",
     contentType: "application/json",
@@ -245,7 +313,7 @@ function claude_(key, prompt) {
       max_tokens: 4000,
       fallbacks: "default",              // 안전 분류기가 거절하면 권장 모델로 다시 시도
       output_config: { effort: "low" },  // 짧은 글이라 낮은 노력으로 충분
-      system: AI_SYSTEM,
+      system: system || AI_SYSTEM,
       messages: [{ role: "user", content: prompt }]
     })
   });
