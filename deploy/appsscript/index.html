@@ -566,6 +566,8 @@ tbody tr:hover{background:var(--glass-fill)}
 .errpanel{border-radius:18px; border-width:1px}
 .errnote{border-radius:12px}
 
+/* 만점을 넘게 쓰면 잠깐 빨갛게 */
+table.ev td.sc input.over{background:var(--crit-soft); color:var(--crit); outline:2px solid var(--crit); outline-offset:-2px; border-radius:3px}
 /* ── 만든이 ── */
 .credit{max-width:1120px; margin:0 auto; padding:10px 16px 30px; display:flex; justify-content:center; flex-wrap:wrap; gap:4px 16px;
   font-size:12px; color:var(--ink-3)}
@@ -1290,7 +1292,7 @@ function evTableHTML(ev){
       '<td class="pr"><input data-f="price" value="'+esc(c.price)+'" placeholder="—" aria-label="가격"></td>'+
       (rankMode?'<td class="rk"><input data-f="rank" value="'+esc(c.rank)+'" placeholder="—" aria-label="순위"></td>':'')+
       ev.crit.map(function(k){
-        return '<td class="sc"><input data-sc="'+k.id+'" value="'+esc(c.sc[k.id]==null?"":c.sc[k.id])+'" placeholder="—" aria-label="'+esc(k.name)+'"></td>';
+        return '<td class="sc"><input data-sc="'+k.id+'" inputmode="decimal" data-max="'+esc(k.w)+'" value="'+esc(c.sc[k.id]==null?"":c.sc[k.id])+'" placeholder="—" aria-label="'+esc(k.name)+' ('+esc(k.w)+'점 만점)" title="'+esc(k.w)+'점 만점"></td>';
       }).join("")+
       '<td class="tot">'+(live?t:"")+'</td>'+
       '<td class="pos">'+(live&&p?p+"위":"")+'</td>'+
@@ -1586,7 +1588,8 @@ function form1Evals(){
   var dept=deptScope(), me=state.me?state.me.name:"", subs=SUBJECT_CATALOG[dept]||[];
   if(isAdmin()) return adminEvals(dept).filter(function(e){ return e.submitted && subs.indexOf(nz(e.subject))>=0 && hasRealBooks(dept, nz(e.subject)); })
     .sort(function(a,b){ return (subs.indexOf(nz(a.subject))-subs.indexOf(nz(b.subject))) || evaluatorOf(a).localeCompare(evaluatorOf(b), "ko"); });
-  var local=state.evals.filter(function(e){ return nz(e.gun)===dept && e.submitted && (!SERVER || e.owner===me); });
+  /* 교사는 언제나 본인 것만. 파일로 연 체험 화면의 교과부장만 이 브라우저의 교과 제출분을 모아 봄 */
+  var local=state.evals.filter(function(e){ return nz(e.gun)===dept && e.submitted && (e.owner===me || (!SERVER && isChief())); });
   var list=local;
   if(SERVER){
     var others=(sync.dept && sync.dept.dept===dept)?sync.dept.evs:[];
@@ -2374,7 +2377,18 @@ document.getElementById("tScoreCard").addEventListener("input",function(e){
   }
   var tr=el.closest("tr[data-cand]"); if(!tr) return;
   var c=ev.cands.filter(function(x){return x.id===tr.dataset.cand;})[0]; if(!c) return;
-  if(el.dataset.sc) c.sc[el.dataset.sc]= el.value===""?"":(parseFloat(el.value)||0);
+  if(el.dataset.sc){
+    var k=ev.crit.filter(function(x){ return x.id===el.dataset.sc; })[0], max=k?parseFloat(k.w):NaN;
+    var raw=el.value.replace(/[^0-9.]/g,"").replace(/(\..*)\./g,"$1");   /* 숫자와 소수점 하나만 */
+    var v=raw===""?"":(parseFloat(raw)||0);
+    if(v!=="" && !isNaN(max) && v>max){
+      v=max; raw=String(max);
+      toast("‘"+nz(k.name)+"’ 항목은 "+max+"점이 만점입니다. "+max+"점을 넘게 입력할 수 없습니다.");
+      el.classList.add("over"); setTimeout(function(){ el.classList.remove("over"); }, 1200);
+    }
+    if(el.value!==raw) el.value=raw;
+    c.sc[el.dataset.sc]=v;
+  }
   else if(el.dataset.f) c[el.dataset.f]=el.value;
   changed(ev); liveTotalsIn(document.getElementById("tScoreCard"), ev); renderSubjectList();
 });
