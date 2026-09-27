@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
+  color-scheme:light;
   --paper:#F3F5FA; --surface:rgba(255,255,255,.72); --surface-2:rgba(255,255,255,.55); --surface-solid:#FFFFFF;
   --ink:#1C1C28; --ink-2:#4A4A5A; --ink-3:#767689;
   --line:rgba(28,28,60,.12); --line-2:rgba(28,28,60,.07);
@@ -17,36 +18,6 @@
   --ai:linear-gradient(95deg,#5856D6,#AF52DE 55%,#FF6FA8);
   --sans:"Pretendard Variable","Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --serif:var(--sans); --mono:var(--sans);
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --paper:#0E0F16; --surface:rgba(44,46,64,.62); --surface-2:rgba(44,46,64,.42); --surface-solid:#1E1F2B;
-    --ink:#F2F2F7; --ink-2:#C4C4D4; --ink-3:#9494AC;
-    --line:rgba(255,255,255,.13); --line-2:rgba(255,255,255,.07);
-    --accent:#8B89FF; --accent-soft:rgba(125,122,255,.2); --accent-ink:#B3B1FF; --on-accent:#0E0F16;
-    --warn:#FFB340; --warn-soft:rgba(255,159,10,.16);
-    --crit:#FF6961; --crit-soft:rgba(255,69,58,.16);
-    --ok:#32D74B; --ok-soft:rgba(48,209,88,.16);
-    --glass-fill:rgba(255,255,255,.06); --glass-edge:rgba(255,255,255,.1); --glass-strong:rgba(255,255,255,.16); --glass-hover:rgba(255,255,255,.12);
-    --header-bg:rgba(14,15,22,.55); --tab-on-bg:#F2F2F7; --tab-on-ink:#111118;
-    --glow-1:#1B2242; --glow-2:#26183A; --glow-3:#0F2A2C; --scrim:rgba(0,0,0,.45);
-    --shadow:0 10px 30px -8px rgba(0,0,0,.6);
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --paper:#0E0F16; --surface:rgba(44,46,64,.62); --surface-2:rgba(44,46,64,.42); --surface-solid:#1E1F2B;
-  --ink:#F2F2F7; --ink-2:#C4C4D4; --ink-3:#9494AC;
-  --line:rgba(255,255,255,.13); --line-2:rgba(255,255,255,.07);
-  --accent:#8B89FF; --accent-soft:rgba(125,122,255,.2); --accent-ink:#B3B1FF; --on-accent:#0E0F16;
-  --warn:#FFB340; --warn-soft:rgba(255,159,10,.16);
-  --crit:#FF6961; --crit-soft:rgba(255,69,58,.16);
-  --ok:#32D74B; --ok-soft:rgba(48,209,88,.16);
-  --glass-fill:rgba(255,255,255,.06); --glass-edge:rgba(255,255,255,.1); --glass-strong:rgba(255,255,255,.16); --glass-hover:rgba(255,255,255,.12);
-  --header-bg:rgba(14,15,22,.55); --tab-on-bg:#F2F2F7; --tab-on-ink:#111118;
-  --glow-1:#1B2242; --glow-2:#26183A; --glow-3:#0F2A2C; --scrim:rgba(0,0,0,.45);
-  --shadow:0 10px 30px -8px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box}
 body{
@@ -492,108 +463,145 @@ table.f3tbl td.f3op{padding:6px}
 .errnote{border:1px solid var(--crit); color:var(--crit); background:var(--crit-soft); border-radius:8px; padding:9px 13px;
   font-size:13px; margin-bottom:14px}
 
-/* ══ 디자인 B · Glass ═══════════════════════════════════════
-   Apple(macOS·visionOS) 유리 질감: 은은한 그라데이션 바탕 위 반투명 카드, 인디고 강조,
-   알약 모양 버튼·탭, Pretendard. 색은 모두 위 :root 토큰에서 가져와 다크 모드도 따라감.
-   한글파일로 저장되는 서식 표(.f1tbl 등, 흰 종이·검은 선)는 원본 양식 그대로 둠. */
+/* ══ 디자인 B · Liquid Glass (유리알) ═════════════════════════
+   Apple Liquid Glass 느낌: 색 번짐이 있는 바탕 위에 두껍고 맑은 유리. 모든 유리 면은
+   ① 반투명 흰 채움 ② 윗면 광택(위→아래로 사라지는 흰 빛) ③ 가장자리 빛 반사(안쪽 1px 흰 선)
+   ④ 부드러운 그림자로 만든다. 버튼·탭·칩은 동그란 유리알(위쪽이 밝게 맺힌 광택).
+   라이트 한 가지만 쓴다. 한글파일 서식 미리보기(.deptform .dfbody)는 흰 종이 그대로. */
+:root{
+  --glass:linear-gradient(180deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.18) 42%, rgba(255,255,255,0) 60%),
+          linear-gradient(135deg, rgba(255,255,255,.66), rgba(255,255,255,.36));
+  --glass-rim:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(255,255,255,.35),
+              inset 1px 0 0 rgba(255,255,255,.55), inset -1px 0 0 rgba(255,255,255,.35);
+  --glass-drop:0 12px 36px -10px rgba(45,45,120,.22), 0 2px 6px rgba(45,45,120,.06);
+  --bead:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.98) 0%, rgba(255,255,255,.55) 45%, rgba(255,255,255,.28) 100%);
+  --bead-rim:inset 0 1px 1px rgba(255,255,255,1), inset 0 -2px 5px rgba(88,86,214,.10), inset 0 0 0 1px rgba(255,255,255,.55);
+  --bead-drop:0 4px 14px -4px rgba(45,45,120,.22);
+  --gem:radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 52%), linear-gradient(180deg,#7472F2 0%,#5553D8 55%,#4644C4 100%);
+  --gem-rim:inset 0 1px 0 rgba(255,255,255,.65), inset 0 -3px 8px rgba(20,10,90,.28), inset 0 0 0 1px rgba(255,255,255,.18);
+  --gem-drop:0 10px 22px -8px rgba(88,86,214,.7);
+  --blur:blur(28px) saturate(185%);
+}
 body{font-size:14.5px; letter-spacing:-.01em;
   background:
-    radial-gradient(900px 520px at 8% -8%, var(--glow-1) 0, transparent 62%),
-    radial-gradient(760px 480px at 96% 4%, var(--glow-2) 0, transparent 58%),
-    radial-gradient(900px 600px at 50% 110%, var(--glow-3) 0, transparent 60%), var(--paper);
+    radial-gradient(640px 460px at 6% 4%, rgba(122,162,255,.55) 0, transparent 70%),
+    radial-gradient(560px 420px at 94% 10%, rgba(196,150,255,.50) 0, transparent 70%),
+    radial-gradient(620px 440px at 78% 92%, rgba(255,164,206,.42) 0, transparent 70%),
+    radial-gradient(700px 480px at 14% 96%, rgba(120,226,214,.40) 0, transparent 70%),
+    linear-gradient(180deg,#F4F6FC,#EEF0F9);
   background-attachment:fixed}
 td.n, .tot, .pos, td input, .wsum, .syncchip, .sc-s, .cnt, .df-hd .ct, .ib-hd .mt{font-variant-numeric:tabular-nums}
 .eyebrow,.ekicker,.formtag,.tag{text-transform:none; letter-spacing:0}
 h1,.etitle,.bar h2,.tsidebar-hd,.subjcard .sc-n,.modal-box h3,.ib-hd .nm,.dftitle{letter-spacing:-.02em}
 
-/* 머리 */
-header.top{background:var(--header-bg); backdrop-filter:saturate(180%) blur(24px); -webkit-backdrop-filter:saturate(180%) blur(24px);
-  border-bottom:1px solid var(--glass-edge); box-shadow:0 1px 0 var(--line-2)}
+/* 머리: 떠 있는 유리 막대 */
+header.top{background:var(--glass); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border-bottom:1px solid rgba(255,255,255,.7); box-shadow:inset 0 -1px 0 rgba(45,45,120,.06), 0 8px 24px -16px rgba(45,45,120,.3)}
 .top-in{align-items:center; padding-top:12px}
 .eyebrow{font-size:12px; color:var(--accent); font-weight:600}
 h1{font-size:21px; font-weight:700}
-nav.tabs{padding:10px 16px 12px; gap:6px}
-nav.tabs button{border:0; border-radius:980px; padding:7px 16px; font-size:13.5px; color:var(--ink-2)}
-nav.tabs button:hover{background:var(--glass-fill); color:var(--ink)}
-nav.tabs button[aria-selected="true"]{background:var(--tab-on-bg); color:var(--tab-on-ink); font-weight:600}
-.whoami{background:var(--glass-fill); border:1px solid var(--glass-edge)}
+nav.tabs{width:max-content; max-width:calc(100% - 32px); margin:10px 0 12px max(16px, calc((100% - 1120px) / 2 + 16px));
+  padding:4px; gap:2px; border-radius:980px; background:rgba(255,255,255,.35);
+  box-shadow:inset 0 1px 2px rgba(45,45,120,.10), inset 0 0 0 1px rgba(255,255,255,.6)}
+nav.tabs button{border:0; border-radius:980px; padding:7px 18px; font-size:13.5px; color:var(--ink-2)}
+nav.tabs button:hover{background:rgba(255,255,255,.4); color:var(--ink)}
+nav.tabs button[aria-selected="true"]{background:var(--bead); color:var(--accent-ink); font-weight:700;
+  box-shadow:var(--bead-rim), var(--bead-drop)}
+.whoami{background:var(--bead); border:0; box-shadow:var(--bead-rim), var(--bead-drop)}
 .whoami .rl{background:var(--accent-soft); color:var(--accent-ink)}
-.syncchip{border:0; border-radius:980px; padding:5px 11px; font-size:12px}
-.syncchip.ok{background:var(--ok-soft); color:var(--ok)}
+.syncchip{border:0; border-radius:980px; padding:5px 11px; font-size:12px; background:var(--bead); box-shadow:var(--bead-rim)}
+.syncchip.ok{background:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.9), rgba(52,199,89,.22)); color:var(--ok)}
+.syncchip.bad{background:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.9), rgba(255,59,48,.2))}
 
-/* 제목 줄·버튼 */
+/* 제목 줄 */
 section.panel{padding-top:28px}
 .bar h2{font-size:24px; font-weight:700}
-button.btn{border:1px solid var(--glass-edge); border-radius:980px; padding:7px 16px; background:var(--glass-fill);
-  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 1px 2px rgba(40,40,90,.08); font-weight:500; color:var(--ink)}
-button.btn:hover{background:var(--glass-hover); color:var(--ink); border-color:var(--glass-strong)}
-button.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); box-shadow:0 6px 16px -6px color-mix(in srgb, var(--accent) 70%, transparent)}
-button.btn.primary:hover{filter:brightness(1.06); background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
-button.btn.ghost{background:transparent; border-color:transparent; box-shadow:none; backdrop-filter:none; color:var(--ink-3)}
+
+/* 유리알 버튼 */
+button.btn{border:0; border-radius:980px; padding:8px 17px; background:var(--bead); color:var(--ink); font-weight:600;
+  box-shadow:var(--bead-rim), var(--bead-drop); transition:transform .15s, box-shadow .15s, filter .15s}
+button.btn:hover{color:var(--ink); transform:translateY(-1px); box-shadow:var(--bead-rim), 0 8px 18px -6px rgba(45,45,120,.3)}
+button.btn:active{transform:translateY(0); filter:brightness(.97)}
+button.btn.primary{background:var(--gem); color:#fff; box-shadow:var(--gem-rim), var(--gem-drop); text-shadow:0 1px 1px rgba(20,10,90,.25)}
+button.btn.primary:hover{background:var(--gem); color:#fff; filter:brightness(1.06); box-shadow:var(--gem-rim), 0 14px 26px -8px rgba(88,86,214,.75)}
+button.btn.ghost{background:transparent; box-shadow:none; color:var(--ink-3); transform:none}
+button.btn.ghost:hover{background:rgba(255,255,255,.5); color:var(--accent-ink)}
 
 /* 유리 카드 */
 .card,.evcard,.deptform,.inboxsubj,.tablewrap,.entrycard,.evempty,.allclear,.subjcard{
-  background:var(--surface); backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%);
-  border:1px solid var(--glass-edge); border-radius:20px; box-shadow:var(--shadow)}
-.ev-hd,.df-hd,.ib-hd{background:transparent; border-bottom:1px solid var(--line-2); padding:14px 18px}
+  background:var(--glass); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid rgba(255,255,255,.6); border-radius:22px; box-shadow:var(--glass-rim), var(--glass-drop)}
+.ev-hd,.df-hd,.ib-hd{background:transparent; border-bottom:1px solid rgba(255,255,255,.6); box-shadow:0 1px 0 rgba(45,45,120,.05); padding:14px 18px}
 .ev-body{padding:16px 18px 18px}
-/* 서식 미리보기는 한글파일과 같은 흰 종이로 (다크 모드에서도 검은 글씨가 보이게) */
-.deptform .dfbody{background:#FFFFFF; color:#141413; border-radius:0 0 19px 19px}
-.deptform .dfbody .f3tools .dim, .deptform .dfbody .f3ref .dim{color:#6E6E80}
-.deptform .dfbody tbody tr:hover{background:transparent}
 .tools{border-top:0; padding-top:4px}
 
-/* 시작 화면 */
-.entrycard{max-width:520px; margin-top:64px; padding:40px 36px 32px; border-radius:26px}
+/* 시작 화면: 두꺼운 유리판 */
+.entrycard{max-width:520px; margin-top:64px; padding:40px 36px 32px; border-radius:30px}
 .ekicker{color:var(--accent); font-size:13px; font-weight:600}
 .etitle{font-size:28px; margin-bottom:28px}
 .elabel{font-size:13px; letter-spacing:0; color:var(--ink-2); font-weight:600}
 .deptpick{gap:8px}
-.deptpick button{border:1px solid var(--glass-strong); border-radius:980px; background:var(--glass-fill); padding:8px 16px; color:var(--ink)}
-.deptpick button:hover{background:var(--glass-hover); color:var(--ink); border-color:var(--glass-strong)}
-.deptpick button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
-input.ename{border:1px solid var(--glass-strong); border-radius:14px; background:var(--glass-fill); font-size:16px; padding:13px 15px}
-input.ename:focus{outline:none; background:var(--surface-solid); border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft)}
-button.estart{border-radius:14px; padding:14px; font-size:16px; margin-top:26px}
+.deptpick button{border:0; border-radius:980px; background:var(--bead); padding:8px 16px; color:var(--ink); font-weight:500;
+  box-shadow:var(--bead-rim), var(--bead-drop); transition:transform .15s}
+.deptpick button:hover{transform:translateY(-1px); color:var(--ink)}
+.deptpick button[aria-pressed="true"]{background:var(--gem); color:#fff; font-weight:700; box-shadow:var(--gem-rim), var(--gem-drop)}
+/* 입력 칸: 유리에 파인 홈 */
+input.ename{border:0; border-radius:16px; background:rgba(255,255,255,.42); font-size:16px; padding:13px 15px;
+  box-shadow:inset 0 1px 3px rgba(45,45,120,.14), inset 0 0 0 1px rgba(255,255,255,.7)}
+input.ename:focus{outline:none; background:rgba(255,255,255,.85); box-shadow:inset 0 1px 2px rgba(45,45,120,.1), 0 0 0 4px rgba(88,86,214,.22)}
+button.estart{border-radius:16px; padding:14px; font-size:16px; margin-top:26px}
 @media (max-width:520px){ .entrycard{margin-top:28px; padding:28px 20px 24px} .etitle{font-size:24px} }
 
 /* 과목 목록 */
 .tsidebar-hd{font-size:15px}
-.tsidebar .subjcard{padding:11px 13px; border-radius:14px}
-.tsidebar .subjcard.active{background:var(--surface-solid); border-color:var(--glass-strong); box-shadow:0 0 0 2px var(--accent), var(--shadow)}
-.subjcard:hover{border-color:var(--glass-strong)}
-.subjcard .sc-s{border-radius:980px; font-size:11.5px; font-weight:600; padding:3px 10px}
-.sc-s.done{background:var(--ok-soft); color:var(--ok)}
-.sc-s.todo{background:var(--warn-soft); color:var(--warn)}
-.formtag{border-radius:6px}
+.tsidebar .subjcard{padding:11px 13px; border-radius:18px; transition:transform .15s, box-shadow .15s}
+.tsidebar .subjcard:hover{transform:translateY(-1px)}
+.tsidebar .subjcard.active{background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.7));
+  box-shadow:var(--glass-rim), 0 0 0 2px rgba(88,86,214,.75), 0 14px 30px -12px rgba(88,86,214,.45)}
+.subjcard:hover{border-color:rgba(255,255,255,.9)}
+.subjcard .sc-s{border-radius:980px; font-size:11.5px; font-weight:700; padding:3px 10px; box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+.sc-s.done{background:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.9), rgba(52,199,89,.28)); color:var(--ok)}
+.sc-s.todo{background:radial-gradient(120% 95% at 50% 0%, rgba(255,255,255,.9), rgba(255,149,0,.26)); color:var(--warn)}
+.formtag{border-radius:980px; background:var(--accent-soft)}
 
 /* 평가표 */
-table.ev th,table.ev td{border-color:var(--line-2)}
-table.ev thead th{background:var(--glass-fill); color:var(--ink-3); border-color:var(--line-2)}
-table.ev td.tot, table.ev td.pos{background:var(--glass-fill)}
+table.ev{background:rgba(255,255,255,.45); border-radius:14px}
+table.ev th,table.ev td{border-color:rgba(45,45,120,.08)}
+table.ev thead th{background:rgba(255,255,255,.5); color:var(--ink-3); border-color:rgba(45,45,120,.08)}
+table.ev td.tot, table.ev td.pos{background:rgba(255,255,255,.4)}
 table.ev tr.win td.pos,table.ev tr.win td.tot{background:var(--accent-soft); color:var(--accent-ink)}
-thead th{background:var(--glass-fill)}
-tbody tr:hover{background:var(--glass-fill)}
-.modesw{border:0; background:var(--line-2); padding:2px; border-radius:980px}
+thead th{background:rgba(255,255,255,.55)}
+tbody tr:hover{background:rgba(255,255,255,.4)}
+.modesw{border:0; background:rgba(255,255,255,.35); padding:3px; border-radius:980px; box-shadow:inset 0 1px 2px rgba(45,45,120,.1)}
 .modesw button{border-radius:980px; background:transparent; color:var(--ink-2)}
-.modesw button[aria-pressed="true"]{background:var(--surface-solid); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.winnerlist button,.modechoose-opts button{border:1px solid var(--glass-strong); background:var(--glass-fill); border-radius:14px}
-.winnerlist button:hover,.modechoose-opts button:hover{border-color:var(--accent); background:var(--accent-soft)}
-.critedit,details.paste{border-radius:14px}
-.provisional,.banner{border-radius:12px}
+.modesw button[aria-pressed="true"]{background:var(--bead); color:var(--accent-ink); box-shadow:var(--bead-rim), var(--bead-drop)}
+.winnerlist button,.modechoose-opts button{border:0; background:var(--bead); border-radius:16px; box-shadow:var(--bead-rim), var(--bead-drop)}
+.winnerlist button:hover,.modechoose-opts button:hover{background:var(--bead); box-shadow:var(--bead-rim), 0 0 0 2px rgba(88,86,214,.6)}
+.critedit,details.paste{border-radius:16px; background:rgba(255,255,255,.35)}
+.provisional,.banner{border-radius:14px}
 
 /* 종합의견·AI */
-.opinion textarea{border-radius:14px}
-.aibtn{border:0; border-radius:980px; color:#FFFFFF; background:var(--ai)}
+.opinion textarea{border-radius:16px; background:rgba(255,255,255,.55) !important; border-color:rgba(255,255,255,.8) !important;
+  box-shadow:inset 0 1px 3px rgba(45,45,120,.12)}
+.aibtn{border:0; border-radius:980px; color:#fff; font-weight:700; text-shadow:0 1px 1px rgba(60,20,90,.3);
+  background:radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 55%), var(--ai);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -3px 8px rgba(60,20,110,.25), 0 8px 20px -8px rgba(175,82,222,.7)}
 .aibtn:hover{filter:brightness(1.06)}
 
 /* 알림·확인 창 */
-.toast{background:color-mix(in srgb, var(--ink) 86%, transparent); color:var(--paper);
-  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:980px}
-.modal{background:var(--scrim); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px)}
-.modal-box{background:var(--surface-solid); border:1px solid var(--glass-edge); border-radius:20px; box-shadow:0 24px 60px rgba(20,20,50,.25)}
-.errpanel{border-radius:18px; border-width:1px}
-.errnote{border-radius:12px}
+.toast{background:linear-gradient(180deg, rgba(60,60,80,.82), rgba(28,28,40,.88)); color:#fff;
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:980px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 10px 30px -10px rgba(0,0,0,.4)}
+.modal{background:rgba(40,40,90,.14); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px)}
+.modal-box{background:var(--glass), rgba(255,255,255,.5); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid rgba(255,255,255,.7); border-radius:26px; box-shadow:var(--glass-rim), 0 30px 70px -20px rgba(40,40,110,.45)}
+.errpanel{border-radius:20px; border-width:1px}
+.errnote{border-radius:14px}
+/* 서식 미리보기는 한글파일과 같은 흰 종이로 */
+.deptform .dfbody{background:#FFFFFF; color:#141413; border-radius:0 0 21px 21px}
+.deptform .dfbody .f3tools .dim, .deptform .dfbody .f3ref .dim{color:#6E6E80}
+.deptform .dfbody tbody tr:hover{background:transparent}
+@media (prefers-reduced-motion:reduce){ button.btn:hover,.deptpick button:hover,.tsidebar .subjcard:hover{transform:none} }
 </style>
 
 <header class="top">
