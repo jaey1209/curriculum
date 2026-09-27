@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>2027 교과서 선정대장</title>
+<title>율천고 교과용 도서 선정</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
@@ -565,17 +565,61 @@ tbody tr:hover{background:var(--glass-fill)}
 .modal-box{background:var(--surface-solid); border:1px solid var(--glass-edge); border-radius:20px; box-shadow:0 24px 60px rgba(20,20,50,.25)}
 .errpanel{border-radius:18px; border-width:1px}
 .errnote{border-radius:12px}
+
+/* ── 만든이 ── */
+.credit{max-width:1120px; margin:0 auto; padding:10px 16px 30px; display:flex; justify-content:center; flex-wrap:wrap; gap:4px 16px;
+  font-size:12px; color:var(--ink-3)}
+.credit b{font-weight:600; color:var(--ink-2)}
+/* ── 시작 화면: 관리자 로그인 ── */
+.entryalt{display:flex; justify-content:center; margin-top:18px; padding-top:16px; border-top:1px solid var(--line-2)}
+.entryalt .btn{font-size:12.5px; padding:6px 14px}
+/* ── 관리자 ── */
+.asidebar{position:static; width:272px; gap:12px}
+.adept{background:var(--surface); backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border:1px solid var(--glass-edge); border-radius:18px; box-shadow:var(--shadow); overflow:hidden}
+.adept-hd{appearance:none; border:0; width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:11px 14px; background:transparent; font:inherit; cursor:pointer; color:var(--ink); border-bottom:1px solid var(--line-2); text-align:left}
+.adept-hd .nm{font-weight:700; font-size:14.5px}
+.adept-hd .ct{font-size:11.5px; color:var(--accent-ink); font-weight:600; white-space:nowrap}
+.adept-hd:hover,.ateacher:hover{background:var(--glass-fill)}
+.adept-hd.on,.ateacher.on{background:var(--accent-soft)}
+.adept-hd:focus-visible,.ateacher:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+.ateacher{appearance:none; border:0; width:100%; display:flex; flex-direction:column; gap:1px; padding:8px 14px; background:transparent;
+  font:inherit; cursor:pointer; color:var(--ink); text-align:left}
+.ateacher + .ateacher{border-top:1px solid var(--line-2)}
+.ateacher .an{font-size:13.5px}
+.ateacher .an b{font-weight:600}
+.ateacher .am{font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+.ateacher.on .am{color:var(--accent-ink)}
+.rl{font-size:11px; color:var(--accent-ink); background:var(--accent-soft); padding:1px 7px; border-radius:10px; font-weight:600}
+.ahead{display:flex; flex-wrap:wrap; gap:10px 14px; align-items:flex-end; justify-content:space-between; margin:2px 2px 14px}
+.ahead h3{margin:0; font-size:20px; font-weight:700; letter-spacing:-.02em; display:flex; align-items:center; gap:8px}
+.ahead .note{margin:4px 0 0}
+.ahead .acts{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.aseg{display:inline-flex; background:var(--line-2); border-radius:980px; padding:2px}
+.aseg button{appearance:none; border:0; background:transparent; font:inherit; font-size:13px; padding:6px 16px; border-radius:980px; cursor:pointer; color:var(--ink-2)}
+.aseg button[aria-pressed="true"]{background:var(--surface-solid); color:var(--ink); font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.aseg button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.df-hd .sc-s{border-radius:980px; font-size:11.5px; font-weight:600; padding:2px 9px}
+.df-hd .when{margin-left:auto; font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+.aover{width:100%; font-size:13px}
+table.aover th, table.aover td.n{text-align:center; font-variant-numeric:tabular-nums}
+table.aover th:first-child{text-align:left}
+table.aover td.n.bad{color:var(--crit); font-weight:600}
+#adminMain .f3tools{display:none}
+#adminMain .f3op textarea{border-style:solid; border-color:transparent; resize:none; background:transparent}
+@media (max-width:760px){ .asidebar{width:100%} }
 </style>
 
 <header class="top">
   <div class="top-in">
     <div class="brand">
       <span class="eyebrow">2027학년도 · 교육과정부</span>
-      <h1>교과서 선정대장</h1>
+      <h1>율천고 교과용 도서 선정</h1>
     </div>
     <div class="whoami" id="whoami" hidden>
       <span id="whoText"></span>
-      <button class="btn ghost" id="whoSwitch">바꾸기</button>
+      <button class="btn ghost" id="whoSwitch">로그아웃</button>
     </div>
     <button class="syncchip" id="syncChip" hidden></button>
     <button class="btn" id="hwpxBtn" hidden>한글파일 저장</button>
@@ -594,8 +638,9 @@ tbody tr:hover{background:var(--glass-fill)}
 <section class="panel" id="entry">
   <div class="entrycard">
     <p class="ekicker">2027학년도 교과용 도서 선정</p>
-    <h2 class="etitle">먼저 본인을 확인해 주세요</h2>
+    <h2 class="etitle" id="entryTitle">먼저 본인을 확인해 주세요</h2>
 
+    <div id="teacherEntry">
     <p class="elabel">교과</p>
     <div class="deptpick" id="deptPick"></div>
 
@@ -607,6 +652,15 @@ tbody tr:hover{background:var(--glass-fill)}
 
     <button class="btn primary estart" id="startBtn">시작하기</button>
     <p class="note" id="entryNote" style="margin:12px 0 0">교과·성명·교사 코드가 모두 맞아야 들어갈 수 있습니다. 평가 내용은 본인과 교과부장만 볼 수 있습니다.</p>
+    </div>
+
+    <div id="adminEntry" hidden>
+      <p class="elabel"><label for="adminCode">관리자 코드</label></p>
+      <input class="ename" id="adminCode" type="password" inputmode="numeric" placeholder="관리자 코드" autocomplete="off">
+      <button class="btn primary estart" id="adminStart">관리자로 들어가기</button>
+      <p class="note" style="margin:12px 0 0">관리자는 모든 교과의 평가를 볼 수 있고, 고치지는 않습니다.</p>
+    </div>
+    <div class="entryalt"><button class="btn" id="entryMode">관리자 로그인</button></div>
   </div>
 </section>
 
@@ -635,6 +689,21 @@ tbody tr:hover{background:var(--glass-fill)}
       </div>
     </div>
   </section>
+</div>
+
+<!-- ══ 관리자 화면 (읽기 전용) ══ -->
+<div id="adminApp" hidden>
+<section class="panel">
+  <div class="bar">
+    <h2>관리자</h2>
+    <span class="sub" id="adminSub"></span>
+    <button class="btn" id="adminReload">새로고침</button>
+  </div>
+  <div class="tsplit">
+    <aside class="tsidebar asidebar" id="adminSide" aria-label="교과별 선생님"></aside>
+    <div class="tmain" id="adminMain"></div>
+  </div>
+</section>
 </div>
 
 <div id="chiefApp" hidden>
@@ -672,6 +741,7 @@ tbody tr:hover{background:var(--glass-fill)}
 </div>
 
 </div>
+<footer class="credit"><span>만든이 <b>쟁쌤</b></span><span>문의 <b>내선번호 953</b></span></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="modal" id="modal" hidden>
   <div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalBody">
@@ -769,7 +839,7 @@ function load(){
         state.stepsAt=d.stepsAt||0; state.stepsDept=d.stepsDept||""; state.f3=d.f3||{};
         state.evals=Array.isArray(d.evals)?d.evals:[];
         state.me=d.me||null; state.sample=!!d.sample;
-        if(state.me) state.me.role=roleFor(state.me.dept, state.me.name);
+        if(state.me) state.me.role=state.me.role==="admin"?"admin":roleFor(state.me.dept, state.me.name);
         /* 예전 자료: 평가마다 작성자(owner)·종합의견 칸이 없으면 채움 */
         state.evals.forEach(function(e){
           if(!e.owner) e.owner=nz(e.by)||(state.me?state.me.name:"");
@@ -818,7 +888,7 @@ function save(){
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 function nz(s){ return (s||"").trim(); }
 /* 교과부장은 자신의 교과 과목만 본다 */
-function deptScope(){ return state.me?state.me.dept:""; }
+function deptScope(){ return isAdmin() ? admin.dept : (state.me?state.me.dept:""); }
 
 var toastT;
 function toast(msg){
@@ -897,7 +967,7 @@ function authLost(msg){
 function renderSyncChip(){
   var el=document.getElementById("syncChip");
   if(!el) return;
-  if(!state.me){ el.hidden=true; return; }
+  if(!state.me || isAdmin()){ el.hidden=true; return; }
   el.hidden=false;
   var s=SERVER?sync.state:"local", label, cls;
   if(s==="local"){ label="이 브라우저에만 저장"; cls="local"; }
@@ -983,7 +1053,7 @@ function topPub(ev){
 }
 /* 로그인하면 시트에서 내 평가를 불러와 이 브라우저의 것과 합침 (과목마다 더 나중에 고친 쪽) */
 function syncLoad(){
-  if(!SERVER || !state.me) return;
+  if(!SERVER || !state.me || isAdmin()) return;
   var who=meKey();
   sync.loadErr=""; setSync("loading");
   if(showingEval()) renderTeacher();
@@ -1023,6 +1093,7 @@ function syncLoad(){
 /* 창으로 돌아올 때: 다른 컴퓨터에서 더 나중에 고친 내 평가가 있으면 가져옴
    (학교에 열어 둔 창에서 예전 내용 위에 고쳐 쓰는 일을 막음). 15초에 한 번까지. */
 function refreshMine(){
+  if(isAdmin()){ loadAdminData(false); return; }
   if(!SERVER || !state.me || sync.loadedFor!==meKey() || sync.refreshing || Date.now()-(sync.refreshedAt||0)<15000) return;
   var who=meKey(); sync.refreshing=true;
   gasCall("apiLoad", [token()], function(res){
@@ -1062,7 +1133,7 @@ function loadDeptForms(force){
 }
 /* index.html 만 새로 올리고 Code.gs 를 그대로 둔 경우 등: 원인을 알 수 있게 덧붙임 */
 function gasHint(msg){
-  return /api(Login|Load|Save|DeptForms)|not found|찾을 수 없/i.test(msg) && !/Code\.gs/.test(msg) ? msg+" — 배포 담당자: Code.gs도 최신 파일로 올렸는지 확인해 주세요" : msg;
+  return /api(Admin)?(Login|Load|Save|DeptForms|Data)|not found|찾을 수 없/i.test(msg) && !/Code\.gs/.test(msg) ? msg+" — 배포 담당자: Code.gs도 최신 파일로 올렸는지 확인해 주세요" : msg;
 }
 
 /* ───────── 렌더 ───────── */
@@ -1463,7 +1534,7 @@ function form2Rows(T, a){
   return rows;
 }
 function form2HwpSection(aggs){
-  var T=hwpxTpl().f2, chief=state.me?state.me.name:"";
+  var T=hwpxTpl().f2, chief=chiefName();
   return T.secOpen+aggs.map(function(a, n){
     return tplPage(T, n, {
       rows: form2Rows(T, a),
@@ -1483,7 +1554,7 @@ function form2HwpSection(aggs){
   }).join("")+"</hs:sec>";
 }
 function form3HwpSection(aggs){
-  var T=hwpxTpl().f3, chief=state.me?state.me.name:"";
+  var T=hwpxTpl().f3, chief=chiefName();
   return T.secOpen+aggs.map(function(a, n){
     return tplPage(T, n, {
       rows: T.rows,
@@ -1513,6 +1584,8 @@ function form3Hwpx(aggs){
    없으면 이 브라우저에 있는 제출분. 과목 순서대로, 같은 과목은 과 위원 이름 순. */
 function form1Evals(){
   var dept=deptScope(), me=state.me?state.me.name:"", subs=SUBJECT_CATALOG[dept]||[];
+  if(isAdmin()) return adminEvals(dept).filter(function(e){ return e.submitted && subs.indexOf(nz(e.subject))>=0 && hasRealBooks(dept, nz(e.subject)); })
+    .sort(function(a,b){ return (subs.indexOf(nz(a.subject))-subs.indexOf(nz(b.subject))) || evaluatorOf(a).localeCompare(evaluatorOf(b), "ko"); });
   var local=state.evals.filter(function(e){ return nz(e.gun)===dept && e.submitted && (!SERVER || e.owner===me); });
   var list=local;
   if(SERVER){
@@ -1646,14 +1719,17 @@ function f3Fit(t){
   while(t && f3Lines(t)>F3_LINES) t=t.slice(0, -2).trim();
   return t;
 }
-function f3Text(a, p){ var t=(state.f3||{})[f3Key(a, p)]; return t==null?f3Default(a, p):t; }
+function f3Text(a, p){
+  var map=isAdmin() ? ((admin.data && admin.data.f3[deptScope()])||{}) : (state.f3||{});
+  var t=map[f3Key(a, p)]; return t==null?f3Default(a, p):t;
+}
 function f3Lines(t){ return opinionParas(t).reduce(function(x, l){ return x+hwpLines(l, 30555); }, 0); }
 function formsWaiting(){ return SERVER && !(sync.dept && sync.dept.dept===deptScope()); }
 /* 평가자가 3명 미만인 과목 → 교과부장 오류 화면 */
 function shortageHTML(aggs){
   var bad=aggs.filter(function(a){ return !a.ok; });
   if(!bad.length) return "";
-  var roster=(SERVER && sync.dept && sync.dept.teachers)||null;
+  var roster=isAdmin() ? adminRoster(deptScope()) : ((SERVER && sync.dept && sync.dept.teachers)||null);
   return '<div class="errpanel" role="alert">'+
     '<h3>평가자가 '+MIN_EVALUATORS+'명 미만인 과목이 있습니다 ('+bad.length+'과목)</h3>'+
     '<p>[서식2]·[서식3]은 과목마다 '+MIN_EVALUATORS+'명 이상이 [서식1]을 제출해야 만들 수 있습니다. '+
@@ -1674,7 +1750,7 @@ function formSubHTML(label){
   return label+' 교과 선생님 전원이 제출한 [서식1]로 만듭니다 · '+esc(hhmm(sync.dept.at))+' 기준';
 }
 function form2BodyHTML(a){
-  var cols=Math.max(F2_EVAL_COLS, a.names.length), rowsN=Math.max(F2_MIN_ROWS, a.pubs.length), chief=state.me?state.me.name:"";
+  var cols=Math.max(F2_EVAL_COLS, a.names.length), rowsN=Math.max(F2_MIN_ROWS, a.pubs.length), chief=chiefName();
   var head='<tr><th rowspan="2" style="width:16%">출판사명</th><th rowspan="2" style="width:9%">가격</th>'+
     '<th colspan="'+cols+'">위 원 별 점 수</th><th rowspan="2" style="width:8%">총점</th><th rowspan="2" style="width:8%">평균</th><th rowspan="2" style="width:7%">비고</th></tr>'+
     '<tr>'+Array.apply(null, Array(cols)).map(function(_, j){ return '<th class="nm">'+esc(a.names[j]||"")+'</th>'; }).join("")+'</tr>';
@@ -1693,7 +1769,7 @@ function form2BodyHTML(a){
     '<p class="f2note">※ 작성자는 교과협의회 소속교사(총무), 확인자는 교과협의회 대표교사(교과부장)로 함</p>';
 }
 function form3BodyHTML(a){
-  var chief=state.me?state.me.name:"";
+  var chief=chiefName();
   var rows=[0, 1, 2].map(function(i){
     var p=a.top3[i];
     if(!p) return '<tr><td></td><td></td><td></td><td class="l"></td></tr>';
@@ -1769,17 +1845,20 @@ function renderTabView(){
 }
 function route(){
   var signed=!!state.me;
-  var chief=isChief();
+  var chief=isChief(), adm=isAdmin();
   document.getElementById("entry").hidden = signed;
   document.getElementById("tabs").hidden = !chief;
+  document.getElementById("adminApp").hidden = !adm;
   var w=document.getElementById("whoami");
   w.hidden=!signed;
   document.getElementById("hwpxBtn").hidden=true;
   if(signed){
-    document.getElementById("whoText").innerHTML=
+    document.getElementById("whoText").innerHTML = adm ? '<b>관리자</b> <span class="rl">읽기 전용</span>' :
       esc(state.me.dept)+' · <b>'+esc(state.me.name)+'</b> <span class="rl">'+(chief?"교과부장":"교과 교사")+'</span>';
   }
-  if(signed) renderTabView();
+  if(!signed || adm){ document.getElementById("teacherApp").hidden=true; document.getElementById("chiefApp").hidden=true; }
+  if(adm){ renderAdmin(); loadAdminData(false); }
+  else if(signed) renderTabView();
   renderSyncChip();
 }
 
@@ -2011,6 +2090,143 @@ function updateOpinionMeta(ev){
 
 function renderAll(){ renderFormTabs(); }
 
+/* ── 관리자 (읽기 전용) ─────────────────
+   관리자 코드(Code.gs 스크립트 속성 ADMIN_CODE)로 들어오면 모든 교과의 평가를 본다.
+   왼쪽: 교과별 선생님(제출 과목 수·최종 수정 일시). 선생님 → 과목별 [서식1], 교과 → [서식2]·[서식3]. */
+var admin={data:null, busy:false, err:"", at:0, sel:null, dept:""};
+function isAdmin(){ return !!(state.me && state.me.role==="admin"); }
+/* 서식2·3의 확인자·작성자 = 그 교과의 교과부장 (관리자가 볼 때도) */
+function chiefName(){ return isAdmin() ? (DEPT_CHIEFS[deptScope()]||"") : (state.me?state.me.name:""); }
+function fmtDT(ms){
+  if(!ms) return "";
+  var d=new Date(ms), p=function(n){ return ("0"+n).slice(-2); };
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
+}
+function adminEvals(dept, name){
+  return ((admin.data && admin.data.evals)||[]).filter(function(e){ return nz(e.gun)===dept && (name==null || e.owner===name); });
+}
+function adminSubjects(dept){ return (SUBJECT_CATALOG[dept]||[]).filter(function(s){ return hasRealBooks(dept, s); }); }
+/* 교과 선생님 이름: 교과부장 먼저, 나머지는 가나다순 (명단에서 빠졌어도 평가가 있으면 넣음) */
+function adminRoster(dept){
+  var names=((admin.data && admin.data.teachers)||[]).filter(function(t){ return t.dept===dept; }).map(function(t){ return t.name; });
+  adminEvals(dept).forEach(function(e){ if(e.owner && names.indexOf(e.owner)<0) names.push(e.owner); });
+  var chief=DEPT_CHIEFS[dept];
+  return names.sort(function(a, b){ return (b===chief)-(a===chief) || a.localeCompare(b, "ko"); });
+}
+function adminTeacherInfo(dept, name){
+  var subs=adminSubjects(dept), evs=adminEvals(dept, name);
+  return {subs:subs, evs:evs,
+    done:evs.filter(function(e){ return e.submitted && subs.indexOf(nz(e.subject))>=0; }).length,
+    last:evs.reduce(function(m, e){ return Math.max(m, e.saved||0); }, 0)};
+}
+function loadAdminData(force){
+  if(!SERVER || !isAdmin() || admin.busy) return;
+  if(!force && admin.data && Date.now()-admin.at<15000) return;
+  admin.busy=true; admin.err=""; renderAdmin();
+  gasCall("apiAdminData", [token()], function(res){
+    admin.busy=false;
+    if(!isAdmin()) return;
+    if(res && res.token){ state.me.token=res.token; save(); }
+    admin.data={evals:((res&&res.evals)||[]).map(function(e){ if(e.opinion==null) e.opinion=""; return e; }),
+                teachers:(res&&res.teachers)||[], f3:(res&&res.f3)||{}};
+    admin.at=Date.now(); renderAdmin();
+  }, function(msg){
+    admin.busy=false; admin.err=gasHint(msg); renderAdmin();
+  });
+}
+function renderAdmin(){
+  if(!isAdmin()) return;
+  var side=document.getElementById("adminSide"), main=document.getElementById("adminMain");
+  document.getElementById("adminSub").innerHTML = admin.err
+    ? '<span style="color:var(--crit)">자료를 불러오지 못했습니다 ('+esc(admin.err)+'). [새로고침]을 눌러 주세요.</span>'
+    : !admin.data ? '모든 교과의 평가를 불러오는 중…'
+    : '교과별 선생님과 평가 현황입니다. 선생님을 누르면 과목별 [서식1], 교과 이름을 누르면 [서식2]·[서식3]을 봅니다 · '+esc(hhmm(admin.at))+' 기준';
+  if(!admin.data){ side.innerHTML=""; main.innerHTML='<div class="evempty">'+(admin.err?'자료를 불러오지 못했습니다.':'불러오는 중…')+'</div>'; return; }
+  var sel=admin.sel;
+  side.innerHTML=DEPTS.map(function(d){
+    var subs=adminSubjects(d);
+    return '<div class="adept"><button class="adept-hd'+(sel && sel.t==="dept" && sel.dept===d?' on':'')+'" data-adept="'+esc(d)+'">'+
+        '<span class="nm">'+esc(d)+'</span><span class="ct">서식2·3 보기 ›</span></button>'+
+      adminRoster(d).map(function(n){
+        var info=adminTeacherInfo(d, n), on=sel && sel.t==="teacher" && sel.dept===d && sel.name===n;
+        return '<button class="ateacher'+(on?' on':'')+'" data-ateacher="'+esc(d+"|"+n)+'">'+
+          '<span class="an"><b>'+esc(n)+'</b>'+(DEPT_CHIEFS[d]===n?' <span class="rl">교과부장</span>':'')+'</span>'+
+          '<span class="am">제출 '+info.done+'/'+subs.length+' · '+(info.last?'수정 '+esc(fmtDT(info.last)):'기록 없음')+'</span></button>';
+      }).join("")+'</div>';
+  }).join("");
+  if(!sel){ admin.dept=""; main.innerHTML=adminOverviewHTML(); return; }
+  admin.dept=sel.dept;
+  main.innerHTML = sel.t==="teacher" ? adminTeacherHTML(sel.dept, sel.name) : adminDeptHTML(sel.dept, sel.n||2);
+  Array.prototype.forEach.call(main.querySelectorAll("textarea"), function(t){ t.readOnly=true; t.tabIndex=-1; });
+}
+function adminOverviewHTML(){
+  var rows=DEPTS.map(function(d){
+    admin.dept=d;
+    var names=adminRoster(d), subs=adminSubjects(d), aggs=subjectAggs(), short=aggs.filter(function(a){ return !a.ok; }).length;
+    var sent=adminEvals(d).filter(function(e){ return e.submitted && subs.indexOf(nz(e.subject))>=0; }).length;
+    var last=adminEvals(d).reduce(function(m, e){ return Math.max(m, e.saved||0); }, 0);
+    return '<tr><td class="l"><b>'+esc(d)+'</b></td><td class="n">'+names.length+'명</td><td class="n">'+subs.length+'과목</td>'+
+      '<td class="n">'+sent+' / '+(names.length*subs.length)+'</td>'+
+      '<td class="n'+(short?' bad':'')+'">'+(short?short+'과목':'없음')+'</td><td class="n">'+(last?esc(fmtDT(last)):'—')+'</td></tr>';
+  }).join("");
+  admin.dept="";
+  return '<div class="ahead"><div><h3>교과별 현황</h3><p class="note">왼쪽에서 선생님이나 교과를 골라 주세요.</p></div></div>'+
+    '<div class="tablewrap"><table class="aover out"><thead><tr><th>교과</th><th>선생님</th><th>선정 과목</th><th>제출된 [서식1]</th>'+
+    '<th>평가자 '+MIN_EVALUATORS+'명 미만 과목</th><th>최종 수정</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+function adminTeacherHTML(d, n){
+  var info=adminTeacherInfo(d, n);
+  var head='<div class="ahead"><div><h3>'+esc(d)+' · '+esc(n)+(DEPT_CHIEFS[d]===n?' <span class="rl">교과부장</span>':'')+'</h3>'+
+    '<p class="note">최종 수정 '+(info.last?esc(fmtDT(info.last)):'기록 없음')+' · 제출 '+info.done+'/'+info.subs.length+'과목</p></div>'+
+    (info.done?'<div class="acts"><button class="btn" data-ahwpx="1">서식1 한글파일 저장</button></div>':'')+'</div>';
+  return head+info.subs.map(function(s){
+    var ev=info.evs.filter(function(e){ return nz(e.subject)===s; })[0], st=ev?evStatus(ev):"미작성";
+    return '<div class="deptform"><div class="df-hd"><span class="nm">'+esc(s)+'</span>'+
+      '<span class="sc-s '+(st==="제출완료"?"done":"todo")+'">'+esc(st)+'</span>'+
+      '<span class="when">'+(ev && ev.saved?'수정 '+esc(fmtDT(ev.saved)):'')+'</span></div>'+
+      (ev && st!=="미작성" ? '<div class="dfbody">'+form1BodyHTML(ev)+'</div>'
+                          : '<div class="evempty" style="border:0; border-radius:0">아직 작성하지 않았습니다.</div>')+'</div>';
+  }).join("");
+}
+function adminDeptHTML(d, n){
+  var aggs=subjectAggs(), okAggs=aggs.filter(function(a){ return a.ok; });
+  var head='<div class="ahead"><div><h3>'+esc(d)+'</h3><p class="note">교과 선생님들이 제출한 [서식1]로 만듭니다. 교과부장 '+esc(DEPT_CHIEFS[d]||"")+
+      (n===3?' · 추천 의견은 교과부장이 고친 내용이 있으면 그대로 보여 줍니다':'')+'</p></div>'+
+    '<div class="acts"><div class="aseg" role="group" aria-label="서식"><button data-an="2" aria-pressed="'+(n===2)+'">서식2</button>'+
+      '<button data-an="3" aria-pressed="'+(n===3)+'">서식3</button></div>'+
+      (okAggs.length && okAggs.length===aggs.length?'<button class="btn" data-ahwpx="'+n+'">서식'+n+' 한글파일 저장</button>':'')+'</div></div>';
+  return head+shortageHTML(aggs)+(okAggs.length?okAggs.map(function(a){
+    return '<div class="deptform"><div class="df-hd"><span class="nm">'+esc(a.subject)+'</span>'+
+      '<span class="ct">위원 '+a.evs.length+'명 · 출판사 '+a.pubs.length+'곳</span></div>'+
+      '<div class="dfbody">'+(n===2?form2BodyHTML(a):form3BodyHTML(a))+'</div></div>';
+  }).join(""):'<div class="evempty">평가자가 '+MIN_EVALUATORS+'명 이상인 과목이 아직 없습니다.</div>');
+}
+document.getElementById("adminSide").addEventListener("click",function(e){
+  var d=e.target.closest("button[data-adept]"), t=e.target.closest("button[data-ateacher]");
+  if(d) admin.sel={t:"dept", dept:d.dataset.adept, n:(admin.sel&&admin.sel.n)||2};
+  else if(t){ var k=t.dataset.ateacher, i=k.indexOf("|"); admin.sel={t:"teacher", dept:k.slice(0,i), name:k.slice(i+1), n:(admin.sel&&admin.sel.n)||2}; }
+  else return;
+  renderAdmin();
+  if(window.matchMedia("(max-width:760px)").matches) document.getElementById("adminMain").scrollIntoView({block:"start"});
+});
+document.getElementById("adminMain").addEventListener("click",function(e){
+  var s=e.target.closest("button[data-an]"), h=e.target.closest("button[data-ahwpx]");
+  if(s && admin.sel){ admin.sel.n=+s.dataset.an; renderAdmin(); return; }
+  if(!h || !admin.sel) return;
+  var n=+h.dataset.ahwpx, sel=admin.sel;
+  admin.dept=sel.dept;
+  if(n===1){
+    var evs=form1Evals().filter(function(ev){ return ev.owner===sel.name; });
+    if(!evs.length){ toast("제출된 [서식1]이 없습니다."); return; }
+    saveHwpx(form1Hwpx(evs), "2027_서식1_"+sel.dept+"_"+sel.name+".hwpx", 1, evs.length);
+    return;
+  }
+  var aggs=subjectAggs();
+  if(aggs.some(function(a){ return !a.ok; })){ toast("평가자가 "+MIN_EVALUATORS+"명 미만인 과목이 있어 [서식"+n+"]을 저장할 수 없습니다."); return; }
+  saveHwpx(n===2?form2Hwpx(aggs):form3Hwpx(aggs), "2027_서식"+n+"_"+sel.dept+".hwpx", n, aggs.length);
+});
+document.getElementById("adminReload").addEventListener("click",function(){ loadAdminData(true); });
+
 /* DOM 영역을 선택해 서식 그대로 복사 */
 function copyNode(node, okMsg){
   try{
@@ -2078,12 +2294,50 @@ document.getElementById("startBtn").addEventListener("click",function(){
     toast(gasHint(msg)); codeEl.select(); codeEl.focus();
   });
 });
+/* 로그아웃: 아직 못 올린 내용을 먼저 올리고(지금 출입증으로 바로 보냄) 시작 화면으로 */
 document.getElementById("whoSwitch").addEventListener("click",function(){
-  pickDept=state.me?state.me.dept:"";
-  document.getElementById("myName").value=state.me?state.me.name:"";
-  flush();   /* 아직 못 올린 내용이 있으면 먼저 올림 (지금 출입증으로 바로 보냄) */
-  document.getElementById("myCode").value="";
-  state.me=null; tCur=null; sync.loadedFor=""; sync.dept=null; save(); renderEntry(); route();
+  if(state.me && !isAdmin()) flush();
+  pickDept=""; entryAdmin=false;
+  ["myName","myCode","adminCode"].forEach(function(id){ document.getElementById(id).value=""; });
+  state.me=null; tCur=null; sync.loadedFor=""; sync.dept=null;
+  admin.data=null; admin.sel=null; admin.dept=""; admin.err="";
+  save(); renderEntry(); route();
+  toast("로그아웃했습니다.");
+});
+
+/* ── 시작 화면: 관리자 로그인 ── */
+var entryAdmin=false;
+function renderEntryMode(){
+  document.getElementById("teacherEntry").hidden=entryAdmin;
+  document.getElementById("adminEntry").hidden=!entryAdmin;
+  document.getElementById("entryTitle").textContent=entryAdmin?"관리자 로그인":"먼저 본인을 확인해 주세요";
+  document.getElementById("entryMode").textContent=entryAdmin?"교사 로그인으로 돌아가기":"관리자 로그인";
+}
+document.getElementById("entryMode").addEventListener("click",function(){
+  entryAdmin=!entryAdmin; renderEntryMode();
+  document.getElementById(entryAdmin?"adminCode":"myName").focus();
+});
+document.getElementById("adminCode").addEventListener("keydown",function(e){
+  if(e.key==="Enter") document.getElementById("adminStart").click();
+});
+document.getElementById("adminStart").addEventListener("click",function(){
+  var btn=this, codeEl=document.getElementById("adminCode"), code=nz(codeEl.value);
+  if(!SERVER){ toast("관리자 페이지는 학교에서 배포한 웹앱 주소에서만 쓸 수 있습니다."); return; }
+  if(!code){ toast("관리자 코드를 입력해 주세요."); codeEl.focus(); return; }
+  if(btn.disabled) return;
+  btn.disabled=true; btn.textContent="확인 중…";
+  gasCall("apiAdminLogin", [code], function(res){
+    btn.disabled=false; btn.textContent="관리자로 들어가기"; codeEl.value="";
+    state.me={dept:res.dept, name:res.name, role:"admin", token:res.token};
+    tCur=null; sync.loadedFor=""; sync.dept=null;
+    admin.data=null; admin.sel=null; admin.dept=""; admin.err="";
+    entryAdmin=false; renderEntryMode();
+    save(); route();
+    toast("관리자로 들어왔습니다. 모든 교과를 읽기 전용으로 봅니다.");
+  }, function(msg){
+    btn.disabled=false; btn.textContent="관리자로 들어가기";
+    toast(gasHint(msg)); codeEl.select(); codeEl.focus();
+  });
 });
 
 /* ── 교사 화면 이벤트 ─────────────────── */
@@ -2216,15 +2470,18 @@ document.getElementById("hwpxBtn").addEventListener("click",function(){
     }
     blob=n===2?form2Hwpx(aggs):form3Hwpx(aggs); count=aggs.length;
   }
+  saveHwpx(blob, "2027_서식"+n+"_"+deptScope()+".hwpx", n, count);
+});
+function saveHwpx(blob, filename, n, count){
   var a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="2027_서식"+n+"_"+deptScope()+".hwpx";
+  a.download=filename;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
   var framed=false; try{ framed=window.top!==window.self; }catch(e){ framed=true; }
   toast("[서식"+n+"] "+count+"장을 한글 파일로 내려받습니다 (한 장에 한 쪽)."+
     (framed && !SERVER ? " 파일이 받아지지 않으면 이 미리보기 화면에서 다운로드가 막힌 것이니, 배포한 주소에서 저장해 주세요." : ""));
-});
+}
 
 /* [서식1] 복사 */
 document.getElementById("form1List").addEventListener("click",function(e){

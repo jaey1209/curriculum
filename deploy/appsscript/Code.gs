@@ -15,6 +15,7 @@
  *
  * 로그인하면 서명한 출입증(token)을 주고, 이후 모든 요청은 출입증의 교과·성명으로만 처리한다.
  * 교사는 자기 평가만 읽고 쓸 수 있고, 교과 전체 제출분은 그 교과의 교과부장만 받는다.
+ * 관리자(스크립트 속성 ADMIN_CODE 의 코드로 로그인)는 모든 교과의 평가를 읽기만 한다(apiAdminData).
  */
 var SHEET_TITLE = "교과서 선정대장 2027 데이터";
 var TEACHER_SHEET = "교사";
@@ -35,7 +36,7 @@ var CHIEFS = {
 
 function doGet(e) {
   return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('교과서 선정대장')
+    .setTitle('율천고 교과용 도서 선정')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -70,6 +71,46 @@ function apiLogin(dept, name, code) {
   cache.remove(failKey);
   var user = { dept: dept, name: name, role: CHIEFS[dept] === name ? "chief" : "teacher" };
   return JSON.stringify({ token: issue_(user), dept: dept, name: name, role: user.role });
+}
+
+/* 관리자 로그인: 스크립트 속성 ADMIN_CODE 와 같으면 관리자 출입증(읽기 전용)을 줌.
+ * 코드는 저장소·화면에 두지 않고 스크립트 속성에만 둔다. 5번 틀리면 10분 동안 막힘. */
+var ADMIN = { dept: "관리자", name: "관리자", role: "admin" };
+function apiAdminLogin(code) {
+  var want = PropertiesService.getScriptProperties().getProperty("ADMIN_CODE");
+  if (!want) throw new Error("관리자 코드가 설정되지 않았습니다. Apps Script 스크립트 속성에 ADMIN_CODE 를 넣어 주세요.");
+  var cache = CacheService.getScriptCache(), failKey = "fail:admin";
+  var fails = Number(cache.get(failKey) || 0);
+  if (fails >= MAX_FAIL) throw new Error("관리자 코드를 " + MAX_FAIL + "번 틀려 " + LOCK_MIN + "분 동안 로그인할 수 없습니다.");
+  code = code_(code);
+  if (!code || code !== code_(want)) {
+    cache.put(failKey, String(fails + 1), LOCK_MIN * 60);
+    throw new Error("관리자 코드가 맞지 않습니다.");
+  }
+  cache.remove(failKey);
+  return JSON.stringify({ token: issue_(ADMIN), dept: ADMIN.dept, name: ADMIN.name, role: ADMIN.role });
+}
+
+/* 관리자 전용: 모든 교과의 평가(작성 중 포함) + 교사 명단(이름·교과, 코드 없음) + 교과부장이 고친 [서식3] 추천 의견.
+ * 평가마다 saved = 시트에 마지막으로 저장된 시각(ms). 출입증도 새로 줌. */
+function apiAdminData(token) {
+  var user = auth_(token);
+  if (user.role !== "admin") throw new Error("관리자만 볼 수 있습니다.");
+  var evals = [], f3 = {};
+  rows_(EVAL_SHEET, EVAL_HEAD).forEach(function (r) {
+    var ev = parse_(r[8]);
+    if (!ev) return;
+    ev.owner = String(r[0]).split("|")[1] || ev.owner || "";
+    var t = r[7] instanceof Date ? r[7].getTime() : Date.parse(r[7]);
+    ev.saved = isNaN(t) ? 0 : t;
+    evals.push(ev);
+  });
+  rows_(STEP_SHEET, STEP_HEAD).forEach(function (r) {
+    var d = parse_(r[2]);
+    if (d && d.f3) f3[String(r[0])] = d.f3;
+  });
+  var teachers = teachers_().map(function (t) { return { name: t.name, dept: t.dept }; });
+  return JSON.stringify({ evals: evals, teachers: teachers, f3: f3, token: issue_(user) });
 }
 
 /* 로그인한 사람의 평가 전부 + (교과부장이면) 그 교과의 교과부장 자료. 출입증도 새로 줌 */
