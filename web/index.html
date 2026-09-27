@@ -804,7 +804,12 @@ function gasCall(fn, args, ok, fail){
       if(/^AUTH:/.test(msg)){ authLost(msg.replace(/^AUTH:\s*/,"")); return; }
       fail(msg);
     });
-  run[fn].apply(run, args);
+  /* 배포된 Code.gs 에 그 함수가 없으면(옛 Code.gs) 버튼이 멈추지 않게 바로 알려 줌 */
+  if(typeof run[fn]!=="function"){
+    fail("서버(Code.gs)에 "+fn+" 함수가 없습니다. Code.gs 를 최신 파일로 바꾸고 저장한 뒤 새 버전으로 배포해 주세요.");
+    return;
+  }
+  try{ run[fn].apply(run, args); }catch(e){ fail(String((e&&e.message)||e)); }
 }
 function token(){ return state.me ? state.me.token||"" : ""; }
 /* 출입증이 만료됨 → 시작 화면으로 (이 브라우저에 남은 입력은 다시 로그인하면 올라감) */
@@ -983,7 +988,7 @@ function loadDeptForms(force){
 }
 /* index.html 만 새로 올리고 Code.gs 를 그대로 둔 경우 등: 원인을 알 수 있게 덧붙임 */
 function gasHint(msg){
-  return /api(Login|Load|Save|DeptForms)|not found|찾을 수 없/i.test(msg) ? msg+" — 배포 담당자: Code.gs도 최신 파일로 올렸는지 확인해 주세요" : msg;
+  return /api(Login|Load|Save|DeptForms)|not found|찾을 수 없/i.test(msg) && !/Code\.gs/.test(msg) ? msg+" — 배포 담당자: Code.gs도 최신 파일로 올렸는지 확인해 주세요" : msg;
 }
 
 /* ───────── 렌더 ───────── */
