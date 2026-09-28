@@ -625,6 +625,12 @@ table.aover th:first-child{text-align:left}
 table.aover td.n.bad{color:var(--crit); font-weight:600}
 #adminMain .f3tools{display:none}
 #adminMain .f3op textarea{border-style:solid; border-color:transparent; resize:none; background:transparent}
+/* ── 교과부장 [서식1]: 과목별·교사별 조회 사이드바 ── */
+.f1side{gap:10px}
+.f1side .aseg{display:flex}
+.f1side .aseg button{flex:1; padding:7px 10px}
+.ateacher .an .me{font-size:11px; color:var(--ink-3); font-weight:500}
+.f1miss{margin:0 0 12px; padding:10px 14px; border-radius:12px; background:var(--warn-soft); color:var(--warn); font-size:13px}
 @media (max-width:760px){ .asidebar{width:100%} }
 </style>
 
@@ -1634,7 +1640,8 @@ function renderForm1Tab(){
   var el=document.getElementById("form1List"), chief=isChief();
   var waiting=chief && SERVER && !(sync.dept && sync.dept.dept===deptScope());
   var evs=form1Evals();
-  document.getElementById("copyAllForm1").hidden=!evs.length;
+  var cp=document.getElementById("copyAllForm1");
+  cp.hidden=!evs.length; cp.textContent=chief?"화면의 서식 모두 복사":"전체 서식 복사";
   Array.prototype.forEach.call(document.querySelectorAll("[data-reloadforms]"), function(b){ b.hidden=!(SERVER && chief); });
   var sub=document.getElementById("form1Sub");
   sub.innerHTML=!chief
@@ -1648,17 +1655,64 @@ function renderForm1Tab(){
   var short=(waiting || !chief)?[]:subjectAggs().filter(function(a){ return !a.ok; });
   var note=short.length?'<div class="errnote" role="alert">평가자가 '+MIN_EVALUATORS+'명 미만인 과목이 '+short.length+'개 있습니다: '+
     esc(short.map(function(a){ return a.subject+" "+a.evs.length+"명"; }).join(", "))+'. 자세한 내용은 [서식2] 탭에서 확인하세요.</div>':'';
+  if(chief && !waiting){ el.innerHTML=note+chiefForm1HTML(evs); return; }
   if(!evs.length){
     el.innerHTML=note+'<div class="evempty">'+(waiting?'불러오는 중…':'아직 생성된 [서식1]이 없습니다. [과목 평가]에서 점수와 종합의견을 모두 쓴 뒤 <b>제출</b>하거나 <b>서식1 생성</b>을 눌러 주세요.')+'</div>';
     return;
   }
-  el.innerHTML=note+evs.map(function(ev){
-    return '<div class="deptform" data-ev="'+esc(ev.id)+'">'+
-      '<div class="df-hd"><span class="nm">'+esc(nz(ev.subject))+'</span>'+
-        '<span class="ct">'+esc(nz(ev.gun))+' 위원 '+esc(evaluatorOf(ev))+' · 후보 '+ev.cands.filter(function(c){ return nz(c.book)||nz(c.pub); }).length+'종</span>'+
-        '<button class="btn" data-copyf1="'+esc(ev.id)+'">서식 복사</button></div>'+
-      '<div class="dfbody">'+form1BodyHTML(ev)+'</div></div>';
-  }).join("");
+  el.innerHTML=note+evs.map(form1CardHTML).join("");
+}
+function form1CardHTML(ev){
+  return '<div class="deptform" data-ev="'+esc(ev.id)+'">'+
+    '<div class="df-hd"><span class="nm">'+esc(nz(ev.subject))+'</span>'+
+      '<span class="ct">'+esc(nz(ev.gun))+' 위원 '+esc(evaluatorOf(ev))+' · 후보 '+ev.cands.filter(function(c){ return nz(c.book)||nz(c.pub); }).length+'종</span>'+
+      '<button class="btn" data-copyf1="'+esc(ev.id)+'">서식 복사</button></div>'+
+    '<div class="dfbody">'+form1BodyHTML(ev)+'</div></div>';
+}
+/* 교과부장 [서식1]: 왼쪽 [과목별 조회]·[교사별 조회] → 고른 과목(또는 선생님)의 제출분만 */
+var f1view={mode:"subject", sel:""};
+function chiefRoster(evs){
+  var me=state.me?state.me.name:"";
+  var names=((SERVER && sync.dept && sync.dept.teachers)||[]).slice();
+  evs.forEach(function(e){ var n=evaluatorOf(e); if(n && names.indexOf(n)<0) names.push(n); });
+  names=names.filter(function(n){ return n!==me; }).sort(function(a, b){ return a.localeCompare(b, "ko"); });
+  return [me].concat(names);   /* 본인이 맨 위 */
+}
+function chiefForm1HTML(evs){
+  var dept=deptScope(), me=state.me?state.me.name:"";
+  var subs=(SUBJECT_CATALOG[dept]||[]).filter(function(x){ return hasRealBooks(dept, x); });
+  var roster=chiefRoster(evs), bySubj=f1view.mode==="subject";
+  var items=bySubj?subs:roster;
+  if(items.indexOf(f1view.sel)<0) f1view.sel=items[0]||"";
+  var sel=f1view.sel;
+  var ofSubj=function(x){ return evs.filter(function(e){ return nz(e.subject)===x; })
+    .sort(function(a, b){ return (evaluatorOf(b)===me)-(evaluatorOf(a)===me) || evaluatorOf(a).localeCompare(evaluatorOf(b), "ko"); }); };
+  var ofName=function(n){ return evs.filter(function(e){ return evaluatorOf(e)===n; }); };
+  var side='<aside class="tsidebar asidebar f1side">'+
+    '<div class="aseg" role="group" aria-label="[서식1] 조회 방법">'+
+      '<button data-f1mode="subject" aria-pressed="'+bySubj+'">과목별 조회</button>'+
+      '<button data-f1mode="teacher" aria-pressed="'+(!bySubj)+'">교사별 조회</button></div>'+
+    '<div class="adept">'+(items.length?items.map(function(x){
+      var on=x===sel;
+      var meta=bySubj?'제출 '+ofSubj(x).length+'명':'제출 '+ofName(x).length+'/'+subs.length+'과목';
+      return '<button class="ateacher'+(on?' on':'')+'" data-f1sel="'+esc(x)+'" aria-current="'+(on?'true':'false')+'">'+
+        '<span class="an"><b>'+esc(x)+'</b>'+(!bySubj && x===me?' <span class="me">(본인)</span>':'')+'</span>'+
+        '<span class="am">'+meta+'</span></button>';
+    }).join(""):'<div class="evempty" style="border:0">목록이 없습니다.</div>')+'</div></aside>';
+  var main;
+  if(bySubj){
+    var list=ofSubj(sel), sent=list.map(evaluatorOf);
+    var miss=(SERVER && sync.dept && sync.dept.teachers)?roster.filter(function(n){ return sent.indexOf(n)<0; }):[];
+    main='<div class="ahead"><div><h3>'+esc(sel)+'</h3><p class="note">같은 교과 선생님이 제출한 [서식1] '+list.length+'개</p></div></div>'+
+      (miss.length?'<p class="f1miss">아직 제출하지 않은 선생님: '+esc(miss.join(", "))+'</p>':'')+
+      (list.length?list.map(form1CardHTML).join(""):'<div class="evempty">이 과목에 제출된 [서식1]이 아직 없습니다.</div>');
+  } else {
+    var mine=ofName(sel);
+    main='<div class="ahead"><div><h3>'+esc(sel)+(sel===me?' <span class="rl">교과부장</span>':'')+'</h3>'+
+      '<p class="note">제출한 [서식1] '+mine.length+'/'+subs.length+'과목</p></div></div>'+
+      (mine.length?mine.map(form1CardHTML).join(""):'<div class="evempty">이 선생님이 제출한 [서식1]이 아직 없습니다.</div>');
+  }
+  return '<div class="tsplit">'+side+'<div class="tmain">'+main+'</div></div>';
 }
 /* ── [서식2]·[서식3]: 과목별로 교과 선생님들의 [서식1]을 모음 ──
    출판사마다 위원별 합계(서식1의 합계 줄), 총점, 평균, 평균 순위. [서식3]은 평균 상위 3개.
@@ -2550,6 +2604,16 @@ function saveHwpx(blob, filename, n, count){
     (framed && !SERVER ? " 파일이 받아지지 않으면 이 미리보기 화면에서 다운로드가 막힌 것이니, 배포한 주소에서 저장해 주세요." : ""));
 }
 
+/* 교과부장 [서식1] 조회 방법·항목 고르기 */
+document.getElementById("form1List").addEventListener("click",function(e){
+  var m=e.target.closest("button[data-f1mode]"), s=e.target.closest("button[data-f1sel]");
+  if(m){ if(f1view.mode!==m.dataset.f1mode){ f1view.mode=m.dataset.f1mode; f1view.sel=""; renderForm1Tab(); } return; }
+  if(s){
+    f1view.sel=s.dataset.f1sel; renderForm1Tab();
+    var t=document.querySelector("#form1List .tmain");
+    if(t && t.getBoundingClientRect().top<0) t.scrollIntoView({block:"start"});
+  }
+});
 /* [서식1] 복사 */
 document.getElementById("form1List").addEventListener("click",function(e){
   var b=e.target.closest("button[data-copyf1]"); if(!b) return;
