@@ -438,6 +438,19 @@ table.f2tbl th.nm{font-weight:600; font-size:11px}
 table.f2tbl td{height:22px; padding:3px 4px}
 table.f2tbl tr.win td, table.f3tbl tbody tr:first-child td:first-child{font-weight:700}
 .f2sign{display:flex; flex-direction:column; align-items:flex-end; gap:6px; margin-top:14px; font-size:13px}
+/* 서명 줄: 칸 너비를 고정해 작성자·확인자 줄의 '직·성명·(인)'이 세로로 맞게 */
+.sgl{display:flex; align-items:baseline; white-space:nowrap}
+.sgl .sg-pre{margin-right:1.6em}
+.sgl .sg-k{margin:0 .8em 0 1.6em}
+.sgl .sg-v{display:inline-block; min-width:2em; font-weight:600}
+.sgl .sg-n{min-width:4em; margin-right:.8em}
+/* 서식2 총무 이름 (교과부장이 입력 → 모든 과목 작성자 칸에) */
+.secbox{display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin:0 0 16px; padding:12px 16px;
+  background:var(--surface); border:1px solid var(--glass-edge); border-radius:16px}
+.secbox label{font-weight:600; font-size:14px}
+.secbox input{font:inherit; font-size:14px; width:9em; padding:7px 12px; border:1px solid var(--glass-strong); border-radius:10px; background:var(--surface-solid); color:var(--ink)}
+.secbox input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.secbox .dim{font-size:12.5px; color:var(--ink-3)}
 .f2note{margin:10px 0 0; font-size:12px; font-weight:600}
 table.f3tbl td{vertical-align:middle}
 table.f3tbl td.f3op{padding:6px}
@@ -732,6 +745,8 @@ table.aover td.n.bad{color:var(--crit); font-weight:600}
     <span class="sub" id="form2Sub"></span>
     <button class="btn" data-reloadforms="1" hidden>새로고침</button>
   </div>
+  <div class="secbox"><label for="secName">총무 이름</label><input id="secName" autocomplete="off" maxlength="10" placeholder="예: 홍길동">
+    <span class="dim">입력하면 모든 과목 [서식2]의 작성자 칸(직 교사)에 들어갑니다. 자동 저장.</span></div>
   <div id="form2List"></div>
 </section>
 <section class="panel" id="p-form3" hidden>
@@ -1526,9 +1541,15 @@ function tplPage(T, n, o){
   }).join("");
 }
 function tplSubject(p, subject){ return p.replace("<hp:t> 과  목 :</hp:t>", "<hp:t> 과  목 : "+esc(subject)+"</hp:t>"); }
-/* '… 성명            (인)' 의 빈칸에 이름 */
-function tplSigner(p, who, name){
-  return p.indexOf(who)<0 ? p : p.replace("성명            (인)", "성명   "+esc(name)+"    (인)");
+/* 원본 서명 줄 '작성자 … 직 … 성명 … (인)'의 '직'부터를 채운 글로 바꿈.
+   칸 사이는 전각 빈칸(한글 한 자 폭)으로 띄우고 이름은 4자 폭에 맞춰, 작성자·확인자 줄의 (인)이 같은 자리에 오게 함 */
+var FW="\u3000";
+function signText(pos, name){
+  var n=String(name||"").trim().slice(0, 4), pad=Math.max(0, 4-n.length);
+  return "직"+FW+(pos||FW+FW)+FW+FW+"성명"+FW+n+new Array(pad+1).join(FW)+FW+"(인)";
+}
+function tplSigner(p, who, pos, name){
+  return p.indexOf(who)<0 ? p : p.replace(/직 +성명 +\(인\)/, esc(signText(pos, name)));
 }
 var F2_EVAL_COLS=7, F2_MIN_ROWS=16;
 function form2Rows(T, a){
@@ -1545,7 +1566,7 @@ function form2Rows(T, a){
   return rows;
 }
 function form2HwpSection(aggs){
-  var T=hwpxTpl().f2, chief=chiefName();
+  var T=hwpxTpl().f2, chief=chiefName(), sec=secName();
   return T.secOpen+aggs.map(function(a, n){
     return tplPage(T, n, {
       rows: form2Rows(T, a),
@@ -1560,7 +1581,7 @@ function form2HwpSection(aggs){
         if(c===11) return {t:p.rank?p.rank+"위":""};
         return null;
       },
-      para: function(x, i){ return tplSigner(tplSubject(x, a.subject), "확인자", chief); }
+      para: function(x, i){ return tplSigner(tplSigner(tplSubject(x, a.subject), "작성자", "교사", sec), "확인자", "교사", chief); }
     });
   }).join("")+"</hs:sec>";
 }
@@ -1577,7 +1598,7 @@ function form3HwpSection(aggs){
         if(c===3) return {lines:opinionParas(f3Text(a, p)), cp:T.opCP, pp:T.opPP};
         return null;
       },
-      para: function(x, i){ return tplSigner(tplSubject(x, a.subject), "작성자", chief); }
+      para: function(x, i){ return tplSigner(tplSigner(tplSubject(x, a.subject), "작성자", "교사", chief), "확인자", "교감", VICE_PRINCIPAL); }
     });
   }).join("")+"</hs:sec>";
 }
@@ -1733,9 +1754,18 @@ function f3Fit(t){
   while(t && f3Lines(t)>F3_LINES) t=t.slice(0, -2).trim();
   return t;
 }
+function f3Map(){ return isAdmin() ? ((admin.data && admin.data.f3[deptScope()])||{}) : (state.f3||{}); }
 function f3Text(a, p){
-  var map=isAdmin() ? ((admin.data && admin.data.f3[deptScope()])||{}) : (state.f3||{});
-  var t=map[f3Key(a, p)]; return t==null?f3Default(a, p):t;
+  var t=f3Map()[f3Key(a, p)]; return t==null?f3Default(a, p):t;
+}
+/* 서식2 작성자(총무) 이름: 교과부장 자료(f3)에 함께 저장 → 교과 전체 과목에 한 번에 들어감 */
+var SEC_KEY="#총무", VICE_PRINCIPAL="김환";
+function secName(){ return String(f3Map()[SEC_KEY]||"").trim(); }
+/* 화면용 서명 줄 (한글파일과 같은 순서·간격) */
+function signHTML(pre, who, pos, name, cls){
+  return '<div class="sgl">'+(pre?'<span class="sg-pre">'+pre+'</span>':'')+'<span>'+who+'</span>'+
+    '<span class="sg-k">직</span><span class="sg-v">'+esc(pos)+'</span>'+
+    '<span class="sg-k">성명</span><span class="sg-v sg-n'+(cls?' '+cls:'')+'">'+esc(name||"")+'</span><span>(인)</span></div>';
 }
 function f3Lines(t){ return opinionParas(t).reduce(function(x, l){ return x+hwpLines(l, 30555); }, 0); }
 function formsWaiting(){ return SERVER && !(sync.dept && sync.dept.dept===deptScope()); }
@@ -1778,8 +1808,7 @@ function form2BodyHTML(a){
   return '<div class="f1title">【서식2】</div><div class="f1sub">검·인정도서 선정기준 평가 총괄표</div>'+
     '<div class="f1meta"><span>과&nbsp;&nbsp;목 : '+esc(a.subject)+'</span></div>'+
     '<table class="f1tbl f2tbl"><thead>'+head+'</thead><tbody>'+body+'</tbody></table>'+
-    '<div class="f2sign"><div>작성자 &nbsp; 직 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 성명 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (인)</div>'+
-      '<div>확인자 &nbsp; 직 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 성명 &nbsp; '+esc(chief)+' &nbsp; (인)</div></div>'+
+    '<div class="f2sign">'+signHTML("", "작성자", "교사", secName(), "sg-sec")+signHTML("", "확인자", "교사", chief)+'</div>'+
     '<p class="f2note">※ 작성자는 교과협의회 소속교사(총무), 확인자는 교과협의회 대표교사(교과부장)로 함</p>';
 }
 function form3BodyHTML(a){
@@ -1805,8 +1834,7 @@ function form3BodyHTML(a){
     '<div class="f1meta"><span>과&nbsp;&nbsp;목 : '+esc(a.subject)+'</span></div>'+
     '<table class="f1tbl f3tbl"><thead><tr><th style="width:9%">순위</th><th style="width:16%">출판사명</th><th style="width:11%">가격</th><th>추 천 의 견</th></tr></thead>'+
       '<tbody>'+rows+'</tbody></table>'+
-    '<div class="f2sign"><div>교과협의회 &nbsp;&nbsp; 작성자 &nbsp; 직 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 성명 &nbsp; '+esc(chief)+' &nbsp; (인)</div>'+
-      '<div>확인자 &nbsp; 직 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 성명 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (인)</div></div>'+
+    '<div class="f2sign">'+signHTML("교과협의회", "작성자", "교사", chief)+signHTML("", "확인자", "교감", VICE_PRINCIPAL)+'</div>'+
     '<p class="f2note">※ 작성자는 교과협의회 대표교사(교과부장), 확인자는 교감으로 함</p>'+
     '<details class="f3ref"><summary>위원 종합의견 및 추천의견 보기 ('+a.evs.length+'명)</summary><ul>'+ref+'</ul></details>';
 }
@@ -1814,6 +1842,7 @@ function renderFormNTab(n){
   var el=document.getElementById("form"+n+"List"), aggs=subjectAggs();
   document.getElementById("form"+n+"Sub").innerHTML=formSubHTML(n===2?"과목마다 위원별 [서식1] 합계를 모아 평균으로 순위를 매깁니다.":
     "과목마다 평균 상위 3개 도서와 추천 의견입니다. 추천 의견 칸은 고쳐 쓸 수 있습니다(자동 저장).");
+  if(n===2){ var si=document.getElementById("secName"); if(document.activeElement!==si) si.value=secName(); }
   if(formsWaiting() && !sync.deptErr){ el.innerHTML='<div class="evempty">불러오는 중…</div>'; return; }
   var okAggs=aggs.filter(function(a){ return a.ok; });
   el.innerHTML=shortageHTML(aggs)+(okAggs.length?okAggs.map(function(a){
@@ -2579,6 +2608,12 @@ function f3AiDraft(btn, subject){
 document.getElementById("form3List").addEventListener("click",function(e){
   var b=e.target.closest("button[data-f3ai]"); if(!b || b.disabled) return;
   f3AiDraft(b, b.dataset.f3ai);
+});
+/* [서식2] 총무 이름 → 교과부장 자료로 저장, 모든 과목 작성자 칸에 바로 반영 */
+document.getElementById("secName").addEventListener("input",function(e){
+  if(!state.f3) state.f3={};
+  state.f3[SEC_KEY]=e.target.value.trim(); stepsChanged();
+  Array.prototype.forEach.call(document.querySelectorAll("#form2List .sg-sec"), function(x){ x.textContent=state.f3[SEC_KEY]; });
 });
 /* [서식3] 추천 의견 고쳐 쓰기 → 교과부장 자료로 저장 */
 document.getElementById("form3List").addEventListener("input",function(e){
