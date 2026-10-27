@@ -775,7 +775,8 @@ button.secondary:disabled, button.is-selected:disabled {
  .speaker-face > small { display: none; }
  .speaker-name { padding: 1px 6px; font-size: .78rem; margin-right: 5px; }
  .speaker-role { font-size: .68rem; }
- .dialogue-text { font-size: .88rem; line-height: 1.35; margin: 1px 0 0; }
+ /* Script line breaks are ignored here so a short line fills the width instead of wrapping early. */
+ .dialogue-text { font-size: .88rem; line-height: 1.35; margin: 1px 0 0; white-space: normal; }
  #dialogueBox [data-action="next"] { float: none; min-height: 34px; min-width: 92px; padding: 3px 10px; font-size: .82rem; }
  #dialogueBox .dialogue-actions .helper-text { font-size: .82rem; }
  #storyChoices { gap: 5px; max-width: min(100%, 560px); max-height: 60%; }
