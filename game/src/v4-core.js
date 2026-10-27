@@ -49,8 +49,13 @@ function paintActors(){
  for(const el of box.children){const id=el.dataset.person,ex=Number(el.dataset.expression);const d=spriteData(id,ex,'bust');
   if(!d){el.innerHTML=portrait(id,ex);el.style.width='160px';el.style.height='240px';continue;}
   const portraitView=W<H*.9;let maxW=view==='title'?W*(portraitView?.72:.46):W*(actors.length===2?.46:.70);
-  const maxH=view==='title'?H*.92:H*(PEOPLE[pid(id)]?.student?.8:.95);const scale=Math.min(maxW/d.w,maxH/d.h);
+  // Students are bust-only sprites (head ≈ 40% of the frame), so they get about half the stage height to keep
+  // their faces near the teachers' size, lifted a little so the face stays above the dialogue box.
+  const student=!!PEOPLE[pid(id)]?.student;const maxH=view==='title'?H*.92:H*(student?.46:.95);const scale=Math.min(maxW/d.w,maxH/d.h);
   el.style.width=d.w*scale+'px';el.style.height=d.h*scale+'px';
+  // Lift a student so the head (top ~45% of the bust) clears the dialogue box; the cut edge stays hidden behind it.
+  let lift=0;if(student){const dlg=$('#dialogueBox');if(dlg&&!dlg.hidden){const boxTop=box.getBoundingClientRect().bottom-dlg.getBoundingClientRect().top;lift=Math.max(0,Math.round(boxTop+6-d.h*scale*.5));}}
+  el.style.bottom=lift?lift+'px':'';
   el.innerHTML=`<img src="${ASSETS[d.key]}" alt="" style="width:${d.sw*scale}px;height:${d.sh*scale}px;left:${-d.x*scale}px;top:${-d.y*scale}px">`;
  }
 }
