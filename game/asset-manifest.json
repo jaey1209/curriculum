@@ -59,7 +59,12 @@
           1379,
           1007
         ]
-      ]
+      ],
+      "figure": [
+        11,
+        1004
+      ],
+      "figureFrac": 1
     },
     "heroF_v2": {
       "size": [
@@ -85,7 +90,12 @@
           1386,
           1013
         ]
-      ]
+      ],
+      "figure": [
+        5,
+        1011
+      ],
+      "figureFrac": 1
     },
     "math_v10_outfit": {
       "size": [
@@ -111,7 +121,12 @@
           1312,
           1015
         ]
-      ]
+      ],
+      "figure": [
+        6,
+        1013
+      ],
+      "figureFrac": 1
     },
     "physics_v3_full": {
       "size": [
@@ -137,7 +152,12 @@
           1395,
           1004
         ]
-      ]
+      ],
+      "figure": [
+        10,
+        1002
+      ],
+      "figureFrac": 1
     },
     "social_full": {
       "size": [
@@ -163,7 +183,12 @@
           1401,
           1001
         ]
-      ]
+      ],
+      "figure": [
+        14,
+        999
+      ],
+      "figureFrac": 1
     },
     "korean_v2_full": {
       "size": [
@@ -189,7 +214,12 @@
           1357,
           1012
         ]
-      ]
+      ],
+      "figure": [
+        14,
+        1010
+      ],
+      "figureFrac": 1
     },
     "english_full": {
       "size": [
@@ -215,7 +245,12 @@
           1292,
           1011
         ]
-      ]
+      ],
+      "figure": [
+        8,
+        1009
+      ],
+      "figureFrac": 1
     },
     "pe_v4_full": {
       "size": [
@@ -241,7 +276,12 @@
           1376,
           1011
         ]
-      ]
+      ],
+      "figure": [
+        6,
+        1009
+      ],
+      "figureFrac": 1
     },
     "mother_full": {
       "size": [
@@ -267,7 +307,12 @@
           1371,
           1014
         ]
-      ]
+      ],
+      "figure": [
+        10,
+        1011
+      ],
+      "figureFrac": 1
     },
     "father_full": {
       "size": [
@@ -293,7 +338,12 @@
           1372,
           985
         ]
-      ]
+      ],
+      "figure": [
+        11,
+        983
+      ],
+      "figureFrac": 1
     },
     "expressions01": {
       "size": [
@@ -319,7 +369,12 @@
           1536,
           1001
         ]
-      ]
+      ],
+      "figure": [
+        34,
+        999
+      ],
+      "figureFrac": 0.6
     },
     "expressions02": {
       "size": [
@@ -345,7 +400,12 @@
           1511,
           1004
         ]
-      ]
+      ],
+      "figure": [
+        24,
+        1002
+      ],
+      "figureFrac": 0.6
     },
     "expressions03": {
       "size": [
@@ -371,7 +431,12 @@
           1517,
           1017
         ]
-      ]
+      ],
+      "figure": [
+        22,
+        1016
+      ],
+      "figureFrac": 0.6
     },
     "expressions04": {
       "size": [
@@ -397,7 +462,12 @@
           1536,
           985
         ]
-      ]
+      ],
+      "figure": [
+        31,
+        984
+      ],
+      "figureFrac": 0.6
     },
     "expressions05": {
       "size": [
@@ -423,7 +493,12 @@
           1536,
           1024
         ]
-      ]
+      ],
+      "figure": [
+        21,
+        1024
+      ],
+      "figureFrac": 0.6
     },
     "expressions06": {
       "size": [
@@ -449,7 +524,12 @@
           1536,
           1005
         ]
-      ]
+      ],
+      "figure": [
+        32,
+        1003
+      ],
+      "figureFrac": 0.6
     },
     "expressions07": {
       "size": [
@@ -475,7 +555,12 @@
           1500,
           1004
         ]
-      ]
+      ],
+      "figure": [
+        11,
+        1002
+      ],
+      "figureFrac": 0.6
     },
     "expressions08": {
       "size": [
@@ -501,7 +586,12 @@
           1536,
           995
         ]
-      ]
+      ],
+      "figure": [
+        46,
+        994
+      ],
+      "figureFrac": 0.6
     },
     "expressions09": {
       "size": [
@@ -527,7 +617,12 @@
           1536,
           998
         ]
-      ]
+      ],
+      "figure": [
+        33,
+        997
+      ],
+      "figureFrac": 0.6
     },
     "expressions10": {
       "size": [
@@ -553,7 +648,12 @@
           1527,
           978
         ]
-      ]
+      ],
+      "figure": [
+        56,
+        977
+      ],
+      "figureFrac": 0.6
     },
     "mathGentle": {
       "size": [
@@ -567,7 +667,12 @@
           978,
           1536
         ]
-      ]
+      ],
+      "figure": [
+        19,
+        1536
+      ],
+      "figureFrac": 0.6
     },
     "studentNarae": {
       "size": [
@@ -593,7 +698,12 @@
           1536,
           1024
         ]
-      ]
+      ],
+      "figure": [
+        21,
+        1024
+      ],
+      "figureFrac": 0.62
     },
     "studentRaon": {
       "size": [
@@ -619,7 +729,12 @@
           1536,
           1024
         ]
-      ]
+      ],
+      "figure": [
+        42,
+        1024
+      ],
+      "figureFrac": 0.62
     },
     "studentExtra0": {
       "size": [
@@ -712,70 +827,80 @@
       "name": "남자 주인공",
       "role": "최성보 담당자",
       "description": "안경 없음 · 네이비 폴로와 줄무늬 셔츠 · 여유 있는 청바지",
-      "expressionKey": "expressions01"
+      "expressionKey": "expressions01",
+      "heightCm": 182
     },
     "02": {
       "key": "heroF_v2",
       "name": "여자 주인공",
       "role": "최성보 담당자",
       "description": "안경 없음 · 긴 웨이브와 작은 헤어핀 · 회색 가디건과 검정 스커트",
-      "expressionKey": "expressions02"
+      "expressionKey": "expressions02",
+      "heightCm": 164
     },
     "03": {
       "key": "math_v10_outfit",
       "name": "박수학 선생님",
       "role": "수학 · 과정부",
       "description": "사용자 사진 참고 얼굴 · 풀뱅 생머리 · 갈색 재킷과 아이보리 원피스 · 아이패드",
-      "expressionKey": "expressions03"
+      "expressionKey": "expressions03",
+      "heightCm": 167
     },
     "04": {
       "key": "physics_v3_full",
       "name": "김물리 선생님",
       "role": "물리 · 연구부",
       "description": "사진 참고의 부드러운 얼굴·중간 길이 헤어 · 초록 바람막이 · 안경 없음",
-      "expressionKey": "expressions04"
+      "expressionKey": "expressions04",
+      "heightCm": 180
     },
     "05": {
       "key": "social_full",
       "name": "이사회 선생님",
       "role": "사회 · 학년부",
       "description": "웨이브 머리 · 둥근 안경 · 코듀로이 재킷",
-      "expressionKey": "expressions05"
+      "expressionKey": "expressions05",
+      "heightCm": 184
     },
     "06": {
       "key": "korean_v2_full",
       "name": "최국어 선생님",
       "role": "국어 · 학년부",
       "description": "단발·안경 유지 · 베이지 터틀넥 · 연청 와이드 데님",
-      "expressionKey": "expressions06"
+      "expressionKey": "expressions06",
+      "heightCm": 162
     },
     "07": {
       "key": "english_full",
       "name": "윤영어 선생님",
       "role": "영어 · 교무부",
       "description": "이전 의상 복원 · 포니테일 · 스카프와 배색 가디건 · 크림색 바지",
-      "expressionKey": "expressions07"
+      "expressionKey": "expressions07",
+      "heightCm": 165
     },
     "08": {
       "key": "pe_v4_full",
       "name": "전체육 선생님",
       "role": "체육 · 학년부",
       "description": "덱스 사진의 얼굴·헤어 참고 · 오버핏 회색 후드티 · 자연스러운 운동 체격",
-      "expressionKey": "expressions08"
+      "expressionKey": "expressions08",
+      "heightCm": 187
     },
     "09": {
       "key": "mother_full",
       "name": "여자 학부모",
       "role": "47세 설정",
       "description": "자연스러운 단발 · 크림 퀼팅 재킷 · 과한 노화 표현 제외",
-      "expressionKey": "expressions09"
+      "expressionKey": "expressions09",
+      "heightCm": 160
     },
     "10": {
       "key": "father_full",
       "name": "남자 학부모",
       "role": "49세 설정",
       "description": "짧은 머리 · 남색 퀼팅 재킷 · 과한 노화 표현 제외",
-      "expressionKey": "expressions10"
+      "expressionKey": "expressions10",
+      "heightCm": 181
     },
     "11": {
       "key": "studentNarae",
@@ -787,7 +912,8 @@
         15,
         387,
         305
-      ]
+      ],
+      "heightCm": 161
     },
     "12": {
       "key": "studentRaon",
@@ -799,7 +925,8 @@
         30,
         392,
         320
-      ]
+      ],
+      "heightCm": 173
     },
     "13": {
       "key": "studentExtra0",
@@ -811,7 +938,8 @@
         5,
         356,
         300
-      ]
+      ],
+      "heightCm": 170
     },
     "14": {
       "key": "studentExtra1",
@@ -823,7 +951,8 @@
         5,
         356,
         300
-      ]
+      ],
+      "heightCm": 168
     },
     "15": {
       "key": "studentExtra2",
@@ -835,7 +964,8 @@
         5,
         356,
         300
-      ]
+      ],
+      "heightCm": 172
     },
     "16": {
       "key": "studentExtra3",
@@ -847,7 +977,8 @@
         5,
         358,
         300
-      ]
+      ],
+      "heightCm": 163
     },
     "17": {
       "key": "studentExtra4",
@@ -859,7 +990,8 @@
         5,
         356,
         300
-      ]
+      ],
+      "heightCm": 175
     },
     "18": {
       "key": "studentExtra5",
@@ -871,7 +1003,8 @@
         5,
         358,
         300
-      ]
+      ],
+      "heightCm": 166
     }
   },
   "icons": {

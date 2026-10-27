@@ -26,7 +26,7 @@ function spriteData(id,ex=0,crop='bust'){
  else if(ex>=3&&p.expressionKey){key=p.expressionKey;index=ex-3;extra=true;}
  let frame=FRAMES[key];if(!frame)return null;
  let [x,y,x2,y2]=frame.boxes[index]||frame.boxes[0];let w=x2-x,h=y2-y;
- // Atlas bounds use left,top,right,bottom. Preserve the source aspect ratio.
+ // Atlas bounds use left,top,right,bottom. Preserve the source aspect ratio. crop 'stage' keeps the whole frame (paintActors crops by figure bounds).
  const upper=p.student||extra;
  // Students share one face framing (manifest faceBox, relative to the frame box) so the 8 faces render at the same size.
  if(crop==='face'&&Array.isArray(p.faceBox)){const [l,t,r2,b2]=p.faceBox;return {key,x:x+l,y:y+t,w:r2-l,h:b2-t,sw:frame.size[0],sh:frame.size[1]};}
@@ -46,20 +46,25 @@ function paintActors(){
  else {const c=S.pending||conditional(currentScene());actors=[{id:'player',ex:c.who==='player'?c.expression:0,pos:c.who==='player'?'center':'left'}];if(c.who!=='player')actors.push({id:c.who,ex:c.expression,pos:'right'});}
  const key=JSON.stringify(actors);if(lastActor!==key){box.innerHTML=actors.map(a=>`<div class="stage-actor ${a.pos==='left'?'is-listening':''}" data-position="${a.pos}" data-person="${a.id}" data-expression="${a.ex}"></div>`).join('');lastActor=key;}
  const W=box.clientWidth,H=box.clientHeight;if(!W||!H)return;
- let heroH=0;
- for(const el of box.children){const id=el.dataset.person,ex=Number(el.dataset.expression);const d=spriteData(id,ex,'bust');
+ // Every actor is drawn to the same centimetre scale: a 190cm figure would fill 95% of the stage (92% on the title).
+ // Each sheet's `figure` is the drawn body's top/bottom and `figureFrac` the share of the body it shows
+ // (1 = full body, .6 = hair to upper thigh), so bust sheets and students no longer blow up to full height.
+ const REF_CM=190,pxPerCm=(view==='title'?H*.92:H*.95)/REF_CM,portraitView=W<H*.9;
+ const maxW=view==='title'?W*(portraitView?.72:.46):W*(actors.length===2?.46:.70);
+ const items=[];let k=1;
+ for(const el of box.children){const id=el.dataset.person,ex=Number(el.dataset.expression);const d=spriteData(id,ex,'stage');
   if(!d){el.innerHTML=portrait(id,ex);el.style.width='160px';el.style.height='240px';continue;}
-  const portraitView=W<H*.9;let maxW=view==='title'?W*(portraitView?.72:.46):W*(actors.length===2?.46:.70);
-  const student=!!PEOPLE[pid(id)]?.student;let scale=Math.min(maxW/d.w,(view==='title'?H*.92:H*.95)/d.h);
-  // A student sprite ends at the thigh and its head is a larger share of the frame than a teacher's full body,
-  // so size it from the player's rendered height: 64% keeps the student's head a little smaller than the hero's.
-  if(student&&heroH)scale=Math.min(maxW/d.w,heroH*.64/d.h);
-  el.style.width=d.w*scale+'px';el.style.height=d.h*scale+'px';if(id==='player')heroH=d.h*scale;
-  // Lift the student so the head sits just below the hero's, but never above the dialogue box top,
-  // so the cut edge of the sprite stays hidden behind the box.
-  let lift=0;if(student){lift=Math.round((heroH||H*.95)*.94-d.h*scale);const dlg=$('#dialogueBox');if(dlg&&!dlg.hidden){const boxTop=box.getBoundingClientRect().bottom-dlg.getBoundingClientRect().top;lift=Math.min(lift,Math.round(boxTop+4));}lift=Math.max(0,lift);}
+  const fr=FRAMES[d.key],p=PEOPLE[pid(id)],cm=p?.heightCm||(p?.student?165:170);const top=fr.figure?fr.figure[0]:d.y,bottom=fr.figure?fr.figure[1]:d.y+d.h,frac=fr.figureFrac||1;
+  // Title screen: the mentor's smile sheet is a bust, so simply fit it to the stage as before.
+  const s=view==='title'?Math.min(H*.92/(bottom-top),maxW/d.w):pxPerCm*cm*frac/(bottom-top);k=Math.min(k,maxW/(d.w*s));items.push({el,d,top,bottom,frac,cm,s});}
+ for(const it of items){const {el,d,top,bottom,frac,cm}=it,scale=it.s*k,hPx=(bottom-top)*scale;
+  el.style.width=d.w*scale+'px';el.style.height=hPx+'px';
+  // A partial figure stands with its unseen legs below the floor: its cut edge sits (1-frac) of the height up,
+  // then is lowered to the dialogue box top so the edge stays hidden. On the title there is no box, so it rests on the floor.
+  let lift=frac<1&&view!=='title'?Math.round((1-frac)*cm*pxPerCm*k):0;
+  if(lift){const dlg=$('#dialogueBox');if(dlg&&!dlg.hidden){const boxTop=box.getBoundingClientRect().bottom-dlg.getBoundingClientRect().top;lift=Math.min(lift,Math.round(boxTop+4));}lift=Math.max(0,lift);}
   el.style.bottom=lift?lift+'px':'';
-  el.innerHTML=`<img src="${ASSETS[d.key]}" alt="" style="width:${d.sw*scale}px;height:${d.sh*scale}px;left:${-d.x*scale}px;top:${-d.y*scale}px">`;
+  el.innerHTML=`<img src="${ASSETS[d.key]}" alt="" style="width:${d.sw*scale}px;height:${d.sh*scale}px;left:${-d.x*scale}px;top:${-top*scale}px">`;
  }
 }
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3200);}
