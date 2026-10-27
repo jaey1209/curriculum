@@ -49,7 +49,10 @@ function paintActors(){
  // Every actor is drawn to the same centimetre scale: a 190cm figure would fill 95% of the stage (92% on the title).
  // Each sheet's `figure` is the drawn body's top/bottom and `figureFrac` the share of the body it shows
  // (1 = full body, .6 = hair to upper thigh), so bust sheets and students no longer blow up to full height.
- const REF_CM=190,pxPerCm=(view==='title'?H*.92:H*.95)/REF_CM,portraitView=W<H*.9;
+ // On a short landscape stage (phones) the camera moves in: 190cm spans 150% of the stage, so only the upper body
+ // shows above the dialogue box and faces stay readable. Everyone still shares one floor and one cm scale.
+ const compact=view!=='title'&&W>H&&H<=440;
+ const REF_CM=190,pxPerCm=(view==='title'?H*.92:compact?H*1.5:H*.95)/REF_CM,portraitView=W<H*.9;
  const maxW=view==='title'?W*(portraitView?.72:.46):W*(actors.length===2?.46:.70);
  const items=[];let k=1;
  for(const el of box.children){const id=el.dataset.person,ex=Number(el.dataset.expression);const d=spriteData(id,ex,'stage');
@@ -57,13 +60,16 @@ function paintActors(){
   const fr=FRAMES[d.key],p=PEOPLE[pid(id)],cm=p?.heightCm||(p?.student?165:170);const top=fr.figure?fr.figure[0]:d.y,bottom=fr.figure?fr.figure[1]:d.y+d.h,frac=fr.figureFrac||1;
   // Title screen: the mentor's smile sheet is a bust, so simply fit it to the stage as before.
   const s=view==='title'?Math.min(H*.92/(bottom-top),maxW/d.w):pxPerCm*cm*frac/(bottom-top);k=Math.min(k,maxW/(d.w*s));items.push({el,d,top,bottom,frac,cm,s});}
+ // Compact stage: the shared floor drops below the stage so the tallest head sits just under the top edge.
+ const tallest=Math.max(0,...items.map(i=>i.cm));const floor=compact?Math.min(0,Math.round(H-6-tallest*pxPerCm*k)):0;
+ const dlg=$('#dialogueBox');const boxTop=dlg&&!dlg.hidden?box.getBoundingClientRect().bottom-dlg.getBoundingClientRect().top:null;
  for(const it of items){const {el,d,top,bottom,frac,cm}=it,scale=it.s*k,hPx=(bottom-top)*scale;
   el.style.width=d.w*scale+'px';el.style.height=hPx+'px';
   // A partial figure stands with its unseen legs below the floor: its cut edge sits (1-frac) of the height up,
   // then is lowered to the dialogue box top so the edge stays hidden. On the title there is no box, so it rests on the floor.
-  let lift=frac<1&&view!=='title'?Math.round((1-frac)*cm*pxPerCm*k):0;
-  if(lift){const dlg=$('#dialogueBox');if(dlg&&!dlg.hidden){const boxTop=box.getBoundingClientRect().bottom-dlg.getBoundingClientRect().top;lift=Math.min(lift,Math.round(boxTop+4));}lift=Math.max(0,lift);}
-  el.style.bottom=lift?lift+'px':'';
+  let edge=floor+(frac<1&&view!=='title'?Math.round((1-frac)*cm*pxPerCm*k):0);
+  if(frac<1&&view!=='title'&&boxTop!==null)edge=Math.min(edge,Math.round(boxTop+4));
+  el.style.bottom=edge?edge+'px':'';
   el.innerHTML=`<img src="${ASSETS[d.key]}" alt="" style="width:${d.sw*scale}px;height:${d.sh*scale}px;left:${-d.x*scale}px;top:${-top*scale}px">`;
  }
 }
