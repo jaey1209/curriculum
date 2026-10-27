@@ -1,0 +1,30 @@
+{
+  "done": [
+    "audit",
+    "prepare",
+    "routes",
+    "roster",
+    "exception",
+    "import",
+    "parent",
+    "shortage",
+    "evidence",
+    "hours",
+    "zero",
+    "finalAudit",
+    "flow"
+  ],
+  "stats": [
+    44,
+    46,
+    59
+  ],
+  "badges": [
+    "기준을 읽는 눈",
+    "기록을 잇는 손",
+    "함께 마무리하는 힘"
+  ],
+  "errors": [],
+  "network": [],
+  "finished": true
+}

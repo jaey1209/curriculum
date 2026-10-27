@@ -1,0 +1,11 @@
+{
+  "name": "jaeyoung-school-training-game",
+  "private": true,
+  "version": "4.2.0",
+  "scripts": {
+    "test": "node tests/qa-v42.cjs && node tests/qa-v42-rewards.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

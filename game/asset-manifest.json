@@ -1,0 +1,894 @@
+{
+  "assets": {
+    "heroM_v2_full": "assets/heroM_v2_full.webp",
+    "heroF_v2": "assets/heroF_v2.webp",
+    "math_v10_outfit": "assets/math_v10_outfit.webp",
+    "physics_v3_full": "assets/physics_v3_full.webp",
+    "social_full": "assets/social_full.webp",
+    "korean_v2_full": "assets/korean_v2_full.webp",
+    "english_full": "assets/english_full.webp",
+    "pe_v4_full": "assets/pe_v4_full.webp",
+    "mother_full": "assets/mother_full.webp",
+    "father_full": "assets/father_full.webp",
+    "school": "assets/school.webp",
+    "office": "assets/office.webp",
+    "corridor": "assets/corridor.webp",
+    "deskGifts": "assets/deskGifts.webp",
+    "expressions01": "assets/expressions01.webp",
+    "expressions02": "assets/expressions02.webp",
+    "expressions03": "assets/expressions03.webp",
+    "expressions04": "assets/expressions04.webp",
+    "expressions05": "assets/expressions05.webp",
+    "expressions06": "assets/expressions06.webp",
+    "expressions07": "assets/expressions07.webp",
+    "expressions08": "assets/expressions08.webp",
+    "expressions09": "assets/expressions09.webp",
+    "expressions10": "assets/expressions10.webp",
+    "mathGentle": "assets/mathGentle.webp",
+    "studentNarae": "assets/studentNarae.webp",
+    "studentRaon": "assets/studentNarae.webp",
+    "studentExtra0": "assets/studentExtra0.webp",
+    "studentExtra1": "assets/studentExtra0.webp",
+    "studentExtra2": "assets/studentExtra0.webp",
+    "studentExtra3": "assets/studentExtra0.webp",
+    "studentExtra4": "assets/studentExtra0.webp",
+    "studentExtra5": "assets/studentExtra0.webp"
+  },
+  "frames": {
+    "heroM_v2_full": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          179,
+          9,
+          500,
+          1007
+        ],
+        [
+          608,
+          9,
+          930,
+          1007
+        ],
+        [
+          1057,
+          8,
+          1379,
+          1007
+        ]
+      ]
+    },
+    "heroF_v2": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          159,
+          3,
+          506,
+          1014
+        ],
+        [
+          602,
+          3,
+          935,
+          1013
+        ],
+        [
+          1051,
+          4,
+          1386,
+          1013
+        ]
+      ]
+    },
+    "math_v10_outfit": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          232,
+          4,
+          556,
+          1016
+        ],
+        [
+          608,
+          5,
+          931,
+          1015
+        ],
+        [
+          987,
+          5,
+          1312,
+          1015
+        ]
+      ]
+    },
+    "physics_v3_full": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          141,
+          8,
+          462,
+          1005
+        ],
+        [
+          595,
+          8,
+          915,
+          1005
+        ],
+        [
+          1075,
+          8,
+          1395,
+          1004
+        ]
+      ]
+    },
+    "social_full": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          131,
+          12,
+          469,
+          1001
+        ],
+        [
+          599,
+          12,
+          939,
+          1001
+        ],
+        [
+          1062,
+          13,
+          1401,
+          1001
+        ]
+      ]
+    },
+    "korean_v2_full": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          210,
+          12,
+          503,
+          1012
+        ],
+        [
+          644,
+          12,
+          937,
+          1013
+        ],
+        [
+          1062,
+          12,
+          1357,
+          1012
+        ]
+      ]
+    },
+    "english_full": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          245,
+          7,
+          487,
+          1011
+        ],
+        [
+          642,
+          6,
+          885,
+          1011
+        ],
+        [
+          1049,
+          7,
+          1292,
+          1011
+        ]
+      ]
+    },
+    "pe_v4_full": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          176,
+          4,
+          521,
+          1011
+        ],
+        [
+          598,
+          6,
+          943,
+          1011
+        ],
+        [
+          1027,
+          4,
+          1376,
+          1011
+        ]
+      ]
+    },
+    "mother_full": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          150,
+          7,
+          477,
+          1014
+        ],
+        [
+          600,
+          7,
+          926,
+          1013
+        ],
+        [
+          1044,
+          7,
+          1371,
+          1014
+        ]
+      ]
+    },
+    "father_full": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          144,
+          9,
+          476,
+          985
+        ],
+        [
+          592,
+          9,
+          924,
+          985
+        ],
+        [
+          1039,
+          9,
+          1372,
+          985
+        ]
+      ]
+    },
+    "expressions01": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          0,
+          33,
+          512,
+          1001
+        ],
+        [
+          512,
+          33,
+          1024,
+          1001
+        ],
+        [
+          1024,
+          33,
+          1536,
+          1001
+        ]
+      ]
+    },
+    "expressions02": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          66,
+          23,
+          512,
+          1004
+        ],
+        [
+          512,
+          23,
+          1017,
+          1004
+        ],
+        [
+          1033,
+          24,
+          1511,
+          1004
+        ]
+      ]
+    },
+    "expressions03": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          23,
+          22,
+          512,
+          1017
+        ],
+        [
+          512,
+          20,
+          1024,
+          1017
+        ],
+        [
+          1024,
+          20,
+          1517,
+          1017
+        ]
+      ]
+    },
+    "expressions04": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          6,
+          30,
+          512,
+          985
+        ],
+        [
+          512,
+          31,
+          1024,
+          985
+        ],
+        [
+          1024,
+          30,
+          1536,
+          985
+        ]
+      ]
+    },
+    "expressions05": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          6,
+          19,
+          512,
+          1024
+        ],
+        [
+          512,
+          19,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          19,
+          1536,
+          1024
+        ]
+      ]
+    },
+    "expressions06": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          59,
+          31,
+          512,
+          1005
+        ],
+        [
+          512,
+          36,
+          1024,
+          1005
+        ],
+        [
+          1024,
+          35,
+          1536,
+          1005
+        ]
+      ]
+    },
+    "expressions07": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          59,
+          10,
+          499,
+          1004
+        ],
+        [
+          549,
+          9,
+          992,
+          1004
+        ],
+        [
+          1057,
+          9,
+          1500,
+          1004
+        ]
+      ]
+    },
+    "expressions08": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          0,
+          45,
+          512,
+          995
+        ],
+        [
+          512,
+          45,
+          1024,
+          995
+        ],
+        [
+          1024,
+          46,
+          1536,
+          995
+        ]
+      ]
+    },
+    "expressions09": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          0,
+          32,
+          512,
+          999
+        ],
+        [
+          512,
+          34,
+          1024,
+          998
+        ],
+        [
+          1024,
+          34,
+          1536,
+          998
+        ]
+      ]
+    },
+    "expressions10": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          5,
+          54,
+          512,
+          978
+        ],
+        [
+          512,
+          55,
+          1024,
+          978
+        ],
+        [
+          1024,
+          54,
+          1527,
+          978
+        ]
+      ]
+    },
+    "mathGentle": {
+      "size": [
+        1024,
+        1536
+      ],
+      "boxes": [
+        [
+          50,
+          19,
+          978,
+          1536
+        ]
+      ]
+    },
+    "studentNarae": {
+      "size": [
+        2172,
+        724
+      ],
+      "boxes": [
+        [
+          4,
+          70,
+          357,
+          724
+        ],
+        [
+          366,
+          70,
+          719,
+          724
+        ],
+        [
+          728,
+          70,
+          1081,
+          724
+        ]
+      ]
+    },
+    "studentRaon": {
+      "size": [
+        2172,
+        724
+      ],
+      "boxes": [
+        [
+          1090,
+          55,
+          1443,
+          724
+        ],
+        [
+          1452,
+          55,
+          1805,
+          724
+        ],
+        [
+          1814,
+          55,
+          2167,
+          724
+        ]
+      ]
+    },
+    "studentExtra0": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          20,
+          10,
+          496,
+          500
+        ]
+      ]
+    },
+    "studentExtra1": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          532,
+          10,
+          1008,
+          500
+        ]
+      ]
+    },
+    "studentExtra2": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          1044,
+          10,
+          1520,
+          500
+        ]
+      ]
+    },
+    "studentExtra3": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          20,
+          522,
+          496,
+          1012
+        ]
+      ]
+    },
+    "studentExtra4": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          532,
+          522,
+          1008,
+          1012
+        ]
+      ]
+    },
+    "studentExtra5": {
+      "size": [
+        1536,
+        1024
+      ],
+      "boxes": [
+        [
+          1044,
+          522,
+          1520,
+          1012
+        ]
+      ]
+    }
+  },
+  "people": {
+    "01": {
+      "key": "heroM_v2_full",
+      "name": "남자 주인공",
+      "role": "최성보 담당자",
+      "description": "안경 없음 · 네이비 폴로와 줄무늬 셔츠 · 여유 있는 청바지",
+      "expressionKey": "expressions01"
+    },
+    "02": {
+      "key": "heroF_v2",
+      "name": "여자 주인공",
+      "role": "최성보 담당자",
+      "description": "안경 없음 · 긴 웨이브와 작은 헤어핀 · 회색 가디건과 검정 스커트",
+      "expressionKey": "expressions02"
+    },
+    "03": {
+      "key": "math_v10_outfit",
+      "name": "박수학 선생님",
+      "role": "수학 · 과정부",
+      "description": "사용자 사진 참고 얼굴 · 풀뱅 생머리 · 갈색 재킷과 아이보리 원피스 · 아이패드",
+      "expressionKey": "expressions03"
+    },
+    "04": {
+      "key": "physics_v3_full",
+      "name": "김물리 선생님",
+      "role": "물리 · 연구부",
+      "description": "사진 참고의 부드러운 얼굴·중간 길이 헤어 · 초록 바람막이 · 안경 없음",
+      "expressionKey": "expressions04"
+    },
+    "05": {
+      "key": "social_full",
+      "name": "이사회 선생님",
+      "role": "사회 · 학년부",
+      "description": "웨이브 머리 · 둥근 안경 · 코듀로이 재킷",
+      "expressionKey": "expressions05"
+    },
+    "06": {
+      "key": "korean_v2_full",
+      "name": "최국어 선생님",
+      "role": "국어 · 학년부",
+      "description": "단발·안경 유지 · 베이지 터틀넥 · 연청 와이드 데님",
+      "expressionKey": "expressions06"
+    },
+    "07": {
+      "key": "english_full",
+      "name": "윤영어 선생님",
+      "role": "영어 · 교무부",
+      "description": "이전 의상 복원 · 포니테일 · 스카프와 배색 가디건 · 크림색 바지",
+      "expressionKey": "expressions07"
+    },
+    "08": {
+      "key": "pe_v4_full",
+      "name": "전체육 선생님",
+      "role": "체육 · 학년부",
+      "description": "덱스 사진의 얼굴·헤어 참고 · 오버핏 회색 후드티 · 자연스러운 운동 체격",
+      "expressionKey": "expressions08"
+    },
+    "09": {
+      "key": "mother_full",
+      "name": "여자 학부모",
+      "role": "47세 설정",
+      "description": "자연스러운 단발 · 크림 퀼팅 재킷 · 과한 노화 표현 제외",
+      "expressionKey": "expressions09"
+    },
+    "10": {
+      "key": "father_full",
+      "name": "남자 학부모",
+      "role": "49세 설정",
+      "description": "짧은 머리 · 남색 퀼팅 재킷 · 과한 노화 표현 제외",
+      "expressionKey": "expressions10"
+    },
+    "11": {
+      "key": "studentNarae",
+      "name": "나래",
+      "student": true,
+      "headshot": false,
+      "faceBox": [
+        69,
+        0,
+        311,
+        275
+      ]
+    },
+    "12": {
+      "key": "studentRaon",
+      "name": "라온",
+      "student": true,
+      "headshot": false,
+      "faceBox": [
+        35,
+        0,
+        277,
+        275
+      ]
+    },
+    "13": {
+      "key": "studentExtra0",
+      "name": "다온",
+      "student": true,
+      "headshot": true,
+      "faceBox": [
+        96,
+        5,
+        356,
+        300
+      ]
+    },
+    "14": {
+      "key": "studentExtra1",
+      "name": "마루",
+      "student": true,
+      "headshot": true,
+      "faceBox": [
+        96,
+        5,
+        356,
+        300
+      ]
+    },
+    "15": {
+      "key": "studentExtra2",
+      "name": "가온",
+      "student": true,
+      "headshot": true,
+      "faceBox": [
+        96,
+        5,
+        356,
+        300
+      ]
+    },
+    "16": {
+      "key": "studentExtra3",
+      "name": "누리",
+      "student": true,
+      "headshot": true,
+      "faceBox": [
+        98,
+        5,
+        358,
+        300
+      ]
+    },
+    "17": {
+      "key": "studentExtra4",
+      "name": "다올",
+      "student": true,
+      "headshot": true,
+      "faceBox": [
+        96,
+        5,
+        356,
+        300
+      ]
+    },
+    "18": {
+      "key": "studentExtra5",
+      "name": "여울",
+      "student": true,
+      "headshot": true,
+      "faceBox": [
+        98,
+        5,
+        358,
+        300
+      ]
+    }
+  },
+  "icons": {
+    "calendar-days": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M8 2v3\" />\n  <path d=\"M16 2v3\" />\n  <rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" />\n  <path d=\"M3 9h18\" />\n  <path d=\"M8 13h.01\" />\n  <path d=\"M12 13h.01\" />\n  <path d=\"M16 13h.01\" />\n  <path d=\"M8 17h.01\" />\n  <path d=\"M12 17h.01\" />\n  <path d=\"M16 17h.01\" />\n</svg>\n",
+    "message-circle": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719\" />\n</svg>\n",
+    "download": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M12 15V3\" />\n  <path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\" />\n  <path d=\"m7 10 5 5 5-5\" />\n</svg>\n",
+    "menu": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M4 5h16\" />\n  <path d=\"M4 12h16\" />\n  <path d=\"M4 19h16\" />\n</svg>\n",
+    "files": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8\" />\n  <path d=\"M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z\" />\n  <path d=\"M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1\" />\n</svg>\n",
+    "sprout": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3\" />\n  <path d=\"M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4\" />\n  <path d=\"M5 21h14\" />\n</svg>\n",
+    "award": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526\" />\n  <circle cx=\"12\" cy=\"8\" r=\"6\" />\n</svg>\n",
+    "maximize": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M8 3H5a2 2 0 0 0-2 2v3\" />\n  <path d=\"M21 8V5a2 2 0 0 0-2-2h-3\" />\n  <path d=\"M3 16v3a2 2 0 0 0 2 2h3\" />\n  <path d=\"M16 21h3a2 2 0 0 0 2-2v-3\" />\n</svg>\n",
+    "user-round": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <circle cx=\"12\" cy=\"8\" r=\"5\" />\n  <path d=\"M20 21a8 8 0 0 0-16 0\" />\n</svg>\n",
+    "phone": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384\" />\n</svg>\n",
+    "book-open": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M12 5v16\" />\n  <path d=\"M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z\" />\n</svg>\n",
+    "type": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M12 4v16\" />\n  <path d=\"M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2\" />\n  <path d=\"M9 20h6\" />\n</svg>\n",
+    "chevron-right": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"m9 18 6-6-6-6\" />\n</svg>\n",
+    "check": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M20 6 9 17l-5-5\" />\n</svg>\n",
+    "x": "<svg\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M18 6 6 18\" />\n  <path d=\"m6 6 12 12\" />\n</svg>\n"
+  }
+}

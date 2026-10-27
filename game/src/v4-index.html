@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#153e65"><title>재영고등학교 · 최성보 성장일지</title><style>__CSS__</style></head>
+<body><div id="game" data-view="title">
+ <div id="sceneBackground"></div><div class="scene-shade"></div>
+ <header id="gameHeader"><button data-action="menu" aria-label="메뉴">메뉴</button><div id="chapterTime">재영고등학교 <small>최성보 성장일지</small></div><div id="identity"></div><button id="fullscreenButton" data-action="fullscreen">전체화면 OFF</button></header>
+ <div id="growthStrip"></div>
+ <main id="stage"><div id="actors" aria-hidden="true"></div><div id="sceneLabel"></div><div id="eventNotice"></div>
+ <section id="titleScreen"></section><section id="setupScreen" hidden></section>
+ <div id="storyChoices" hidden></div>
+ <section id="dialogueBox" hidden aria-label="현재 대화"><div class="speaker-face"></div><div class="dialogue-main"><div><span class="speaker-name"></span><span class="speaker-role"></span></div><p class="dialogue-text"></p><div class="dialogue-actions"></div></div></section>
+ </main>
+ <nav id="gameNav" aria-label="게임 도구"></nav><div id="simNotice">교육용 모의 화면 · 실제 나이스와 연결되지 않습니다 · 모든 학생과 기록은 가상입니다</div>
+</div><div id="toast" role="status" aria-live="polite"></div>
+<dialog id="workDialog" aria-labelledby="workTitle"><header class="work-header"></header><div id="workBody" class="work-body"></div><footer id="workFooter" class="work-footer"></footer></dialog>
+<dialog id="infoDialog" aria-labelledby="infoTitle"><header class="work-header"></header><div class="work-body"></div><footer class="work-footer"></footer></dialog>
+<script>const ASSETS=__ASSETS__,FRAMES=__FRAMES__,PEOPLE=__PEOPLE__,ICONS=__ICONS__;</script>
+<script>__STORY__</script><script>__CORE__</script><script>__TASKS__</script><script>boot();</script>
+</body></html>

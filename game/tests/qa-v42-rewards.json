@@ -1,0 +1,10 @@
+{
+  "migration": true,
+  "giftPersistence": true,
+  "rapportCapped": true,
+  "noRepeatFarming": true,
+  "noPracticeFarming": true,
+  "colleagueHelp": true,
+  "attendanceAssist": true,
+  "errors": []
+}

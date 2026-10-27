@@ -1,0 +1,39 @@
+# 재영고등학교 게임 · Claude 수정용
+
+현재 공개된 2차 테스트(v4.2)와 같은 실행본 및 소스입니다. 새 컴퓨터에서도 원래의 Windows 경로 없이 빌드할 수 있습니다. Python 3 표준 라이브러리만 사용합니다.
+
+## Claude에게 전달
+이 폴더 전체 또는 ZIP을 전달하고 CLAUDE.md를 먼저 읽도록 요청하세요. 수정할 내용을 함께 적어 주세요. ZIP을 읽지 못하는 환경에서는 압축을 풀고 CLAUDE.md와 src 파일을 올린 뒤 필요한 이미지를 추가하면 됩니다. 실행본 HTML만 수정할 수도 있지만, 이미지 데이터가 크므로 분리된 소스 수정을 권합니다.
+
+## 저장소 위치
+이 폴더는 curriculum 저장소의 `game/`에서 관리합니다. 소스는 src, 실행본은 dist-v4/index.html이며 빌드 결과도 함께 커밋합니다.
+
+## 실행·수정
+1. dist-v4/index.html을 브라우저에서 열면 바로 실행됩니다.
+2. src 안의 파일을 수정합니다. dist-v4/index.html만 수정하면 다음 빌드에서 덮어써집니다.
+3. 프로젝트 폴더에서 `python build.py` 실행.
+4. 필요하면 `python -m http.server 8766 --directory dist-v4` 후 http://127.0.0.1:8766/ 접속.
+
+## 파일 안내
+- src/v4-index.html: 화면 뼈대와 빌드 자리표시자
+- src/v4.css: 반응형 화면·실습·대화·보상 스타일
+- src/v4-core.js: 상태, 저장, 닉네임, 대화 진행, 실습 공통 UI, 메뉴
+- src/v4-story.js: 장면·대사·등장인물 역할·선택지
+- src/v4-tasks.js: 13개 실습, 가상 학생 자료, 모의 나이스 동작
+- src/v4-rewards.js: 친밀도, 책상 선물, 조언, 기념사진. 기존 전역 함수를 감싸는 방식이므로 로딩 순서 유지
+- asset-manifest.json: 이미지 경로, 인물 정보, 프레임 좌표, Lucide SVG 아이콘
+- assets/: 실제 사용하는 이미지(중복 파일 제거)
+- build.py: 외부 설치 없이 단일 HTML 생성
+- tests/: 재사용 가능한 Playwright 테스트와 이전 검증 결과
+
+## 선택적 자동 검증
+Node.js 환경에서 `npm install`, `npx playwright install chromium`, `npm test`.
+이미 설치된 Edge를 쓰려면 환경 변수 PLAYWRIGHT_CHANNEL=msedge를 지정합니다.
+검증 결과 JSON은 이전 실행의 기록이며 수정 후 다시 검사해야 합니다. 테스트를 변경된 동작에 맞춰 업데이트하세요.
+
+## 공개본
+https://jaeyoung-school-growth-test.jaey1209.chatgpt.site
+소스 기준 커밋: 0687a9aa8a38f1536152ee76dcd04484be92b40d
+이 패키지를 수정해도 공개본은 자동 갱신되지 않습니다. 배포 자격증명·Git 저장소·개인 원본 사진·브라우저 저장 내용은 포함하지 않았습니다.
+
+별도 `행정지침_참고자료.zip`에는 사용자가 제공한 여섯 PDF가 있습니다. 법령·절차·판정 기준 수정 시 원문을 함께 검토하세요. 서울시 자료는 Ⅰ·Ⅱ·Ⅳ장만 사용합니다.
