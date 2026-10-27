@@ -532,9 +532,15 @@ dialog::backdrop { background: #0c29466e; backdrop-filter: blur(3px); }
   .speaker-face > small { font-size: .63rem; }
   .speaker-name { font-size: .95rem; }
   .speaker-role { display: block; margin-top: 4px; font-size: .78rem; }
-  .dialogue-text { font-size: 1.06rem; line-height: 1.5; }
-  #dialogueBox [data-action="next"] { width: 100%; min-width: 0; min-height: 43px; }
-  #storyChoices { flex: 0 1 auto; max-height: 38%; width: min(100%, 680px); }
+  .dialogue-text { font-size: 1rem; line-height: 1.45; }
+  #dialogueBox [data-action="next"] { width: 100%; min-width: 0; min-height: 40px; font-size: .95rem; padding: 6px 10px; line-height: 1.3; }
+  #storyChoices { flex: 0 1 auto; max-height: 58%; width: min(100%, 680px); }
+  /* With choices open the question box shrinks so all answers fit above it. */
+  #stage:has(#storyChoices:not([hidden])) #dialogueBox { max-height: 34%; grid-template-columns: 48px minmax(0, 1fr); padding: 8px 11px; }
+  #stage:has(#storyChoices:not([hidden])) .speaker-face { width: 48px; height: 56px; }
+  #stage:has(#storyChoices:not([hidden])) .speaker-role { display: none; }
+  #stage:has(#storyChoices:not([hidden])) .dialogue-text { font-size: .95rem; line-height: 1.4; margin: 3px 0 3px; }
+  #stage:has(#storyChoices:not([hidden])) .dialogue-actions .helper-text { font-size: .8rem; line-height: 1.4; }
   #storyChoices.segment { width: 100%; flex-wrap: wrap; }
   #storyChoices.segment > button { flex: 1 1 110px; min-width: 0; }
   #gameNav button { flex-direction: column; gap: 1px; min-height: 46px; padding: 4px 7px; font-size: .77rem; }
@@ -687,7 +693,7 @@ dialog::backdrop { background: #0c29466e; backdrop-filter: blur(3px); }
   #titleScreen p { font-size: .9rem; margin-top: 6px; }
   #titleScreen .title-actions { margin-top: 9px; }
   #game[data-view="title"] #actors { bottom: 34%; }
-  #dialogueBox { max-height: 56%; }
+  #dialogueBox { max-height: 62%; }
   .speaker-role { font-size: .74rem; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -794,6 +800,53 @@ button.secondary:disabled, button.is-selected:disabled {
  #gameNav button, .work-tools button, .work-footer button, .student-tabs button { min-height: 44px; }
  #titleScreen { padding-bottom: 22px; }
  #growthStrip { display: none; }
+ /* Work dialogs: thinner header and footer so the body keeps most of the 360px. */
+ dialog#workDialog, dialog#infoDialog { height: calc(100dvh - 8px); max-height: calc(100dvh - 8px); border-radius: 9px; }
+ .work-header { min-height: 42px; padding: 4px 12px; gap: 8px; }
+ .work-header h2 { font-size: 1rem; }
+ .work-header p, .work-header small { display: none; }
+ .work-header .work-face, .work-header > .portrait { width: 30px; height: 33px; border-radius: 5px; }
+ .work-tools button { min-height: 34px; min-width: 34px; padding: 4px 8px; font-size: .86rem; }
+ .work-body, #workBody { padding: 10px 12px; }
+ .work-body h3 { font-size: 1rem; margin: 4px 0 8px; }
+ .work-body h4 { margin: 10px 0 6px; font-size: .95rem; }
+ .work-footer, #workFooter { padding: 6px 12px; }
+ .work-footer button, #workFooter button { min-height: 36px; padding: 5px 12px; font-size: .92rem; }
+ .work-footer .task-feedback { padding: 6px 10px; margin-bottom: 5px; font-size: .86rem; }
+ .task-intro { padding: 7px 11px; font-size: .9rem; margin-bottom: 10px; }
+ .helper-text, .task-note { font-size: .84rem; }
+ .evidence-pane, .student-card { padding: 10px; margin-bottom: 10px; }
+ .task-layout { gap: 10px; }
+ .choice-card { min-height: 38px; padding: 7px 11px; font-size: .94rem; line-height: 1.4; }
+ .choice-list { gap: 6px; }
+ .comparison-row { margin: 8px 0; gap: 6px; }
+ .comparison-row > div { padding: 7px 8px; }
+ .comparison-row .value { font-size: 1.3rem; }
+ .student-tabs { gap: 5px; margin-bottom: 8px; }
+ .student-tabs button { min-height: 36px; padding: 4px 8px; min-width: 58px; font-size: .88rem; gap: 2px; }
+ .student-tabs .student-face { width: 32px; height: 36px; }
+ .student-heading > .student-face { width: 56px; height: 62px; }
+ .call-card { grid-template-columns: 70px minmax(0, 1fr); gap: 10px; }
+ .call-face { width: 70px; height: 84px; border-radius: 8px; }
+ .bubble, .call-chat .bubble { padding: 9px 12px; font-size: .94rem; line-height: 1.5; margin-top: 4px; margin-bottom: 8px; }
+ .reply-label { padding-top: 6px; font-size: .9rem; }
+ .n-main { padding: 8px; }
+ .n-tabs { margin-bottom: 8px; }
+ .n-tabs button { min-height: 34px; padding: 4px 11px; font-size: .84rem; }
+ .n-mission { margin-bottom: 8px; padding: 5px 9px; font-size: .82rem; }
+ .n-filters { padding: 6px 8px; margin-bottom: 8px; gap: 6px 9px; font-size: .8rem; }
+ .n-filters button, .n-toolbar button { min-height: 34px; padding: 4px 10px; font-size: .84rem; }
+ .n-toolbar { margin: 6px 0; }
+ .n-empty { padding: 8px; }
+ .table-scroll table, .data-table table, table.data-table { min-width: 560px; font-size: .86rem; }
+ .data-table th, .data-table td, .table-scroll th, .table-scroll td { padding: 6px 8px; }
+ .n-table td, .n-table th { padding: 6px 8px; }
+ .n-table .inline-picker button, .n-table .inline-picker .value, .n-table .inline-picker output { min-height: 34px; }
+ .inline-picker button { min-width: 38px; min-height: 38px; }
+ .inline-number-panel { padding: 8px; }
+ .menu-grid button, .practice-list button { min-height: 42px; }
+ .menu-grid, .practice-list { gap: 7px; margin-bottom: 10px; }
+ #expressionGrid .portrait { height: 150px; }
  #setupScreen { inset: 8px 4% 22px; }
  .setup-panel, #setupScreen > .setup-card { padding: 10px 14px; }
  #setupScreen h2 { font-size: 1.2rem; margin-bottom: 3px; }
@@ -816,7 +869,9 @@ button.secondary:disabled, button.is-selected:disabled {
 #nickname { display: block; width: 100%; max-width: 360px; padding: 12px 14px; margin: 8px 0 14px; border: 2px solid #83abc9; border-radius: 9px; background: white; color: var(--ink); font-size: 18px; }
 .student-face { display: inline-block; width: 68px; height: 76px; border-radius: 12px; overflow: hidden; background: #dce9f3; flex: 0 0 auto; }
 .student-face .portrait { width: 100%; height: 100%; }
-.student-label { display: flex; gap: 10px; align-items: center; min-width: 100px; }
+.student-label { display: flex; gap: 10px; align-items: center; min-width: 100px; white-space: nowrap; }
+/* Short labels inside table cells never break letter by letter; the table scrolls sideways instead. */
+.data-table td button, .table-scroll td button, .n-table td button, .data-table td .status-chip, .n-table td .status-chip { white-space: nowrap; }
 .student-label .student-face { width: 38px; height: 44px; border-radius: 7px; }
 .student-heading { display: flex; justify-content: flex-start !important; gap: 16px; }
 .student-heading > .student-face { width: 100px; height: 112px; }

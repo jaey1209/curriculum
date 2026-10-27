@@ -1,2 +1,3 @@
 node_modules/
 tests/v42-*.png
+tests/audit/

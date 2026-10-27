@@ -25,8 +25,8 @@
     "expressions09": "assets/expressions09.webp",
     "expressions10": "assets/expressions10.webp",
     "mathGentle": "assets/mathGentle.webp",
-    "studentNarae": "assets/studentNarae.webp",
-    "studentRaon": "assets/studentNarae.webp",
+    "studentNarae": "assets/student_narae_v2.webp",
+    "studentRaon": "assets/student_raon_v2.webp",
     "studentExtra0": "assets/studentExtra0.webp",
     "studentExtra1": "assets/studentExtra0.webp",
     "studentExtra2": "assets/studentExtra0.webp",
@@ -571,53 +571,53 @@
     },
     "studentNarae": {
       "size": [
-        2172,
-        724
+        1536,
+        1024
       ],
       "boxes": [
         [
-          4,
-          70,
-          357,
-          724
+          0,
+          0,
+          512,
+          1024
         ],
         [
-          366,
-          70,
-          719,
-          724
+          512,
+          0,
+          1024,
+          1024
         ],
         [
-          728,
-          70,
-          1081,
-          724
+          1024,
+          0,
+          1536,
+          1024
         ]
       ]
     },
     "studentRaon": {
       "size": [
-        2172,
-        724
+        1536,
+        1024
       ],
       "boxes": [
         [
-          1090,
-          55,
-          1443,
-          724
+          0,
+          0,
+          512,
+          1024
         ],
         [
-          1452,
-          55,
-          1805,
-          724
+          512,
+          0,
+          1024,
+          1024
         ],
         [
-          1814,
-          55,
-          2167,
-          724
+          1024,
+          0,
+          1536,
+          1024
         ]
       ]
     },
@@ -783,10 +783,10 @@
       "student": true,
       "headshot": false,
       "faceBox": [
-        69,
-        0,
-        311,
-        275
+        132,
+        15,
+        387,
+        305
       ]
     },
     "12": {
@@ -795,10 +795,10 @@
       "student": true,
       "headshot": false,
       "faceBox": [
-        35,
-        0,
-        277,
-        275
+        137,
+        30,
+        392,
+        320
       ]
     },
     "13": {

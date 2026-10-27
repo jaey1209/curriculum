@@ -21,7 +21,7 @@ function currentScene(){return STORY[S.chapter]?.[S.scene]||STORY.prologue[0];}
 function conditional(s){return {...s,text:s.conditionText?(S.flags[s.conditionText.flag]?s.conditionText.yes:s.conditionText.no):s.text,expression:s.conditionExpression?(S.flags[s.conditionExpression.flag]?s.conditionExpression.yes:s.conditionExpression.no):s.expression};}
 function spriteData(id,ex=0,crop='bust'){
  id=pid(id);const p=PEOPLE[id];if(!p)return null;let key=p.key,index=Math.min(2,ex),extra=false;
- if(p.student){index=ex===5?2:ex===2?1:0;if(id==='12')index=ex===2||ex===5?2:ex===1?1:0;}
+ if(p.student){index=ex===5?2:ex===2?1:0;} // student atlases: 0 calm, 1 smile, 2 laugh
  else if(id==='03'&&ex===2&&crop!=='full'){key='mathGentle';index=0;extra=true;}
  else if(ex>=3&&p.expressionKey){key=p.expressionKey;index=ex-3;extra=true;}
  let frame=FRAMES[key];if(!frame)return null;
@@ -46,16 +46,18 @@ function paintActors(){
  else {const c=S.pending||conditional(currentScene());actors=[{id:'player',ex:c.who==='player'?c.expression:0,pos:c.who==='player'?'center':'left'}];if(c.who!=='player')actors.push({id:c.who,ex:c.expression,pos:'right'});}
  const key=JSON.stringify(actors);if(lastActor!==key){box.innerHTML=actors.map(a=>`<div class="stage-actor ${a.pos==='left'?'is-listening':''}" data-position="${a.pos}" data-person="${a.id}" data-expression="${a.ex}"></div>`).join('');lastActor=key;}
  const W=box.clientWidth,H=box.clientHeight;if(!W||!H)return;
+ let heroH=0;
  for(const el of box.children){const id=el.dataset.person,ex=Number(el.dataset.expression);const d=spriteData(id,ex,'bust');
   if(!d){el.innerHTML=portrait(id,ex);el.style.width='160px';el.style.height='240px';continue;}
   const portraitView=W<H*.9;let maxW=view==='title'?W*(portraitView?.72:.46):W*(actors.length===2?.46:.70);
-  // Students are bust-only sprites (head ≈ 40% of the frame), so they get about half the stage height to keep
-  // their faces near the teachers' size, lifted a little so the face stays above the dialogue box.
-  const student=!!PEOPLE[pid(id)]?.student;const maxH=view==='title'?H*.92:H*(student?.54:.95);const scale=Math.min(maxW/d.w,maxH/d.h);
-  el.style.width=d.w*scale+'px';el.style.height=d.h*scale+'px';
-  // A student is a bust-only sprite: lift it so the head sits just below the teacher's (top at ~88% of the stage),
-  // but never above the dialogue box top, so the cut edge of the bust stays hidden behind the box.
-  let lift=0;if(student){lift=Math.round(H*.88-d.h*scale);const dlg=$('#dialogueBox');if(dlg&&!dlg.hidden){const boxTop=box.getBoundingClientRect().bottom-dlg.getBoundingClientRect().top;lift=Math.min(lift,Math.round(boxTop+4));}lift=Math.max(0,lift);}
+  const student=!!PEOPLE[pid(id)]?.student;let scale=Math.min(maxW/d.w,(view==='title'?H*.92:H*.95)/d.h);
+  // A student sprite ends at the thigh and its head is a larger share of the frame than a teacher's full body,
+  // so size it from the player's rendered height: 64% keeps the student's head a little smaller than the hero's.
+  if(student&&heroH)scale=Math.min(maxW/d.w,heroH*.64/d.h);
+  el.style.width=d.w*scale+'px';el.style.height=d.h*scale+'px';if(id==='player')heroH=d.h*scale;
+  // Lift the student so the head sits just below the hero's, but never above the dialogue box top,
+  // so the cut edge of the sprite stays hidden behind the box.
+  let lift=0;if(student){lift=Math.round((heroH||H*.95)*.94-d.h*scale);const dlg=$('#dialogueBox');if(dlg&&!dlg.hidden){const boxTop=box.getBoundingClientRect().bottom-dlg.getBoundingClientRect().top;lift=Math.min(lift,Math.round(boxTop+4));}lift=Math.max(0,lift);}
   el.style.bottom=lift?lift+'px':'';
   el.innerHTML=`<img src="${ASSETS[d.key]}" alt="" style="width:${d.sw*scale}px;height:${d.sh*scale}px;left:${-d.x*scale}px;top:${-d.y*scale}px">`;
  }

@@ -34,10 +34,12 @@
 ## 구조·주의점
 전역 상태 S는 localStorage의 jaeyoung-growth-v4.1에 저장됩니다. 데이터 변경 시 호환성/마이그레이션을 고려하세요. 보상은 v4-rewards.js에서 finishTask/showTask/endChapter/nextChapter/renderHeader/showEnding을 감쌉니다. 함수 중복 수정 시 호출 순서 주의.
 이미지는 스프라이트 시트이며 asset-manifest.frames.boxes는 [left,top,right,bottom], [x,y,width,height]가 아닙니다. 원본 비율·인물 동일성을 유지하세요. 박수학의 미소용 mathGentle과 환한 웃음은 서로 다른 그림입니다.
+나래·라온은 2026-10 사용자 제공 허벅지 위 상반신 그림(student_narae_v2/student_raon_v2, 표정 0 차분·1 미소·2 환한 웃음)을 씁니다. 무대에서는 주인공 렌더 높이의 64%로 세우고 대화창 위로 들어 올립니다(paintActors).
 학생 8명의 얼굴은 asset-manifest.people[id].faceBox(프레임 상자 기준 [left,top,right,bottom])로 같은 구도·크기로 잘라 씁니다. 얼굴 크기를 바꿀 때는 이 값을 조정하세요.
 휴대폰 가로 화면(높이 500px 이하)에서는 하단 메뉴가 오른쪽 세로 막대로 옮겨지고 안내 문구는 바닥 오버레이가 됩니다. v4.css의 마지막 landscape 블록을 보세요.
 불필요한 원본 증명사진·개인정보·인증정보는 요구하지 마세요. 현재 승인된 이미지 자산이 들어 있습니다.
 
 ## 검증과 배포
+휴대폰 점검은 `W=760 H=360 node tests/qa-phone-audit.cjs`로 전편을 자동 진행하며 스크린샷과 레이아웃 문제를 tests/audit에 남깁니다.
 변경 후 빌드, 전편13실습·분기·저장/복원·오답 재검토·자유실습·선물/친밀도·PNG 다운로드 및 760×360/390×630/일반PC에서 점검. 테스트 결과를 실제로 실행한 범위만 보고하세요.
 이번 인수인계는 편집용입니다. 사용자가 명시적으로 요청하기 전 공개 배포하지 말고 수정본과 변경 내역을 먼저 전달하세요.
