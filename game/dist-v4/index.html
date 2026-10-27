@@ -1254,10 +1254,10 @@ function paintActors(){
  // Every actor is drawn to the same centimetre scale: a 190cm figure would fill 95% of the stage (92% on the title).
  // Each sheet's `figure` is the drawn body's top/bottom and `figureFrac` the share of the body it shows
  // (1 = full body, .6 = hair to upper thigh), so bust sheets and students no longer blow up to full height.
- // On a short landscape stage (phones) the camera moves in: 190cm spans 150% of the stage, so only the upper body
+ // On a short landscape stage (phones) the camera moves in: 190cm spans 210% of the stage (like the title mentor), so only head and chest
  // shows above the dialogue box and faces stay readable. Everyone still shares one floor and one cm scale.
  const compact=view!=='title'&&W>H&&H<=440;
- const REF_CM=190,pxPerCm=(view==='title'?H*.92:compact?H*1.5:H*.95)/REF_CM,portraitView=W<H*.9;
+ const REF_CM=190,pxPerCm=(view==='title'?H*.92:compact?H*2.1:H*.95)/REF_CM,portraitView=W<H*.9;
  const maxW=view==='title'?W*(portraitView?.72:.46):W*(actors.length===2?.46:.70);
  const items=[];let k=1;
  for(const el of box.children){const id=el.dataset.person,ex=Number(el.dataset.expression);const d=spriteData(id,ex,'stage');
