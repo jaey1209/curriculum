@@ -78,7 +78,7 @@ const STORY = {
     { id: 'c1-01-audit', who: '07', expression: 4, bg: 'office', time: '12월 둘째 주 화요일 10:40', place: '교무실 · 출결 기록 대조', text: '학생 출석 횟수 말고,\n강의실별 마감 수를 대조해 주실래요?', kind: 'task', task: 'audit', button: '숫자가 맞지 않는 출결 기록' },
     { id: 'c1-01-math-missing', who: '03', expression: 3, bg: 'office', time: '12월 둘째 주 화요일 10:40', place: '교무실', text: '어머, 수요일 3교시 공통수학2면 제 수업이네요.\n그날 출장이라 보강 들어간 선생님이 마감을 못 하셨나 봐요.' },
     { id: 'c1-01-homeroom-missing', who: '06', expression: 2, bg: 'office', time: '12월 둘째 주 화요일 10:40', place: '교무실', text: '목요일은 저희 반 체험학습 서류 처리하다\n일출결 마감을 놓쳤어요. 바로 할게요.' },
-    { id: 'c1-01-prepare', who: '07', expression: 4, bg: 'office', time: '12월 둘째 주 화요일 10:40', place: '교무실 · 모의 나이스', text: '확인한 기록이 51·51·51로 맞는지 보고,\n마감 결과와 준비된 학교 자료까지 확인해 주세요.', kind: 'task', task: 'prepare', button: '모의 나이스 · 학기별 과목출결 마감' },
+    { id: 'c1-01-prepare', who: '07', expression: 4, bg: 'office', time: '12월 둘째 주 화요일 10:40', place: '교무실', text: '확인한 기록이 51·51·51로 맞는지 보고,\n마감 결과와 준비된 학교 자료까지 확인해 주세요.', kind: 'task', task: 'prepare', button: '학기별 과목출결 마감' },
     { id: 'c1-01-first-step', who: 'player', expression: 0, bg: 'office', time: '12월 둘째 주 화요일 10:40', place: '교무실 · 내 책상', text: '출결이 맞아야 성적도, 대상도 맞는다.\n첫 단추는 끼웠다.' },
 
     { id: 'c1-02-grades-ready', who: '07', expression: 2, bg: 'office', time: '12월 둘째 주 목요일 15:00', place: '교무실', text: '성적 이의신청 기간 끝났어요.\n학기말 성적도 확정됐고요.' },
@@ -96,7 +96,7 @@ const STORY = {
     { id: 'c1-04-no-promise', who: 'player', expression: 0, bg: 'corridor', time: '12월 둘째 주 금요일 11:30', place: '조용한 복도', text: '바로 답해 드리고 싶었다.\n그래도 확인하지 않은 걸 약속할 수는 없지.' },
 
     { id: 'c1-05-school-decision', who: '07', expression: 4, bg: 'office', time: '12월 둘째 주 금요일 14:10', place: '교무실', text: '다온이 건은 학교에서 확인을 마쳤어요.\n이번 사례는 예외 적용 없이 일반 절차로 진행해요.' },
-    { id: 'c1-05-import', who: '07', expression: 4, bg: 'office', time: '12월 둘째 주 금요일 14:10', place: '교무실 · 모의 나이스', text: '확인한 다섯 명의 자료를 과목별로 조회해 주세요.\n학교 확인 결과와 명단을 함께 대조해요.', kind: 'task', task: 'import', button: '모의 나이스 · 대상자' },
+    { id: 'c1-05-import', who: '07', expression: 4, bg: 'office', time: '12월 둘째 주 금요일 14:10', place: '교무실', text: '확인한 다섯 명의 자료를 과목별로 조회해 주세요.\n학교 확인 결과와 명단을 함께 대조해요.', kind: 'task', task: 'import', button: '대상자' },
     { id: 'c1-05-inform-father', who: '06', expression: 0, bg: 'office', time: '12월 둘째 주 금요일 14:10', place: '교무실', text: '다온이 아버님께는\n제가 같이 다시 안내드릴게요.' },
 
     { id: 'c1-06-student-at-door', who: 'player', expression: 0, bg: 'office', time: '12월 둘째 주 금요일 16:20', place: '교무실 문 앞 · 나래 방문', text: '안내문을 든 나래가\n교무실 문 앞에서 머뭇거리고 있다.' },
@@ -151,7 +151,7 @@ const STORY = {
     },
     { id: 'c2-04-agree-with-record', who: '06', expression: 0, bg: 'office', time: '12월 넷째 주 목요일 17:40', place: '교무실', text: '…맞아요.\n기록대로 해요.' },
     { id: 'c2-04-evidence', who: '04', expression: 4, bg: 'office', time: '12월 넷째 주 목요일 17:40', place: '교무실 · 기록과 입력 초안', text: '참여 기록과 초안을 나란히 놓고 볼게요.\n어디서 숫자가 달라졌는지 확인해 주세요.', kind: 'task', task: 'evidence', button: '초안의 시수가 왜 다를까요?' },
-    { id: 'c2-04-hours', who: 'player', expression: 4, bg: 'office', time: '12월 넷째 주 목요일 17:40', place: '교무실 · 모의 나이스', text: '확인한 실제 참여 기록을\n과목별로 입력하고 대조하자.', kind: 'task', task: 'hours', button: '모의 나이스 · 이수관리' },
+    { id: 'c2-04-hours', who: 'player', expression: 4, bg: 'office', time: '12월 넷째 주 목요일 17:40', place: '교무실', text: '확인한 실제 참여 기록을\n과목별로 입력하고 대조하자.', kind: 'task', task: 'hours', button: '이수관리' },
 
     { id: 'c2-review-calendar', who: 'player', expression: 0, bg: 'corridor', time: '12월 마지막 주 월요일 15:00', place: '회의실 앞 복도', text: '12월 마지막 주 월요일\n학교 심의·확정 결과 확인', kind: 'calendar', button: '학교에서 확인한 결과 보기' },
     { id: 'c2-05-review-complete', who: '07', expression: 4, bg: 'corridor', time: '12월 마지막 주 월요일 15:00', place: '회의실 앞 복도', text: '학업성적관리위원회 심의가 끝났어요.\n학교의 최종 확정 결과도 확인했고요.' },
@@ -187,7 +187,7 @@ const STORY = {
     { id: 'c3-03-final-audit', who: '07', expression: 3, bg: 'office', time: '1월 첫째 주 화요일 14:00', place: '교무실 · 반영 현황', text: '앗, 영어는 저장만 하고 학점반영을 안 했어요.\n다른 과목도 같이 봐 주실래요?', kind: 'task', task: 'finalAudit', button: '어느 단계가 빠졌을까요?' },
 
     { id: 'c3-04-colleague-message', who: '05', expression: 4, bg: 'office', time: '1월 첫째 주 수요일 15:30', place: '교무실', text: '1학년 담임 선생님들께\n학생부 자료반영 메시지 보냈어요.' },
-    { id: 'c3-04-flow', who: '05', expression: 4, bg: 'office', time: '1월 첫째 주 수요일 15:30', place: '교무실 · 모의 나이스', text: '끝나면 선생님이 마감정보 저장하고\n승인요청하시면 돼요.', kind: 'task', task: 'flow', button: '모의 나이스 · 역할별 반영과 마감' },
+    { id: 'c3-04-flow', who: '05', expression: 4, bg: 'office', time: '1월 첫째 주 수요일 15:30', place: '교무실', text: '끝나면 선생님이 마감정보 저장하고\n승인요청하시면 돼요.', kind: 'task', task: 'flow', button: '역할별 반영과 마감' },
     // The flow task owns: request -> pending -> next-morning calendar/message -> result lookup.
     // It must show the supplied inner monologue while pending, not approve on the learner's behalf:
     // "승인요청 완료. 그런데 ‘요청’은 ‘완료’가 아니지. 내일 아침에 다시 확인하자."

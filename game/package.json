@@ -3,7 +3,7 @@
   "private": true,
   "version": "4.3.0",
   "scripts": {
-    "test": "node tests/qa-v42.cjs && node tests/qa-v42-rewards.cjs"
+    "test": "node tests/qa-v43.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

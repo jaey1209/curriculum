@@ -776,6 +776,7 @@ button.secondary:disabled, button.is-selected:disabled {
  .dialogue-main > div:first-child { grid-column: 2; grid-row: 1; }
  #dialogueBox .dialogue-text { grid-column: 2; grid-row: 2; }
  #dialogueBox .dialogue-actions { grid-column: 3; grid-row: 1 / span 2; align-self: center; flex-direction: column; align-items: flex-end; gap: 4px; }
+ .task-progress { width: 100%; text-align: right; margin: 0; }
  .speaker-face { width: 40px; height: 46px; border-radius: 6px; }
  .speaker-face > small { display: none; }
  .speaker-name { padding: 1px 6px; font-size: .78rem; margin-right: 5px; }
@@ -953,3 +954,59 @@ button.secondary:disabled, button.is-selected:disabled {
 .rotate-card p { font-size: .95rem; color: #526b80; margin: 0 0 14px; }
 .rotate-actions { display: grid; gap: 8px; }
 .rotate-actions button { min-height: 44px; }
+
+/* ---- Tasks on the stage: evidence card, numeric/gift choices, progress, rapport change, review ---- */
+#evidencePanel { position: relative; z-index: 8; width: min(100%, 700px); max-height: 38%; overflow: auto; padding: 8px 10px; border: 2px solid #a8cce5; border-radius: 12px; background: #f6fbfff2; box-shadow: 0 5px 16px #1337553a; scrollbar-width: thin; scrollbar-color: #8babca transparent; }
+#evidencePanel[hidden] { display: none; }
+.ev-card h4 { margin: 0 0 6px; font-size: .9rem; color: #1f517d; }
+.ev-card p { margin: 0 0 6px; font-size: .9rem; line-height: 1.5; }
+.ev-card .table-scroll, .ev-card .data-table { margin: 0 0 6px; }
+.ev-card .data-table table { min-width: 0; font-size: .84rem; }
+.ev-card .data-table th, .ev-card .data-table td { padding: 5px 7px; white-space: nowrap; }
+.ev-card tr.is-marked td { background: #fff4dd; font-weight: 700; }
+.ev-card .student-label .student-face { width: 30px; height: 34px; }
+.ev-card .att-table td { text-align: center; }
+.ev-card .segment { gap: 5px; }
+.ev-card .status-chip { font-size: .74rem; }
+.ev-student { display: flex; gap: 12px; align-items: center; }
+.ev-student .student-face { width: 56px; height: 62px; }
+.ev-stats { display: flex; gap: 14px; }
+.ev-stats > div { display: grid; line-height: 1.25; }
+.ev-stats span { font-size: .78rem; color: #526b80; }
+.ev-stats b { font-size: 1.3rem; color: #194c77; }
+.ev-stats small { font-size: .72rem; color: #526c83; }
+.flow-list { margin: 0; padding-left: 20px; font-size: .88rem; line-height: 1.6; columns: 2; }
+.flow-list li.is-done { color: #245c3e; text-decoration: line-through; }
+.flow-list li.is-now { font-weight: 800; color: #1f5c99; }
+#storyChoices.segment > button { min-width: 48px; font-size: max(16px, 1rem); font-variant-numeric: tabular-nums; }
+#storyChoices.gifts { flex-direction: row; flex-wrap: wrap; justify-content: center; width: min(100%, 520px); }
+#storyChoices.gifts > button.gift-choice { flex: 1 1 180px; width: auto; flex-direction: column; align-items: center; text-align: center; padding: 8px; }
+#storyChoices.gifts .gift-art { max-width: 110px; }
+#dialogueBox .dialogue-actions { align-items: center; }
+#dialogueBox button.next-line { min-width: 56px; font-size: 1.1rem; }
+#dialogueBox button.small, button.small { min-height: 32px; padding: 3px 10px; font-size: .82rem; }
+.task-progress { font-size: .78rem; color: #526b80; margin-right: auto; }
+.rapport-delta { display: inline-block; padding: 3px 9px; border-radius: 6px; font-size: .8rem; font-weight: 750; }
+.rapport-delta.up { background: #e8f5ee; color: #245c3e; }
+.rapport-delta.down { background: #fff0f2; color: #8d2f42; }
+.review-line { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.review-line h4 { margin: 0 0 4px; font-size: .95rem; }
+.review-line p { margin: 0 0 2px; font-size: .9rem; }
+.review-line.is-wrong h4 { color: #8d2f42; }
+/* Avatar choice: keep the drawing's own ratio instead of stretching it to the button width. */
+.avatar-button .portrait, .avatar-choice .portrait { width: auto; margin: 0 auto; }
+@media (orientation: landscape) and (max-height: 500px) {
+ #evidencePanel { max-height: 50%; padding: 6px 8px; }
+ #stage:has(#storyChoices:not([hidden])) #evidencePanel { position: absolute; left: 12px; top: 30px; width: min(46%, 380px); max-height: calc(100% - 150px); }
+ #stage:has(#storyChoices:not([hidden])) #storyChoices.gifts > button.gift-choice { flex: 1 1 42%; padding: 5px; }
+ #stage:has(#storyChoices:not([hidden])) #storyChoices.gifts .gift-art { max-width: 72px; }
+ #stage:has(#storyChoices:not([hidden])) #storyChoices.gifts b { font-size: .9rem; padding-top: 3px; }
+ #dialogueBox .dialogue-actions { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; gap: 4px; max-width: 270px; }
+ #evidencePanel .desk-scene { display: none; }
+ #stage:has(#storyChoices:not([hidden])) #storyChoices.segment { display: flex; flex-direction: row; flex-wrap: wrap; align-content: flex-start; width: min(50%, 400px); }
+ #stage:has(#storyChoices:not([hidden])) #storyChoices.gifts { width: min(50%, 400px); }
+ .flow-list { columns: 1; }
+}
+@media (orientation: portrait) {
+ #evidencePanel { max-height: 32%; }
+}

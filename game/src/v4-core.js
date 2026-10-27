@@ -8,7 +8,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 function icon(name){return (ICONS[name]||ICONS['book-open']||'').replace('<svg','<svg class="icon" aria-hidden="true"');}
 function btn(label,action,data={},cls='primary'){return `<button class="${esc(cls)}" data-action="${esc(action)}" ${Object.entries(data).map(([k,v])=>`data-${k.replace(/[A-Z]/g,x=>'-'+x.toLowerCase())}="${esc(v)}"`).join(' ')}>${label}</button>`;}
-function fresh(){return {version:4,started:false,hero:'02',name:'하늘',chapter:'prologue',scene:0,view:'title',tasks:{},stats:[10,10,10],awarded:{},choices:{},flags:{},cards:[],badges:[],history:[],large:false,pending:null,finished:false};}
+function fresh(){return {version:4,started:false,hero:'02',name:'재영',chapter:'prologue',scene:0,view:'title',tasks:{},stats:[10,10,10],awarded:{},choices:{},flags:{},cards:[],badges:[],history:[],large:false,pending:null,finished:false};}
 let S=fresh(),activeTask=null,practiceBackup=null,infoPage='',lastActor=null,toastTimer;
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(practiceBackup||S));}catch(e){toast('이 브라우저에서는 저장을 사용할 수 없어요. 성장 기록을 내려받아 주세요.');}}
 function readSave(){try{const x=JSON.parse(localStorage.getItem(SAVE_KEY));if(x?.version===4&&ORDER.includes(x.chapter)&&Array.isArray(x.stats))return {...fresh(),...x};}catch(e){}return null;}
@@ -43,7 +43,7 @@ function paintActors(){
  const box=$('#actors');if(!box)return;const view=$('#game').dataset.view;
  let actors=[];if(view==='title')actors=[{id:'03',ex:2,pos:'right'}];
  else if(view==='setup')actors=[];
- else {const c=S.pending||conditional(currentScene());actors=[{id:'player',ex:c.who==='player'?c.expression:0,pos:c.who==='player'?'center':'left'}];if(c.who!=='player')actors.push({id:c.who,ex:c.expression,pos:'right'});}
+ else {const c=shownLine||(S.pending||conditional(currentScene()));const who=c.who,ex=c.expression;actors=[{id:'player',ex:who==='player'?ex:0,pos:who==='player'?'center':'left'}];if(who!=='player')actors.push({id:who,ex,pos:'right'});}
  const key=JSON.stringify(actors);if(lastActor!==key){box.innerHTML=actors.map(a=>`<div class="stage-actor ${a.pos==='left'?'is-listening':''}" data-position="${a.pos}" data-person="${a.id}" data-expression="${a.ex}"></div>`).join('');lastActor=key;}
  const W=box.clientWidth,H=box.clientHeight;if(!W||!H)return;
  // Every actor is drawn to the same centimetre scale: a 190cm figure would fill 95% of the stage (92% on the title).
@@ -87,44 +87,48 @@ function renderHeader(){
 }
 function renderTitle(){setView('title');setBackground('school');$('#sceneLabel').textContent='';
  $('#titleScreen').innerHTML=`<div class="title-copy"><span class="eyebrow">재영고등학교</span><h1>나의 최성보<br>성장일지</h1><p>낯선 업무 앞에서도, 함께라면.<br>선배 교사 박수학과 한 학기의 끝을 걸어요.</p></div><div class="title-actions">${btn('처음부터 시작','setup')}${S.started?btn('이어하기','continue',{},'secondary'):''}</div><p class="title-meta">2026학년도 · 가상의 학교에서 배우는 업무 이야기</p><div class="maker-credit">NOWZERO · Developed by Jae-Young Lee<br>© 2026 Jae-Young Lee. All rights reserved.</div>`;renderHeader();requestAnimationFrame(paintActors);}
-let namePage=0,setupHero='02',setupName='하늘';
+let namePage=0,setupHero='02',setupName='재영';
+/* One sentence at a time: the dialogue shows text line by line and ▶ moves to the next line. */
+let lineKey='',lineIdx=0,shownLine=null;
+function splitLines(text){const out=[];for(const para of String(text||'').split('\n')){const parts=para.split(/(?<=[.?!…])\s+(?=\S)/).map(x=>x.trim()).filter(Boolean);let cur='';for(const part of parts){if(cur&&(cur+' '+part).length>44){out.push(cur);cur=part;}else cur=cur?cur+' '+part:part;}if(cur)out.push(cur);}return out;}
 function renderSetup(){setView('setup');setBackground('school');$('#setupScreen').innerHTML=`<div class="setup-panel"><h2>재영고에 오신 걸 환영해요.</h2><p>함께 학기말을 보낼 나의 모습과 호칭을 골라 주세요.</p><div class="setup-grid"><div class="avatar-grid">${['01','02'].map((id,i)=>btn(portrait(id,2,'bust')+`<b>${i?'여자':'남자'} 주인공</b>`,'hero',{id},'avatar-choice '+(id===setupHero?'is-selected':''))).join('')}</div><div><h3>선생님을 어떻게 부를까요?</h3><label for="nickname">닉네임</label><input id="nickname" type="text" maxlength="12" autocomplete="off" placeholder="닉네임을 입력해 주세요" value="${esc(setupName)}"><p class="helper-text">12자 이내로 입력해 주세요.</p><div class="setup-actions">${btn('돌아가기','title',{},'secondary')}${btn('출근하기','begin')}</div></div></div></div>`;renderHeader();requestAnimationFrame(paintActors);}
 function recordScene(s){const k=s.id+(S.pending?'-reply':'');if(S.history.some(x=>x.id===k))return;S.history.push({id:k,who:displayName(s.who),text:s.text,time:s.time||currentScene().time});}
-function renderStory(){$('#setupScreen').innerHTML='';setView(S.finished?'ending':'story');const s=S.pending?{...currentScene(),...S.pending}:conditional(currentScene());setBackground(s.bg);$('#sceneLabel').textContent=s.place;recordScene(s);
- $('#dialogueBox .speaker-face').innerHTML=portrait(s.who,s.expression,'face');$('#dialogueBox .speaker-name').textContent=displayName(s.who);$('#dialogueBox .speaker-role').textContent=PERSON_ROLES[s.who]||'';
- $('#dialogueBox .dialogue-text').textContent=s.text;$('#dialogueBox .dialogue-text').classList.toggle('emphasis',s.id==='p03-beginning');
- let action='next',label='다음 이야기';
- if(!S.pending){
-  if(s.kind==='task'){action=S.tasks[s.task]?.done?'next':'open-task';label=S.tasks[s.task]?.done?'확인한 결과로 이야기 계속':s.button;}
-  else if(s.kind==='choice'){if(S.choices[s.id]!==undefined){label='다음 이야기';}else{action='';$('#storyChoices').hidden=false;$('#storyChoices').innerHTML=s.choices.map((c,i)=>btn(esc(c.text),'story-choice',{index:i},'choice-card')).join('');}}
-  else if(s.kind==='chapterEnd'){action='chapter-end';label=s.button;}
-  else if(s.kind==='ending'){action='ending';label=s.button;}
-  else if(s.kind==='calendar'){label=s.button||'다음 날짜로';$('#eventNotice').innerHTML=`<strong>${icon('calendar-days')} 시간이 흘러</strong>${esc(s.time)}`;}
+function renderStory(){$('#setupScreen').innerHTML='';setView(S.finished?'ending':'story');const scene=S.pending?{...currentScene(),...S.pending}:conditional(currentScene());setBackground(scene.bg);$('#sceneLabel').textContent=scene.place;
+ const tv=typeof taskView==='function'?taskView():null;const rv=!tv&&typeof rewardView==='function'?rewardView():null;const ev=!tv&&!rv&&S.endingFlow?endingView():null;const v=tv||rv||ev;
+ const who=v?v.who:scene.who,expression=v?v.expression:scene.expression,text=v?v.text:scene.text,key=v?v.id:scene.id+(S.pending?'-reply':'');
+ if(!v)recordScene(scene);
+ const lines=splitLines(text);if(key!==lineKey){lineKey=key;lineIdx=0;}lineIdx=Math.min(lineIdx,Math.max(0,lines.length-1));const last=lineIdx>=lines.length-1;shownLine={who,expression};
+ $('#dialogueBox .speaker-face').innerHTML=portrait(who,expression,'face');$('#dialogueBox .speaker-name').textContent=displayName(who);$('#dialogueBox .speaker-role').textContent=v?.header||PERSON_ROLES[who]||'';
+ $('#dialogueBox .dialogue-text').textContent=lines[lineIdx]||'';$('#dialogueBox .dialogue-text').classList.toggle('emphasis',!v&&scene.id==='p03-beginning');
+ const panel=$('#evidencePanel');panel.innerHTML=v?.evidence||'';panel.hidden=!v?.evidence;
+ let action='next',label='다음 이야기',choices='';
+ if(v){action='';label='';choices=last?v.choices||'':'';}
+ else if(!S.pending){
+  if(scene.kind==='task'){action=S.tasks[scene.task]?.done?'next':'task-start';label=S.tasks[scene.task]?.done?'확인한 결과로 이야기 계속':scene.button;}
+  else if(scene.kind==='choice'){if(S.choices[scene.id]!==undefined){label='다음 이야기';}else{action='';choices=last?scene.choices.map((c,i)=>btn(esc(c.text),'story-choice',{index:i},'choice-card')).join(''):'';}}
+  else if(scene.kind==='chapterEnd'){action='chapter-end';label=scene.button;}
+  else if(scene.kind==='ending'){action='ending';label=scene.button;}
+  else if(scene.kind==='calendar'){label=scene.button||'다음 날짜로';$('#eventNotice').innerHTML=`<strong>${icon('calendar-days')} 시간이 흘러</strong>${esc(scene.time)}`;}
  }
- $('#dialogueBox .dialogue-actions').innerHTML=action?btn(esc(label),action,s.task?{id:s.task}:{},'primary'): '<span class="helper-text">위에서 이야기를 이어갈 말을 골라 주세요.</span>';
- if(!S.pending&&s.kind==='task'&&S.tasks[s.task]?.done)$('#dialogueBox .dialogue-actions').insertAdjacentHTML('afterbegin',btn('기록 다시 보기','open-task',{id:s.task},'secondary'));
+ const sc=$('#storyChoices');sc.className=v?.choicesClass||'';sc.innerHTML=choices;sc.hidden=!choices;
+ let actions='';if(!last)actions=btn('▶','line-next',{},'primary next-line');else if(v)actions=(v.chips||'')+(v.actions||'');else actions=action?btn(esc(label),action,scene.task?{id:scene.task}:{},'primary'):'<span class="helper-text">위에서 이야기를 이어갈 말을 골라 주세요.</span>';
+ if(last&&v?.progress)actions=`<span class="task-progress">${v.progress}</span>`+actions;
+ $('#dialogueBox .dialogue-actions').innerHTML=actions;
+ if(last&&!v&&!S.pending&&scene.kind==='task'&&S.tasks[scene.task]?.done)$('#dialogueBox .dialogue-actions').insertAdjacentHTML('afterbegin',btn('기록 다시 보기','review-task',{id:scene.task},'ghost small'));
  renderHeader();save();requestAnimationFrame(paintActors);
 }
+function lineNext(){lineIdx++;renderStory();}
 function advance(){if(S.pending){S.pending=null;S.scene++;}else{const c=currentScene();if(c.kind==='choice'&&S.choices[c.id]===undefined)return;if(c.kind==='task'&&!S.tasks[c.task]?.done)return;if(c.kind==='chapterEnd'||c.kind==='ending')return;S.scene++;}if(S.scene>=STORY[S.chapter].length){S.chapter=ORDER[Math.min(4,ORDER.indexOf(S.chapter)+1)];S.scene=0;}renderStory();}
 function chooseStory(index){const s=currentScene(),c=s.choices?.[index];if(!c||S.choices[s.id]!==undefined)return;S.choices[s.id]=index;if(c.flag)S.flags[c.flag]=true;awardStat(c.stat,c.amount);(c.bonus||[]).forEach(x=>awardStat(x.stat,x.amount));S.history.push({id:s.id+'-choice',who:S.name+' 선생님',text:c.text,time:s.time});S.pending={id:s.id,who:c.who||'player',expression:c.expression??2,text:c.response};renderStory();}
 function awardStat(index,amount){if(Number.isInteger(index)&&amount>0)S.stats[index]=Math.min(100,S.stats[index]+amount);}
-function endChapter(){const c=CHAPTERS.find(x=>x.id===S.chapter);if(!c)return;if(!S.badges.includes(c.badge))S.badges.push(c.badge);save();openInfo('한 장을 마쳤어요',`<div class="chapter-reward">${icon('award')}<h2>${esc(c.badge)}</h2><p>동료의 질문에서 출발해 자료를 확인하고,<br>다음 업무까지 연결했습니다.</p><div class="segment">${STAT_NAMES.map((n,i)=>`<span class="status-chip">${n} ${S.stats[i]}</span>`).join('')}</div><p class="helper-text">근거를 펼치거나 다시 확인해도 감점은 없어요.</p>${btn('다음 장으로','next-chapter')}</div>`);renderHeader();}
+function endChapter(){const c=CHAPTERS.find(x=>x.id===S.chapter);if(!c)return;if(!S.badges.includes(c.badge))S.badges.push(c.badge);save();renderHeader();nextChapter();}
 function nextChapter(){closeInfo();S.chapter=ORDER[ORDER.indexOf(S.chapter)+1]||'epilogue';S.scene=0;renderStory();}
-function showTask(id,config){
- const d=$('#workDialog'),body=$('#workBody');const same=activeTask===id&&d.open;const sy=body.scrollTop,sx=body.scrollLeft;const scrolls=same?Array.from(body.querySelectorAll('.table-scroll')).map(x=>x.scrollLeft):[];const opened=same?Array.from(body.querySelectorAll('details')).map(x=>x.open):[];
- activeTask=id;d.className='kind-'+(config.kind||'document');d.dataset.task=id;
- d.querySelector('.work-header').innerHTML=`<div class="work-face">${portrait(config.person||'03',4)}</div><div><h2 id="workTitle">${esc(config.title||TASK_TITLES[id])}</h2><small>${practiceBackup?'자유 실습 · 본편 기록은 그대로 유지됩니다':'확인한 뒤 제출해 주세요'}</small></div><div class="work-tools">${btn(icon('x')+' 닫기','close-task',{},'')}</div>`;
- body.innerHTML=config.body||'';$('#workFooter').innerHTML=config.footer||'';
- if(false&&config.help)body.insertAdjacentHTML('afterbegin',`<details class="task-help"><summary>관련 근거 펼치기</summary>${config.help}</details>`);
- if(!d.open)d.showModal();if(same){body.scrollTop=sy;body.scrollLeft=sx;body.querySelectorAll('.table-scroll').forEach((x,i)=>x.scrollLeft=scrolls[i]||0);body.querySelectorAll('details').forEach((x,i)=>{if(opened[i]!==undefined)x.open=opened[i];});}else body.scrollTop=0;
-}
-function taskFeedback(message,type='error',errors=[]){let el=$('#workFooter .task-feedback');if(!el){el=document.createElement('div');$('#workFooter').prepend(el);}el.className='task-feedback '+(type==='success'?'good':type);el.setAttribute('role','status');el.innerHTML=`${esc(message)}${errors?.length?`<ul>${errors.map(e=>`<li>${esc(typeof e==='string'?e:e.message||e.text||'확인해 주세요')}</li>`).join('')}</ul>`:''}`;}
-function finishTask(id,payload={}){S.tasks[id]??={};S.tasks[id].done=true;if(!S.awarded[id]){S.awarded[id]=true;const index=typeof payload.skill==='number'?payload.skill:STAT_NAMES.indexOf(payload.skill);awardStat(index<0?1:index,6);if(payload.rule)S.cards.push({id,title:TASK_TITLES[id],text:payload.rule});}save();renderHeader();$('#workFooter').innerHTML='';taskFeedback(payload.message||'확인한 내용이 기록되었습니다.','good');$('#workFooter').insertAdjacentHTML('beforeend',`<div class="footer-actions">${btn(practiceBackup?'연습 목록으로':'완료','task-return')}</div>`);}
-function openTask(id){if(!TASK_TITLES[id])return;activeTask=null;renderTask(id);}
-function closeTask(){const d=$('#workDialog');if(d.open)d.close();activeTask=null;if(!practiceBackup)renderStory();}
+function finishTask(id,payload={}){S.tasks[id]??={};S.tasks[id].done=true;if(!S.awarded[id]&&!practiceBackup){S.awarded[id]=true;const index=typeof payload.skill==='number'?payload.skill:STAT_NAMES.indexOf(payload.skill);awardStat(index<0?1:index,6);if(payload.rule)S.cards.push({id,title:TASK_TITLES[id],text:payload.rule});}save();renderHeader();}
+function openTask(id){if(typeof startTask==='function')startTask(id);}
+function closeTask(){if(!practiceBackup)renderStory();}
 function openInfo(title,html,footer=''){const d=$('#infoDialog');d.querySelector('.work-header').innerHTML=`<div><h2 id="infoTitle">${esc(title)}</h2></div><div class="work-tools">${btn(icon('x')+' 닫기','close-info',{},'')}</div>`;d.querySelector('.work-body').innerHTML=html;d.querySelector('.work-body').scrollTop=0;d.querySelector('.work-footer').innerHTML=footer||btn('닫기','close-info',{},'secondary');if(!d.open)d.showModal();}
 function closeInfo(){if($('#infoDialog').open)$('#infoDialog').close();infoPage='';}
-function openJournal(){infoPage='journal';openInfo('학기말 업무 일지',`<p class="task-intro">${practiceBackup?'연습 중입니다. 본편의 능력치와 진행은 유지됩니다.':'각 질문을 해결하며 다음 주의 이야기를 열어 보세요.'}</p>${CHAPTERS.map(c=>`<section class="journal-chapter"><h3>${c.label} · ${c.title}</h3><p class="helper-text">${c.subtitle}</p>${STORY[c.id].filter(s=>s.task).map(s=>`<div class="journal-row"><span>${esc(TASK_TITLES[s.task])}</span>${S.tasks[s.task]?.done?btn('확인 기록','review-task',{id:s.task},'secondary'): `<span class="status-chip">${currentScene().task===s.task?'진행 중':'이야기에서 만나요'}</span>`}</div>`).join('')}</section>`).join('')}`);}
+function openJournal(){infoPage='journal';openInfo('학기말 업무 일지',`<p class="task-intro">${practiceBackup?'연습 중입니다. 본편의 능력치와 진행은 유지됩니다.':'각 질문을 해결하며 다음 주의 이야기를 열어 보세요.'}</p>${CHAPTERS.map(c=>`<section class="journal-chapter"><h3>${c.label} · ${c.title}</h3><p class="helper-text">${c.subtitle}</p>${STORY[c.id].filter(s=>s.task).map(s=>`<div class="journal-row"><span>${esc(TASK_TITLES[s.task])}</span>${S.tasks[s.task]?.done?btn('확인 기록','review-task',{id:s.task},'secondary small'): `<span class="status-chip">${currentScene().task===s.task?'진행 중':'이야기에서 만나요'}</span>`}</div>`).join('')}</section>`).join('')}`);}
 const RULES=[
  ['적용 기준','2026학년도 고1·2 일반 사례입니다. 공통 과목은 학업성취율 40% 이상과 과목 출석 기준을 함께 확인합니다. 선택 과목에는 학업성취율 기준을 적용하지 않습니다.','운영 자료 PDF 7~9·20쪽 · 학점 이수 QnA 6·17쪽'],
  ['서로 다른 세 숫자','실제 시간표의 수업 수 51과 학점 이수 기준을 계산하는 3학점 × 16 = 48은 다른 숫자입니다. 이 사례의 출석 기준은 48 × 2/3 = 32회입니다.','2026 학점 이수 안내 자료 · 운영 자료 PDF 7~9쪽'],
@@ -142,21 +146,18 @@ function openReferences(tab='rules'){infoPage='references';const tabs=`<div clas
  openInfo('업무 책상 · 기준과 근거',tabs+body);}
 function showHistory(){infoPage='history';openInfo('대화 기록',S.history.length?S.history.map(h=>`<article class="history-line"><small>${esc(h.time)}</small><h3>${esc(h.who)}</h3><p>${esc(h.text).replace(/\n/g,'<br>')}</p></article>`).join(''):'<p>이야기를 시작하면 대화가 여기에 남아요.</p>');}
 function endingTitle(){const top=Math.max(...S.stats),ix=S.stats.map((v,i)=>v===top?i:-1).filter(i=>i>=0);return {title:ix.map(i=>ENDING_TITLES[i]).join(' · '),note:ix.length>1?'공동으로 높은 역량을 함께 표시했어요.':STAT_NAMES[ix[0]]+' 역량이 가장 많이 자랐어요.'};}
-function growthHTML(){const e=endingTitle();return `<h3>${S.finished?esc(e.title):'함께 확인하며 자라는 중'}</h3><p>${S.finished?esc(e.note):'빠른 정답보다, 기준과 기록을 확인한 과정이 남아요.'}</p><div class="growth-values">${STAT_NAMES.map((n,i)=>`<div><span>${n}</span><strong>${S.stats[i]}</strong></div>`).join('')}</div><h3>완료한 장</h3><div class="segment">${S.badges.map(x=>`<span class="status-chip done">${icon('award')} ${esc(x)}</span>`).join('')||'<p>첫 장의 이야기를 이어가 보세요.</p>'}</div><h3>모은 업무 카드 ${S.cards.length}장</h3>${S.cards.map(c=>`<details class="rule-card"><summary>${esc(c.title)}</summary><p>${esc(c.text)}</p></details>`).join('')}<div class="growth-actions">${btn(icon('download')+' 성장 기록 내려받기','download')}${S.finished?btn('자유 실습','practice',{},'secondary'):''}</div>`;}
+function growthHTML(){const e=endingTitle();return `<h3>${S.finished?esc(e.title):'함께 확인하며 자라는 중'}</h3><p>${S.finished?esc(e.note):'빠른 정답보다, 기준과 기록을 확인한 과정이 남아요.'}</p><div class="growth-values">${STAT_NAMES.map((n,i)=>`<div><span>${n}</span><strong>${S.stats[i]}</strong></div>`).join('')}</div><h3>완료한 장</h3><div class="segment">${S.badges.map(x=>`<span class="status-chip done">${icon('award')} ${esc(x)}</span>`).join('')||'<p>첫 장의 이야기를 이어가 보세요.</p>'}</div><h3>모은 업무 카드 ${S.cards.length}장</h3>${S.cards.map(c=>`<details class="rule-card"><summary>${esc(c.title)}</summary><p>${esc(c.text)}</p></details>`).join('')}<div class="growth-actions">${S.finished?btn('자유 실습','practice',{},'secondary'):''}</div>`;}
 function showGrowth(){infoPage='growth';openInfo('나의 성장 기록',growthHTML());}
-function showEnding(){S.finished=true;save();renderStory();openInfo('학기말, 함께 완성한 성장일지',`<div class="ending-letter"><p>낯선 용어보다 학생들의 이름이 남은 한 학기.<br>기록을 확인하고, 동료에게 설명하고, 다음 지원을 함께 찾았습니다.</p></div>${growthHTML()}<div class="segment">${btn('처음 화면으로','ending-title',{},'secondary')}${btn('처음부터 다시','restart',{},'secondary')}</div>`);}
-function menu(){infoPage='menu';openInfo('메뉴',`<div class="menu-grid">${btn(icon('maximize')+` 전체화면 ${document.fullscreenElement?'ON':'OFF'}`,'fullscreen',{},'secondary')}${btn(icon('type')+` 큰 글씨 ${S.large?'ON':'OFF'}`,'large',{},'secondary')}${btn('계속하기','close-info',{},'secondary')}${btn('처음 화면','menu-title',{},'secondary')}${btn('표정 살펴보기','expressions',{},'secondary')}${btn('자유 실습','practice',{},'secondary')}${btn('성장 기록 내려받기','download',{},'secondary')}${btn('새로 시작','restart',{},'secondary')}</div><p class="helper-text">진행은 이 브라우저에 자동 저장됩니다. 다른 기기와 자동 동기화하지 않습니다. 소리·개인정보 입력·제한 시간은 없어요.</p>`);}
+function showEnding(){S.finished=true;S.endingFlow=true;save();renderStory();}
+function endingView(){const e=endingTitle();const desk=typeof deskHTML==='function'?deskHTML():'';return {id:'ending:'+(S.endingStep||0),who:'player',expression:2,header:'학기말, 함께 완성한 성장일지',text:'낯선 용어보다 학생들의 이름이 남은 한 학기.\n기록을 확인하고, 동료에게 설명하고, 다음 지원을 함께 찾았다.\n'+e.title+' · '+e.note,
+ evidence:`<div class="ev-card"><h4>나의 성장 기록</h4><div class="segment">${STAT_NAMES.map((n,i)=>`<span class="status-chip done">${n} ${S.stats[i]}</span>`).join('')}${S.badges.map(x=>`<span class="status-chip done">${icon('award')} ${esc(x)}</span>`).join('')}</div>${desk}</div>`,
+ actions:`${typeof keepsake==='function'?btn('기념사진 저장','keepsake',{},'secondary small'):''}${btn('자유 실습','practice',{},'secondary small')}${btn('처음 화면으로','ending-title',{},'primary')}`};}
+function menu(){infoPage='menu';openInfo('메뉴',`<div class="menu-grid">${btn(icon('maximize')+` 전체화면 ${document.fullscreenElement?'ON':'OFF'}`,'fullscreen',{},'secondary')}${btn(icon('type')+` 큰 글씨 ${S.large?'ON':'OFF'}`,'large',{},'secondary')}${btn('계속하기','close-info',{},'secondary')}${btn('처음 화면','menu-title',{},'secondary')}${btn('표정 살펴보기','expressions',{},'secondary')}${btn('자유 실습','practice',{},'secondary')}${btn('새로 시작','restart',{},'secondary')}</div><p class="helper-text">진행은 이 브라우저에 자동 저장됩니다. 다른 기기와 자동 동기화하지 않습니다. 소리·개인정보 입력·제한 시간은 없어요.</p>`);}
 function expressions(){openInfo('상황에 따라 달라지는 표정',`<div class="segment">${Object.keys(PEOPLE).filter(x=>Number(x)<=10).map(id=>btn(displayName(id),'expression-person',{id},'secondary')).join('')}</div><div id="expressionGrid"></div>`);expressionPerson('03');}
 function expressionPerson(id){$('#expressionGrid').innerHTML=['차분','걱정','미소','놀람','집중','환한 웃음'].map((n,i)=>`<div>${portrait(id,i,'bust')}<b>${n}</b></div>`).join('');}
 function practiceMenu(){if(!S.started){toast('캐릭터를 선택하고 이야기를 시작한 뒤 연습할 수 있어요.');return;}if(!practiceBackup)practiceBackup=JSON.parse(JSON.stringify(S));infoPage='practice';openInfo('자유 실습',`<p>본편의 기록과 능력치는 그대로 두고 다시 확인할 수 있어요.</p><div class="practice-list">${Object.entries(TASK_TITLES).map(([id,n])=>btn(n,'practice-task',{id},'secondary')).join('')}</div>`,btn('본편으로 돌아가기','exit-practice'));renderHeader();}
-function beginPractice(id){closeInfo();S.tasks[id]={};S.awarded[id]=true;openTask(id);}
-function exitPractice(){if(practiceBackup){S=practiceBackup;practiceBackup=null;}closeInfo();if($('#workDialog').open)$('#workDialog').close();activeTask=null;renderStory();save();}
-function downloadRecord(){const c=endingTitle();let txt=`재영고등학교 · 최성보 성장일지\n${S.name} 선생님\n2026학년도 교육용 모의 실습 · 가상의 학생과 기록\n\n${STAT_NAMES.map((n,i)=>n+': '+S.stats[i]).join(' / ')}\n${S.finished?'엔딩: '+c.title:'진행 중'}\n\n`;
- txt+='완료한 업무\n'+Object.keys(TASK_TITLES).filter(id=>S.tasks[id]?.done).map(id=>'· '+TASK_TITLES[id]).join('\n');txt+='\n\n업무 카드\n'+S.cards.map(x=>x.title+'\n'+x.text).join('\n\n');
- const review=document.createElement('div');review.innerHTML=typeof renderVerdictReview==='function'?renderVerdictReview():'';txt+='\n\n학생 판정표\n'+review.textContent;
- txt+='\n\n선택과 대화\n'+S.history.map(h=>h.time+' · '+h.who+'\n'+h.text).join('\n\n');
- txt+='\n\n실제 업무는 최신 공문·학교 계획·나이스 매뉴얼로 확인하세요.';
- const url=URL.createObjectURL(new Blob(['\ufeff'+txt],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='재영고_나의_성장일지.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('성장 기록을 내려받았습니다.');}
+function beginPractice(id){closeInfo();S.practiceTask=id;S.tasks[id]={};startTask(id);}
+function exitPractice(){if(practiceBackup){S=practiceBackup;practiceBackup=null;}delete S.practiceTask;closeInfo();renderStory();save();}
 function syncFullscreen(){const on=!!document.fullscreenElement;$('#fullscreenButton').textContent='전체화면 '+(on?'ON':'OFF');$('#fullscreenButton').setAttribute('aria-pressed',String(on));}
 function isTouchPhone(){return matchMedia('(hover: none) and (pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<=600;}
 /* Phones play in landscape by default: entering the story goes full screen and locks landscape (needs a tap, so it rides the start buttons). */
@@ -165,10 +166,10 @@ function rotateHint(){let el=$('#rotateHint');if(!el){el=document.createElement(
  const portrait=innerHeight>innerWidth;el.hidden=!(isTouchPhone()&&portrait&&!rotateDismissed);}
 let rotateDismissed=false;try{rotateDismissed=sessionStorage.getItem('jaeyoung-rotate-dismissed')==='1';}catch(e){}
 async function toggleFullscreen(){try{if(document.fullscreenElement){await document.exitFullscreen();screen.orientation?.unlock?.();}else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen();try{await screen.orientation?.lock?.('landscape');}catch(e){}}else toast('이 브라우저는 전체화면을 지원하지 않아요. 화면 크기에 맞춰 그대로 플레이할 수 있어요.');}catch(e){toast('전체화면 전환이 지원되지 않았어요. 현재 화면에서도 플레이할 수 있어요.');}syncFullscreen();if(infoPage==='menu')menu();}
-function restart(){openInfo('새 학기말을 시작할까요?','<p>지금까지의 진행은 새 이야기로 바뀝니다. 필요한 기록은 먼저 내려받아 주세요.</p>',btn('성장 기록 내려받기','download',{},'secondary')+btn('현재 이야기 유지','close-info',{},'secondary')+btn('새로 시작하기','confirm-restart'));}
+function restart(){openInfo('새 학기말을 시작할까요?','<p>지금까지의 진행은 새 이야기로 바뀝니다.</p>',btn('현재 이야기 유지','close-info',{},'secondary')+btn('새로 시작하기','confirm-restart'));}
 function boot(){S=readSave()||fresh();renderTitle();rotateHint();addEventListener('resize',rotateHint);document.addEventListener('fullscreenchange',()=>{syncFullscreen();requestAnimationFrame(paintActors);if(infoPage==='menu')menu();});new ResizeObserver(()=>requestAnimationFrame(paintActors)).observe($('#actors'));
  document.addEventListener('input',event=>{if(event.target.id==='nickname')setupName=event.target.value;});
- document.addEventListener('click',event=>{const b=event.target.closest('button[data-action]');if(!b)return;const a=b.dataset.action;if(a.startsWith('task-')&&a!=='task-return'){if(typeof taskAction==='function')taskAction(a,b);return;}
+ document.addEventListener('click',event=>{const b=event.target.closest('button[data-action]');if(!b)return;const a=b.dataset.action;if(a.startsWith('task-')){if(typeof taskAction==='function')taskAction(a,b);return;}
  switch(a){
  case 'rotate-landscape':enterLandscape();break;
  case 'rotate-dismiss':rotateDismissed=true;try{sessionStorage.setItem('jaeyoung-rotate-dismissed','1');}catch(e){}rotateHint();break;
@@ -180,14 +181,12 @@ function boot(){S=readSave()||fresh();renderTitle();rotateHint();addEventListene
  case 'continue':enterLandscape();closeInfo();renderStory();break;
  case 'title':renderTitle();break;
  case 'next':advance();break;
+ case 'line-next':lineNext();break;
  case 'story-choice':chooseStory(Number(b.dataset.index));break;
  case 'chapter-end':endChapter();break;
  case 'next-chapter':nextChapter();break;
  case 'ending':showEnding();break;
- case 'open-task':openTask(b.dataset.id);break;
- case 'close-task':closeTask();if(practiceBackup)practiceMenu();break;
- case 'task-return':closeTask();if(practiceBackup)practiceMenu();break;
- case 'review-task':closeInfo();openTask(b.dataset.id);break;
+ case 'review-task':closeInfo();if(typeof reviewTask==='function')reviewTask(b.dataset.id);break;
  case 'menu':menu();break;
  case 'references':openReferences();break;
  case 'ref-tab':openReferences(b.dataset.tab);break;
@@ -202,13 +201,12 @@ function boot(){S=readSave()||fresh();renderTitle();rotateHint();addEventListene
  case 'practice':practiceMenu();break;
  case 'practice-task':beginPractice(b.dataset.id);break;
  case 'exit-practice':exitPractice();break;
- case 'download':downloadRecord();break;
  case 'restart':restart();break;
- case 'confirm-restart':practiceBackup=null;S=fresh();save();closeInfo();if($('#workDialog').open)$('#workDialog').close();renderSetup();break;
- case 'ending-title':case 'menu-title':if(practiceBackup){S=practiceBackup;practiceBackup=null;}closeInfo();renderTitle();break;
+ case 'confirm-restart':practiceBackup=null;S=fresh();save();closeInfo();renderSetup();break;
+ case 'ending-title':case 'menu-title':if(practiceBackup){S=practiceBackup;practiceBackup=null;}delete S.endingFlow;closeInfo();renderTitle();break;
  }
  });
- $('#dialogueBox .dialogue-text').addEventListener('click',()=>{if($('#dialogueBox [data-action="next"]'))advance();});
- document.addEventListener('keydown',e=>{if((e.code==='Space'||e.code==='Enter')&&!$('dialog[open]')&&!e.target.closest('button,input,textarea')&&$('#dialogueBox [data-action="next"]')){e.preventDefault();advance();}});
- $('#workDialog').addEventListener('cancel',e=>{e.preventDefault();closeTask();if(practiceBackup)practiceMenu();});$('#infoDialog').addEventListener('cancel',e=>{if(infoPage==='practice'&&practiceBackup){e.preventDefault();exitPractice();}else infoPage='';});
+ $('#dialogueBox .dialogue-text').addEventListener('click',()=>{if($('#dialogueBox [data-action="line-next"]'))lineNext();else if($('#dialogueBox [data-action="next"]'))advance();});
+ document.addEventListener('keydown',e=>{if((e.code==='Space'||e.code==='Enter')&&!$('dialog[open]')&&!e.target.closest('button,input,textarea')){if($('#dialogueBox [data-action="line-next"]')){e.preventDefault();lineNext();}else if($('#dialogueBox [data-action="next"]')){e.preventDefault();advance();}}});
+$('#infoDialog').addEventListener('cancel',e=>{if(infoPage==='practice'&&practiceBackup){e.preventDefault();exitPractice();}else infoPage='';});
 }

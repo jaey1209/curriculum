@@ -19,7 +19,7 @@ v4.3 실행본 및 소스입니다. 공개본(v4.2)보다 새 버전이며, 공�
 - src/v4.css: 반응형 화면·실습·대화·보상 스타일
 - src/v4-core.js: 상태, 저장, 닉네임, 대화 진행, 실습 공통 UI, 메뉴
 - src/v4-story.js: 장면·대사·등장인물 역할·선택지
-- src/v4-tasks.js: 13개 실습, 가상 학생 자료, 모의 나이스 동작
+- src/v4-tasks.js: 13개 실습(무대 위 대화형 질문), 가상 학생 자료
 - src/v4-rewards.js: 친밀도, 책상 선물, 조언, 기념사진. 기존 전역 함수를 감싸는 방식이므로 로딩 순서 유지
 - asset-manifest.json: 이미지 경로, 인물 정보, 프레임 좌표, Lucide SVG 아이콘
 - assets/: 실제 사용하는 이미지(중복 파일 제거)
@@ -27,7 +27,7 @@ v4.3 실행본 및 소스입니다. 공개본(v4.2)보다 새 버전이며, 공�
 - tests/: 재사용 가능한 Playwright 테스트와 이전 검증 결과
 
 ## 선택적 자동 검증
-Node.js 환경에서 `npm install`, `npx playwright install chromium`, `npm test`.
+Node.js 환경에서 `npm install`, `npx playwright install chromium`, `npm test`(tests/qa-v43.cjs).
 이미 설치된 Edge를 쓰려면 환경 변수 PLAYWRIGHT_CHANNEL=msedge를 지정합니다.
 검증 결과 JSON은 이전 실행의 기록이며 수정 후 다시 검사해야 합니다. 테스트를 변경된 동작에 맞춰 업데이트하세요.
 
@@ -38,7 +38,9 @@ Node.js 환경에서 `npm install`, `npx playwright install chromium`, `npm test
 - 실습 질문이 둘 이상이면 한 번에 하나씩 표시(이전/다음).
 - 휴대폰 세로 접속 시 가로 전환 안내, 시작 버튼에서 전체화면·가로 잠금 시도.
 - 실습 창·표·전화 상담 카드의 휴대폰 간격 정리, 세로 화면 버튼 잘림 수정.
-- tests/qa-phone-audit.cjs 추가(휴대폰 전편 자동 점검).
+- 실습을 새 창 대신 무대 위 대화로 진행(질문 하나씩, 맞으면 친밀도 +1·틀리면 -1, 동료 설명 후 진행). 모의 나이스 화면 제거.
+- 장 마무리·선물·엔딩도 무대에서 진행, 대사는 ▶로 한 문장씩, 기본 닉네임 재영, 성장 기록 내려받기 제거.
+- tests/qa-v43.cjs로 전편·휴대폰 점검 통합.
 
 ## 공개본
 https://jaeyoung-school-growth-test.jaey1209.chatgpt.site
