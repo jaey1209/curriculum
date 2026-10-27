@@ -828,7 +828,7 @@
       "role": "최성보 담당자",
       "description": "안경 없음 · 네이비 폴로와 줄무늬 셔츠 · 여유 있는 청바지",
       "expressionKey": "expressions01",
-      "heightCm": 182
+      "heightCm": 170
     },
     "02": {
       "key": "heroF_v2",
@@ -836,7 +836,7 @@
       "role": "최성보 담당자",
       "description": "안경 없음 · 긴 웨이브와 작은 헤어핀 · 회색 가디건과 검정 스커트",
       "expressionKey": "expressions02",
-      "heightCm": 164
+      "heightCm": 165
     },
     "03": {
       "key": "math_v10_outfit",
@@ -844,7 +844,7 @@
       "role": "수학 · 과정부",
       "description": "사용자 사진 참고 얼굴 · 풀뱅 생머리 · 갈색 재킷과 아이보리 원피스 · 아이패드",
       "expressionKey": "expressions03",
-      "heightCm": 167
+      "heightCm": 165
     },
     "04": {
       "key": "physics_v3_full",
@@ -852,7 +852,7 @@
       "role": "물리 · 연구부",
       "description": "사진 참고의 부드러운 얼굴·중간 길이 헤어 · 초록 바람막이 · 안경 없음",
       "expressionKey": "expressions04",
-      "heightCm": 180
+      "heightCm": 170
     },
     "05": {
       "key": "social_full",
@@ -860,7 +860,7 @@
       "role": "사회 · 학년부",
       "description": "웨이브 머리 · 둥근 안경 · 코듀로이 재킷",
       "expressionKey": "expressions05",
-      "heightCm": 184
+      "heightCm": 170
     },
     "06": {
       "key": "korean_v2_full",
@@ -868,7 +868,7 @@
       "role": "국어 · 학년부",
       "description": "단발·안경 유지 · 베이지 터틀넥 · 연청 와이드 데님",
       "expressionKey": "expressions06",
-      "heightCm": 162
+      "heightCm": 165
     },
     "07": {
       "key": "english_full",
@@ -884,7 +884,7 @@
       "role": "체육 · 학년부",
       "description": "덱스 사진의 얼굴·헤어 참고 · 오버핏 회색 후드티 · 자연스러운 운동 체격",
       "expressionKey": "expressions08",
-      "heightCm": 187
+      "heightCm": 170
     },
     "09": {
       "key": "mother_full",
@@ -892,7 +892,7 @@
       "role": "47세 설정",
       "description": "자연스러운 단발 · 크림 퀼팅 재킷 · 과한 노화 표현 제외",
       "expressionKey": "expressions09",
-      "heightCm": 160
+      "heightCm": 165
     },
     "10": {
       "key": "father_full",
@@ -900,7 +900,7 @@
       "role": "49세 설정",
       "description": "짧은 머리 · 남색 퀼팅 재킷 · 과한 노화 표현 제외",
       "expressionKey": "expressions10",
-      "heightCm": 181
+      "heightCm": 170
     },
     "11": {
       "key": "studentNarae",
@@ -913,7 +913,7 @@
         387,
         305
       ],
-      "heightCm": 161
+      "heightCm": 165
     },
     "12": {
       "key": "studentRaon",
@@ -926,7 +926,7 @@
         392,
         320
       ],
-      "heightCm": 173
+      "heightCm": 170
     },
     "13": {
       "key": "studentExtra0",
@@ -938,8 +938,7 @@
         5,
         356,
         300
-      ],
-      "heightCm": 170
+      ]
     },
     "14": {
       "key": "studentExtra1",
@@ -951,8 +950,7 @@
         5,
         356,
         300
-      ],
-      "heightCm": 168
+      ]
     },
     "15": {
       "key": "studentExtra2",
@@ -964,8 +962,7 @@
         5,
         356,
         300
-      ],
-      "heightCm": 172
+      ]
     },
     "16": {
       "key": "studentExtra3",
@@ -977,8 +974,7 @@
         5,
         358,
         300
-      ],
-      "heightCm": 163
+      ]
     },
     "17": {
       "key": "studentExtra4",
@@ -990,8 +986,7 @@
         5,
         356,
         300
-      ],
-      "heightCm": 175
+      ]
     },
     "18": {
       "key": "studentExtra5",
@@ -1003,8 +998,7 @@
         5,
         358,
         300
-      ],
-      "heightCm": 166
+      ]
     }
   },
   "icons": {

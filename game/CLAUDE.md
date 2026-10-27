@@ -34,7 +34,7 @@
 ## 구조·주의점
 전역 상태 S는 localStorage의 jaeyoung-growth-v4.1에 저장됩니다. 데이터 변경 시 호환성/마이그레이션을 고려하세요. 보상은 v4-rewards.js에서 finishTask/showTask/endChapter/nextChapter/renderHeader/showEnding을 감쌉니다. 함수 중복 수정 시 호출 순서 주의.
 이미지는 스프라이트 시트이며 asset-manifest.frames.boxes는 [left,top,right,bottom], [x,y,width,height]가 아닙니다. 원본 비율·인물 동일성을 유지하세요. 박수학의 미소용 mathGentle과 환한 웃음은 서로 다른 그림입니다.
-무대 인물은 asset-manifest.people[id].heightCm(사용자 확정: 박수학167, 남자 주인공·김물리·이사회·전체육·남자 학부모 180~187)와 frames[key].figure(그려진 몸의 위·아래 px)·figureFrac(전신1, 머리~허벅지 .6)으로 같은 cm 축척에 맞춰 그립니다(190cm=무대 95%). 크기를 바꾸려면 코드가 아니라 이 값을 고치세요. 제목 화면만 예전처럼 맞춤 크기입니다. 높이 440px 이하 가로 화면(휴대폰)은 카메라를 당겨 190cm=무대 210%로 그려 오프닝의 박수학처럼 머리·가슴 위주로 보입니다(사용자 확정: 이야기에 집중).
+무대 인물은 asset-manifest.people[id].heightCm(사용자 확정 2026-10: 여자 165, 남자 170. 학생도 동일. 얼굴 아이콘만 쓰는 학생 6명은 값 없음)와 frames[key].figure(그려진 몸의 위·아래 px)·figureFrac(전신1, 머리~허벅지 .6)으로 같은 cm 축척에 맞춰 그립니다(190cm=무대 95%). 크기를 바꾸려면 코드가 아니라 이 값을 고치세요. 제목 화면만 예전처럼 맞춤 크기입니다. 높이 440px 이하 가로 화면(휴대폰)은 카메라를 당겨 190cm=무대 210%로 그려 오프닝의 박수학처럼 머리·가슴 위주로 보입니다(사용자 확정: 이야기에 집중).
 나래·라온은 2026-10 사용자 제공 허벅지 위 상반신 그림(student_narae_v2/student_raon_v2, 표정 0 차분·1 미소·2 환한 웃음)을 씁니다. 무대에서는 주인공 렌더 높이의 64%로 세우고 대화창 위로 들어 올립니다(paintActors).
 학생 8명의 얼굴은 asset-manifest.people[id].faceBox(프레임 상자 기준 [left,top,right,bottom])로 같은 구도·크기로 잘라 씁니다. 얼굴 크기를 바꿀 때는 이 값을 조정하세요.
 휴대폰 가로 화면(높이 500px 이하)에서는 하단 메뉴가 오른쪽 세로 막대로 옮겨지고 안내 문구는 바닥 오버레이가 됩니다. v4.css의 마지막 landscape 블록을 보세요.
