@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>가상 나이스 연수 시뮬레이터</title>
+<title>가상 나이스 — 최소 성취수준 보장지도 연수</title>
 <style>
 :root{
-  --blue:#1b4f9c; --blue-d:#143d7a; --blue-l:#e8eef8; --blue-ll:#f3f6fb;
-  --ink:#222; --ink-2:#555; --ink-3:#888; --line:#c9d1dc; --line-2:#e3e8ef;
-  --grid-h:#eef2f7; --paper:#f5f6f8; --white:#fff;
-  --ok:#1a7f37; --ok-soft:#e3f5e8; --warn:#b25400; --warn-soft:#fff3e0; --crit:#c8102e; --crit-soft:#fde8ea;
-  --lock:#6b7280;
+  --blue:#2f6fde; --blue-d:#1f55b5; --blue-l:#e9f0fc; --blue-ll:#f4f7fd; --navy:#1d3f7a;
+  --ink:#222; --ink-2:#555; --ink-3:#8a8f99; --line:#cfd6e0; --line-2:#e6eaf0;
+  --grid-h:#f1f4f8; --paper:#f2f4f7; --white:#fff;
+  --ok:#1a7f37; --ok-soft:#e3f5e8; --warn:#b25400; --warn-soft:#fff3e0; --crit:#d0243a; --crit-soft:#fdeaed;
+  --green:#19a05b; --green-d:#13844a; --gray:#6b7280; --orange:#f26b1d;
   --sans:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
@@ -20,135 +20,164 @@ button,select,input,textarea{font-family:inherit;font-size:13px}
 button{cursor:pointer}
 a{color:var(--blue)}
 
-/* ───── 로그인 ───── */
-#login{position:fixed;inset:0;background:linear-gradient(135deg,#17407f,#2d6cc0 60%,#3f8ad6);display:flex;align-items:center;justify-content:center;z-index:50}
-.lg-card{background:#fff;border-radius:10px;width:min(920px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.35);display:grid;grid-template-columns:1.1fr 1fr;overflow:hidden}
+/* 로그인 */
+#login{position:fixed;inset:0;background:linear-gradient(135deg,#1d3f7a,#2f6fde 60%,#5a95ea);display:flex;align-items:center;justify-content:center;z-index:50}
+.lg-card{background:#fff;border-radius:12px;width:min(980px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.35);display:grid;grid-template-columns:1.1fr 1fr;overflow:hidden}
 .lg-left{padding:40px 36px;background:#f7f9fc;border-right:1px solid var(--line-2)}
-.lg-left h1{margin:0 0 6px;font-size:26px;color:var(--blue)}
+.lg-left h1{margin:0 0 6px;font-size:24px;color:var(--navy)}
 .lg-left h1 small{display:block;font-size:12px;color:var(--ink-3);font-weight:normal;letter-spacing:.1em;margin-bottom:6px}
-.lg-left p{color:var(--ink-2);font-size:13px}
-.lg-note{margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:8px;background:#fff;font-size:12px;color:var(--ink-2)}
+.lg-left p{color:var(--ink-2)}
+.lg-note{margin-top:18px;padding:12px 14px;border:1px dashed var(--line);border-radius:8px;background:#fff;font-size:12px;color:var(--ink-2)}
 .lg-note b{color:var(--crit)}
-.lg-right{padding:40px 36px}
-.lg-right h2{margin:0 0 14px;font-size:16px}
-.user-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.lg-right{padding:34px 32px}
+.lg-right h2{margin:0 0 12px;font-size:15px}
+.user-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:9px 12px;margin-bottom:6px;border:1px solid var(--line);border-radius:8px;background:#fff}
 .user-btn:hover{border-color:var(--blue);background:var(--blue-ll)}
-.user-btn .av{width:36px;height:36px;border-radius:50%;background:var(--blue-l);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;flex:none}
+.user-btn .av{width:34px;height:34px;border-radius:50%;background:var(--blue-l);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;flex:none}
 .user-btn .nm{font-weight:bold}
 .user-btn .rl{font-size:12px;color:var(--ink-3)}
 
-/* ───── 상단 ───── */
+/* 상단 */
 #app{display:none;flex-direction:column;height:100vh}
 #app.on{display:flex}
-.gnb{background:var(--blue);color:#fff;display:flex;align-items:center;height:48px;padding:0 16px;gap:18px}
-.gnb .logo{font-weight:bold;font-size:16px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
-.gnb .logo .tag{font-size:10px;background:#fff;color:var(--blue);padding:1px 6px;border-radius:3px;font-weight:bold}
-.gnb .school{font-size:12px;opacity:.9;border-left:1px solid rgba(255,255,255,.35);padding-left:14px}
+.gnb{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;height:50px;padding:0 16px;gap:16px}
+.gnb .logo{font-weight:bold;font-size:17px;color:var(--navy);display:flex;align-items:center;gap:8px}
+.gnb .logo .tag{font-size:10px;background:var(--crit);color:#fff;padding:1px 6px;border-radius:3px}
+.gnb .school{font-size:12px;color:var(--ink-2);border-left:1px solid var(--line);padding-left:14px}
 .gnb .sp{flex:1}
-.gnb .who{font-size:12px;display:flex;align-items:center;gap:10px}
-.gnb .who b{font-size:13px}
-.gnb .who .date{background:rgba(255,255,255,.15);padding:2px 8px;border-radius:3px}
-.gnb button{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;padding:3px 10px;border-radius:3px}
-.gnb button:hover{background:rgba(255,255,255,.15)}
-.lnb{background:#fff;border-bottom:2px solid var(--blue);display:flex;height:40px;padding:0 10px}
-.lnb button{background:none;border:0;padding:0 18px;font-size:14px;font-weight:bold;color:var(--ink-2);border-bottom:3px solid transparent;margin-bottom:-2px}
-.lnb button.on{color:var(--blue);border-bottom-color:var(--blue)}
-.lnb .guide{margin-left:auto;color:var(--warn)}
-.lnb .guide.on{color:var(--warn);border-bottom-color:var(--warn)}
+.gnb .who{font-size:12px;display:flex;align-items:center;gap:10px;color:var(--ink-2)}
+.gnb .who b{font-size:13px;color:var(--ink)}
+.gnb .who .date{background:var(--blue-l);color:var(--blue);padding:2px 8px;border-radius:3px}
+.gnb button{background:#fff;border:1px solid var(--line);padding:3px 10px;border-radius:3px}
+.gnb .gbtn{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:bold}
+.lnb{background:var(--navy);display:flex;height:40px;padding:0 10px}
+.lnb button{background:none;border:0;padding:0 18px;font-size:14px;font-weight:bold;color:rgba(255,255,255,.75)}
+.lnb button.on{color:#fff;background:rgba(255,255,255,.12)}
+.lnb .guide{margin-left:auto;color:#ffd166}
+.lnb .badge{display:inline-block;min-width:16px;font-size:10px;background:var(--crit);color:#fff;border-radius:8px;padding:0 5px;margin-left:4px;vertical-align:middle}
 
-/* ───── 본문 ───── */
+/* 본문 */
 .body{flex:1;display:flex;min-height:0}
-.tree{width:220px;background:#fff;border-right:1px solid var(--line);overflow:auto;flex:none}
-.tree h3{margin:0;padding:12px 14px 8px;font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
-.tree .grp{padding:6px 14px 2px;font-weight:bold;font-size:13px;color:var(--ink)}
+.tree{width:236px;background:#fff;border-right:1px solid var(--line);overflow:auto;flex:none}
+.tree h3{margin:0;padding:12px 14px 6px;font-size:12px;color:var(--ink-3)}
+.tree .grp{padding:7px 14px 2px;font-weight:bold;font-size:13px;color:var(--ink)}
 .tree .grp::before{content:"▾ ";color:var(--ink-3)}
-.tree .it{display:block;width:100%;text-align:left;background:none;border:0;padding:6px 14px 6px 30px;color:var(--ink-2);font-size:13px;position:relative}
-.tree .it::before{content:"·";position:absolute;left:20px;color:var(--ink-3)}
+.tree .sub{padding:4px 14px 2px 26px;font-size:12px;color:var(--ink-2)}
+.tree .it{display:block;width:100%;text-align:left;background:none;border:0;padding:5px 10px 5px 34px;color:var(--ink-2);font-size:12.5px;position:relative;line-height:1.35}
+.tree .it::before{content:"·";position:absolute;left:24px;color:var(--ink-3)}
 .tree .it:hover{background:var(--blue-ll)}
 .tree .it.on{background:var(--blue-l);color:var(--blue);font-weight:bold}
-.tree .it .cnt{float:right;font-size:11px;background:var(--crit);color:#fff;border-radius:9px;padding:0 6px}
-.main{flex:1;overflow:auto;padding:14px 18px 40px}
-.crumb{font-size:12px;color:var(--ink-3);margin-bottom:6px}
-.crumb b{color:var(--ink)}
-.ttl{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.ttl h2{margin:0;font-size:18px}
+.tree .it.next{box-shadow:inset 3px 0 0 var(--orange)}
+.tree .it .role{float:right;font-size:10px;color:var(--ink-3)}
+.main{flex:1;overflow:auto;padding:0 18px 120px;min-width:0}
+.wtabs{display:flex;gap:4px;padding:8px 0 0;border-bottom:1px solid var(--line);margin-bottom:12px;overflow:auto}
+.wtabs .wt{background:#e6eaf0;border:1px solid var(--line);border-bottom:0;border-radius:6px 6px 0 0;padding:6px 12px;font-size:12px;color:var(--ink-2);white-space:nowrap}
+.wtabs .wt.on{background:#fff;color:var(--navy);font-weight:bold;position:relative;top:1px}
+.wtabs .wt.next{outline:2px solid var(--orange);outline-offset:-2px}
+.ttl{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.ttl h2{margin:0;font-size:16px;color:var(--navy)}
+.ttl h2::before{content:"■ ";color:var(--blue);font-size:11px;vertical-align:middle}
 .ttl .help{font-size:12px;color:var(--ink-3)}
-.cond{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin-bottom:10px}
+.stabs{display:flex;margin-bottom:10px;border-bottom:2px solid var(--blue)}
+.stabs button{background:#eef1f6;border:1px solid var(--line);border-bottom:0;padding:7px 16px;font-weight:bold;color:var(--ink-2);border-radius:4px 4px 0 0;margin-right:3px}
+.stabs button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.cond{background:#fff;border:1px solid var(--line);border-radius:4px;padding:9px 12px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-bottom:10px}
 .cond label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
-.cond label b{color:var(--ink);font-weight:bold;min-width:40px}
-.cond select,.cond input{border:1px solid var(--line);border-radius:3px;padding:4px 6px;background:#fff;min-width:80px}
+.cond label b{color:var(--ink);font-weight:bold}
+.cond label b.req::before{content:"*";color:var(--crit);margin-right:2px}
+.cond select,.cond input{border:1px solid var(--line);border-radius:3px;padding:4px 6px;background:#fff;min-width:70px}
+.cond .sp{flex:1}
+.cond .radio{display:flex;gap:10px;align-items:center;font-size:12px}
 .bar{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
 .bar .sp{flex:1}
-.btn{border:1px solid var(--line);background:#fff;padding:5px 12px;border-radius:3px;color:var(--ink);font-weight:bold}
+.btn{border:1px solid var(--line);background:#fff;padding:5px 12px;border-radius:3px;color:var(--ink);font-weight:bold;white-space:nowrap;position:relative}
 .btn:hover{background:var(--blue-ll);border-color:var(--blue)}
 .btn.p{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.p:hover{background:var(--blue-d)}
-.btn.w{background:var(--warn);border-color:var(--warn);color:#fff}
+.btn.q{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.q::before{content:"🔍 ";font-size:11px}
+.btn.g{background:var(--green);border-color:var(--green);color:#fff}
+.btn.g:hover{background:var(--green-d)}
+.btn.n{background:var(--navy);border-color:var(--navy);color:#fff}
 .btn.d{background:var(--crit);border-color:var(--crit);color:#fff}
 .btn.s{padding:2px 8px;font-weight:normal;font-size:12px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
+.btn .gnum{position:absolute;top:-9px;left:-9px;width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.3);pointer-events:none}
+.btn .gnum.done{background:var(--ok)}
+.btn.next{outline:3px solid var(--orange);outline-offset:2px;animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(242,107,29,.55)}50%{box-shadow:0 0 0 8px rgba(242,107,29,0)}}
+.cond.next,.cond .next-field{outline:2px dashed var(--orange);outline-offset:2px;border-radius:3px}
 .status{font-size:12px;color:var(--ink-3)}
-.chip{display:inline-block;font-size:11px;padding:1px 7px;border-radius:3px;border:1px solid transparent;font-weight:bold;vertical-align:middle}
+.chip{display:inline-block;font-size:11px;padding:1px 7px;border-radius:3px;font-weight:bold;vertical-align:middle}
 .chip.ok{background:var(--ok-soft);color:var(--ok)}
 .chip.warn{background:var(--warn-soft);color:var(--warn)}
 .chip.crit{background:var(--crit-soft);color:var(--crit)}
-.chip.lock{background:#eceff3;color:var(--lock)}
+.chip.lock{background:#eceff3;color:var(--gray)}
 .chip.info{background:var(--blue-l);color:var(--blue)}
-
-/* 그리드 */
-.grid-wrap{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:auto;max-height:calc(100vh - 290px)}
+.grid-wrap{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:auto;max-height:calc(100vh - 300px)}
+.grid-wrap.auto{max-height:none}
 table.grid{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;white-space:nowrap}
-table.grid th{background:var(--grid-h);border-bottom:1px solid var(--line);border-right:1px solid var(--line-2);padding:6px 6px;font-weight:bold;position:sticky;top:0;z-index:2;text-align:center}
-table.grid th.l2{top:29px}
-table.grid td{border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);padding:3px 6px;text-align:center;font-variant-numeric:tabular-nums}
+table.grid th{background:var(--grid-h);border-bottom:1px solid var(--line);border-right:1px solid var(--line-2);padding:6px 6px;font-weight:bold;position:sticky;top:0;z-index:2;text-align:center;color:var(--ink-2)}
+table.grid th.l2{top:30px}
+table.grid td{border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);padding:4px 6px;text-align:center;font-variant-numeric:tabular-nums}
 table.grid td.l,table.grid th.l{text-align:left}
 table.grid tr:hover td{background:#fbfcfe}
-table.grid td.fix,table.grid th.fix{position:sticky;left:0;background:#fff;z-index:1}
-table.grid th.fix{z-index:3;background:var(--grid-h)}
-table.grid td.fix2,table.grid th.fix2{position:sticky;left:44px;background:#fff;z-index:1}
-table.grid th.fix2{z-index:3;background:var(--grid-h)}
-table.grid input[type=number],table.grid input[type=text]{width:58px;border:1px solid var(--line);border-radius:2px;padding:2px 4px;text-align:right}
-table.grid input.wide{width:100%;text-align:left}
+table.grid input[type=number],table.grid input[type=text]{border:1px solid var(--line);border-radius:2px;padding:2px 4px}
+table.grid input[type=number]{width:60px;text-align:right}
+table.grid input.wide{width:100%;min-width:200px}
 table.grid select{border:1px solid var(--line);border-radius:2px;padding:2px 3px;font-size:12px;background:#fff}
-table.grid input:disabled,table.grid select:disabled,textarea:disabled{background:#f1f3f5;color:var(--ink-3)}
-table.grid .miss{background:var(--crit-soft)}
-table.grid .abs{background:var(--warn-soft)}
-table.grid tfoot td{background:var(--blue-ll);font-weight:bold}
-.att-cell{display:flex;gap:2px;justify-content:center}
-.att-cell select{width:56px}
-.sum{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
-.card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 14px;min-width:150px}
-.card .k{font-size:11px;color:var(--ink-3)}
-.card .v{font-size:20px;font-weight:bold}
-.card .v small{font-size:12px;color:var(--ink-3);font-weight:normal}
+table.grid input:disabled,table.grid select:disabled{background:#f1f3f5;color:var(--ink-3)}
+table.grid .bad{color:var(--crit);font-weight:bold}
+table.grid .good{color:var(--ok)}
+table.grid td.next-cell{outline:2px dashed var(--orange);outline-offset:-2px}
+.empty{padding:36px;text-align:center;color:var(--ink-3);background:#fff;border:1px solid var(--line);border-radius:4px}
+.empty b{color:var(--blue)}
+.sumbox{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 14px;margin-bottom:10px}
+.sumbox .h{font-weight:bold;color:var(--navy);margin-bottom:6px}
+.sumbox .h::before{content:"☞ ";color:var(--blue)}
+.sumbox table{border-collapse:collapse;font-size:12px}
+.sumbox td{padding:4px 14px 4px 0}
+.sumbox td.k{color:var(--ink-2);min-width:150px}
+.sumbox td.v{font-weight:bold}
+.sumbox tr.hl td{color:var(--crit)}
 .note{background:var(--blue-ll);border:1px solid var(--line-2);border-radius:4px;padding:8px 12px;font-size:12px;color:var(--ink-2);margin-bottom:10px}
 .note.warn{background:var(--warn-soft);color:var(--warn)}
 .note.crit{background:var(--crit-soft);color:var(--crit)}
 .note.ok{background:var(--ok-soft);color:var(--ok)}
-.note ul{margin:4px 0 0;padding-left:18px}
-textarea.txt{width:100%;min-height:76px;border:1px solid var(--line);border-radius:3px;padding:6px 8px;resize:vertical;line-height:1.5}
-.cnt{font-size:11px;color:var(--ink-3);text-align:right}
-.cnt.over{color:var(--crit);font-weight:bold}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:900px){.two{grid-template-columns:1fr}.tree{width:170px}}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cal .d{border:1px solid var(--line-2);border-radius:3px;padding:4px;min-height:48px;font-size:11px;background:#fff;cursor:pointer}
-.cal .d.off{background:#f6f7f9;color:#bbb;cursor:default}
-.cal .d.done{border-color:var(--ok);background:var(--ok-soft)}
-.cal .d.todo{border-color:var(--crit);background:var(--crit-soft)}
-.cal .d.sel{outline:2px solid var(--blue)}
-.cal .d.future{opacity:.5;cursor:default}
-.cal .d .n{font-weight:bold}
-.cal .d .ev{color:var(--ink-2)}
-.cal .hd{text-align:center;font-size:11px;color:var(--ink-3);padding:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 14px;min-width:140px}
+.tip{position:relative;cursor:help;border-bottom:1px dotted var(--crit);color:var(--crit)}
+.tip .tt{display:none;position:absolute;left:0;top:100%;background:#333;color:#fff;padding:6px 10px;border-radius:4px;white-space:nowrap;z-index:5;font-size:11px;font-weight:normal}
+.tip:hover .tt{display:block}
+
+/* 안내 패널 */
+#gpanel{position:fixed;right:18px;bottom:18px;width:400px;max-width:calc(100vw - 36px);background:#fff;border:2px solid var(--orange);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.25);z-index:40;display:none;font-size:12.5px}
+#gpanel.on{display:block}
+#gpanel .gh{background:var(--orange);color:#fff;padding:8px 12px;border-radius:7px 7px 0 0;font-weight:bold;display:flex;align-items:center;gap:8px}
+#gpanel .gh .x{margin-left:auto;background:none;border:0;color:#fff;font-size:15px;cursor:pointer}
+#gpanel .gb{padding:10px 12px;max-height:50vh;overflow:auto}
+#gpanel .step{font-weight:bold;color:var(--navy);font-size:13px}
+#gpanel .meta{color:var(--ink-2);margin:4px 0 8px}
+#gpanel .meta b{color:var(--ink)}
+#gpanel .meta code{background:#f1f3f5;padding:0 4px;border-radius:2px;color:var(--navy);font-family:inherit}
+#gpanel ol{margin:0;padding:0;list-style:none}
+#gpanel li{display:flex;gap:8px;align-items:flex-start;padding:4px 0;border-top:1px dashed var(--line-2)}
+#gpanel li .n{width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+#gpanel li.done .n{background:var(--ok)}
+#gpanel li.done{color:var(--ink-3);text-decoration:line-through}
+#gpanel li.cur{font-weight:bold}
+#gpanel .gf{padding:8px 12px;border-top:1px solid var(--line-2);display:flex;gap:6px;align-items:center}
+#gpanel .role-warn{background:var(--crit-soft);color:var(--crit);padding:6px 8px;border-radius:4px;margin-bottom:8px}
+#gpanel .all-done{color:var(--ok);font-weight:bold}
 
 /* 모달 */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:60}
 .scrim.on{display:flex}
-.modal{background:#fff;border-radius:6px;min-width:360px;max-width:560px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
-.modal .mh{padding:12px 16px;border-bottom:1px solid var(--line-2);font-weight:bold;background:var(--blue);color:#fff;border-radius:6px 6px 0 0}
-.modal .mb{padding:16px;max-height:60vh;overflow:auto;white-space:pre-wrap;line-height:1.6}
-.modal .mf{padding:10px 16px;border-top:1px solid var(--line-2);display:flex;justify-content:flex-end;gap:6px}
+.modal{background:#fff;border-radius:6px;min-width:380px;max-width:min(960px,94vw);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.modal .mh{padding:10px 16px;font-weight:bold;background:var(--navy);color:#fff;border-radius:6px 6px 0 0;display:flex;align-items:center}
+.modal .mh .x{margin-left:auto;background:none;border:0;color:#fff;font-size:16px}
+.modal .mb{padding:14px 16px;max-height:70vh;overflow:auto;line-height:1.6}
+.modal .mb.pre{white-space:pre-wrap}
+.modal .mf{padding:10px 16px;border-top:1px solid var(--line-2);display:flex;justify-content:center;gap:6px}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:4px;font-size:13px;opacity:0;transition:.25s;z-index:70;pointer-events:none}
 .toast.on{opacity:.95}
 
@@ -158,50 +187,47 @@ textarea.txt{width:100%;min-height:76px;border:1px solid var(--line);border-radi
 .steps .no{width:26px;height:26px;border-radius:50%;background:var(--blue-l);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;flex:none}
 .steps li.done .no{background:var(--ok);color:#fff}
 .steps li.done{border-color:var(--ok)}
+.steps li.pre{border-left:4px solid #8e7cc3}
+.steps li.cur{border-color:var(--orange);box-shadow:0 0 0 2px rgba(242,107,29,.25)}
 .steps .t{font-weight:bold}
 .steps .d{font-size:12px;color:var(--ink-2)}
-.steps .go{margin-left:auto}
-.log{font-size:12px;font-family:ui-monospace,Consolas,monospace;background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px 10px;max-height:260px;overflow:auto}
+.steps .d code{background:#f1f3f5;padding:0 4px;border-radius:2px;font-family:inherit;color:var(--navy)}
+.steps .go{margin-left:auto;flex:none}
+.log{font-size:12px;font-family:ui-monospace,Consolas,monospace;background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px 10px;max-height:320px;overflow:auto}
 .log div{border-bottom:1px dashed var(--line-2);padding:2px 0}
-.print-only{display:none}
-@media print{
-  .gnb,.lnb,.tree,.cond,.bar,#login,.note{display:none!important}
-  .main{padding:0}.grid-wrap{max-height:none;border:0}
-  body{background:#fff}
-}
+@media print{.gnb,.lnb,.tree,.cond,.bar,#login,.note,.wtabs,#gpanel{display:none!important}.main{padding:0}.grid-wrap{max-height:none;border:0}body{background:#fff}}
 </style>
 </head>
 <body>
 
-<!-- ───────── 로그인 ───────── -->
 <div id="login">
   <div class="lg-card">
     <div class="lg-left">
-      <h1><small>NEIS TRAINING SIMULATOR</small>가상 나이스<br>연수 시뮬레이터</h1>
-      <p>실제 나이스(NEIS)와 연결되지 않은 <b>연습용 가상 시스템</b>입니다.<br>
-      학기말 <b>출결 마감</b>과 <b>성적 마감</b> 절차를 처음부터 끝까지 실제 화면 흐름대로 연습할 수 있으며,
-      모든 입력은 이 브라우저에만 저장되고 언제든 초기화할 수 있습니다.</p>
+      <h1><small>NEIS TRAINING SIMULATOR</small>가상 나이스<br>최소 성취수준 보장지도 연수</h1>
+      <p>실제 나이스와 연결되지 않은 <b>연습용 가상 시스템</b>입니다. 2026학년도 2학기 학기말
+      <b>최소 성취수준 보장지도(추가학습)</b> 업무를 나이스 메뉴·버튼 그대로, <b>정해진 순서대로</b> 눌러 가며 연습합니다.</p>
       <div class="lg-note">
-        <b>※ 주의</b> 이 화면의 학생·교사·점수는 모두 가상 자료입니다. 실제 나이스 업무는 반드시 교육청 나이스(neis.go.kr)에서 처리하세요.<br><br>
-        연습 범위: 일일출결 입력 → 출결 월마감 → 평가계획 → 지필·수행평가 점수 입력(결시 인정점 포함) →
-        성적 산출(성취도·석차등급) → 과목 마감 → 학기말 성적 마감 → 세부능력 및 특기사항 → 행동특성 및 종합의견
+        <b>연습 흐름(8단계)</b><br>
+        사전업무 ① 과목 출석률 마감(교과담임 → 업무담당자 전체마감·승인요청) ② 학기말 성적산출 마감(승인요청)<br>
+        보장지도 ③ 대상자 가져오기 ④ 예외처리 ⑤ 이수여부 처리 ⑥ 학점반영·마감 ⑦ 학생부 자료반영 ⑧ 마감관리·승인요청<br><br>
+        <b>순서를 모르겠으면</b> 화면 오른쪽 위 <b>[다음에 누를 버튼]</b>을 켜세요. 지금 해야 할 단계·메뉴·버튼 순서(①②③)를 알려 주고 눌러야 할 버튼을 주황색으로 표시합니다.<br>
+        <b>※</b> 학생·교사·점수는 모두 가상 자료입니다. 입력은 이 브라우저에만 저장되며 [연수도우미]에서 초기화할 수 있습니다.
       </div>
     </div>
     <div class="lg-right">
       <h2>접속 사용자 선택 <span class="status">(인증서 로그인 대신)</span></h2>
       <div id="userList"></div>
-      <p class="status" style="margin-top:14px">같은 브라우저에서 사용자를 바꿔 로그인하면 같은 자료를 이어서 봅니다. 담임↔교과교사↔교무부 권한 차이를 그대로 체험할 수 있습니다.</p>
+      <p class="status" style="margin-top:10px">사용자를 바꿔 로그인해도 같은 자료를 이어서 봅니다. 교과담임 → 업무담당자 → 결재권자 순으로 역할을 바꿔 가며 진행하세요.</p>
     </div>
   </div>
 </div>
 
-<!-- ───────── 앱 ───────── -->
 <div id="app">
   <div class="gnb">
     <div class="logo">가상 나이스 <span class="tag">연수용</span></div>
     <div class="school" id="gSchool"></div>
     <div class="sp"></div>
-    <div class="who"><span class="date" id="gDate"></span><span id="gUser"></span><button onclick="logout()">로그아웃</button></div>
+    <div class="who"><button class="gbtn" id="gToggle" onclick="toggleGuide()">💡 다음에 누를 버튼</button><span class="date" id="gDate"></span><span id="gUser"></span><button onclick="logout()">로그아웃</button></div>
   </div>
   <div class="lnb" id="lnb"></div>
   <div class="body">
@@ -210,580 +236,539 @@ textarea.txt{width:100%;min-height:76px;border:1px solid var(--line);border-radi
   </div>
 </div>
 
-<div class="scrim" id="scrim"><div class="modal"><div class="mh" id="mTitle"></div><div class="mb" id="mBody"></div><div class="mf" id="mFoot"></div></div></div>
+<div id="gpanel"><div class="gh">💡 다음에 누를 버튼 <button class="x" onclick="toggleGuide(false)">✕</button></div><div class="gb" id="gBody"></div><div class="gf" id="gFoot"></div></div>
+<div class="scrim" id="scrim"><div class="modal"><div class="mh"><span id="mTitle"></span><button class="x" onclick="closeModal()">✕</button></div><div class="mb" id="mBody"></div><div class="mf" id="mFoot"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   기본 자료 (가상)
-═══════════════════════════════════════════════════════════ */
-const KEY='neis-sim-v1';
+/* ═════════════════ 기본 자료(가상) ═════════════════ */
+const KEY='neis-msb-v2';
 const SCHOOL='율천고등학교';
 const YEAR=2026, SEM=2;
 const TERM_START='2026-08-18', TERM_END='2026-12-31';
-const HOLIDAYS={'2026-09-24':'추석 연휴','2026-09-25':'추석','2026-09-26':'추석 연휴','2026-10-09':'한글날','2026-12-25':'성탄절'};
-const SCHOOL_EVENTS={'2026-10-05':'중간고사','2026-10-06':'중간고사','2026-10-07':'중간고사','2026-12-07':'기말고사','2026-12-08':'기말고사','2026-12-09':'기말고사','2026-12-31':'방학식'};
-const CLASSES=[{g:1,c:1},{g:1,c:2},{g:1,c:3}];
+const HOLIDAYS={'2026-09-24':1,'2026-09-25':1,'2026-09-26':1,'2026-10-09':1,'2026-12-25':1};
+const CLASSES=['1-1','1-2','1-3'];
 const SUBJECTS=[
-  {id:'kor',name:'공통국어2',credit:4},
-  {id:'mat',name:'공통수학2',credit:4},
-  {id:'eng',name:'공통영어2',credit:4},
-  {id:'soc',name:'통합사회2',credit:4},
-  {id:'sci',name:'통합과학2',credit:4},
-  {id:'his',name:'한국사2',credit:3},
+  {id:'mat',name:'공통수학2',credit:4,teacher:'t_lee'},
+  {id:'kor',name:'공통국어2',credit:4,teacher:'t_kim'},
+  {id:'eng',name:'공통영어2',credit:4,teacher:'t_park'},
 ];
 const USERS=[
-  {id:'t_kim',  name:'김민정', role:'homeroom', title:'1학년 1반 담임 · 국어', cls:'1-1', subj:'kor', classes:['1-1','1-2','1-3']},
-  {id:'t_lee',  name:'이준호', role:'homeroom', title:'1학년 2반 담임 · 수학', cls:'1-2', subj:'mat', classes:['1-1','1-2','1-3']},
-  {id:'t_park', name:'박서연', role:'homeroom', title:'1학년 3반 담임 · 영어', cls:'1-3', subj:'eng', classes:['1-1','1-2','1-3']},
-  {id:'t_choi', name:'최유진', role:'subject',  title:'교과교사 · 통합사회', subj:'soc', classes:['1-1','1-2','1-3']},
-  {id:'t_jung', name:'정현우', role:'subject',  title:'교과교사 · 통합과학', subj:'sci', classes:['1-1','1-2','1-3']},
-  {id:'t_han',  name:'한지우', role:'subject',  title:'교과교사 · 한국사', subj:'his', classes:['1-1','1-2','1-3']},
-  {id:'t_adm',  name:'오성적', role:'admin',    title:'교무부 · 성적처리·출결 담당(권한자)'},
+  {id:'t_lee',  name:'이준호', role:'teacher', title:'교과담임 · 공통수학2 / 1학년 2반 담임', cls:'1-2', subj:'mat'},
+  {id:'t_kim',  name:'김민정', role:'teacher', title:'교과담임 · 공통국어2 / 1학년 1반 담임', cls:'1-1', subj:'kor'},
+  {id:'t_park', name:'박서연', role:'teacher', title:'교과담임 · 공통영어2 / 1학년 3반 담임', cls:'1-3', subj:'eng'},
+  {id:'t_adm',  name:'오성적', role:'admin',   title:'교무부 · 성적·출결 업무담당자'},
+  {id:'t_vp',   name:'김환',   role:'approver',title:'교감 · 결재권자'},
 ];
-const ATT_TYPES=['결석','지각','조퇴','결과'];
-const ATT_REASONS=['질병','미인정','기타','인정'];
-const ABSENT_RULES=[{id:'none',name:'해당없음',ratio:null},{id:'rec100',name:'인정결시(100%)',ratio:1},{id:'ill80',name:'질병결시(80%)',ratio:.8},{id:'etc0',name:'미인정결시(0점)',ratio:0}];
-
-const FAM='김이박최정강조윤장임한오서신권황안송류전홍고문양손배백허유남심노정하곽성차주우구민류나진지엄채원천방공현';
+const EXC_TYPES=['특수교육대상자','학교외 장소 수강','기타'];
+const FAM='김이박최정강조윤장임한오서신권황안송류전홍고문양손배백허유남심노하곽성차주우구민나진지엄채원천방공현';
 const G1='민서지수현예하준도우시연윤은채서주승지하태진아율라소윤영은세다';
 const G2='준우아연서현민윤호은지빈서율찬우현아연진원영하율리나경수민별우혁';
 function rnd(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>(s=s*16807%2147483647)/2147483647;}
+function fmt(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function schoolDays(){const d=[];let cur=new Date(TERM_START+'T00:00:00');const end=new Date(TERM_END+'T00:00:00');while(cur<=end){const iso=fmt(cur);const w=cur.getDay();if(w!==0&&w!==6&&!HOLIDAYS[iso])d.push(iso);cur.setDate(cur.getDate()+1);}return d;}
+const DAYS=schoolDays();
+const TT={mat:{1:2,2:3,4:1,5:4},kor:{1:1,2:4,3:2,5:3},eng:{1:3,3:1,4:2,5:1}};
+function periodsOf(subj){const out=[];DAYS.forEach(d=>{const w=new Date(d+'T00:00:00').getDay();const p=TT[subj][w];if(p)out.push({d,p});});return out;}
+const PERIODS={};SUBJECTS.forEach(s=>PERIODS[s.id]=periodsOf(s.id));
+
 function makeStudents(){
   const out={};let r=rnd(20260818);
-  CLASSES.forEach(({g,c})=>{
-    const key=`${g}-${c}`;out[key]=[];
-    const n=24+Math.floor(r()*3);
-    const used=new Set();
-    for(let i=1;i<=n;i++){
-      let nm;do{nm=FAM[Math.floor(r()*FAM.length)]+G1[Math.floor(r()*G1.length)]+G2[Math.floor(r()*G2.length)];}while(used.has(nm));
-      used.add(nm);
-      out[key].push({id:`${YEAR}${g}${c}${String(i).padStart(2,'0')}`,g,c,no:i,name:nm,gender:r()<.5?'남':'여'});
-    }
-    out[key].sort((a,b)=>a.name.localeCompare(b.name,'ko')).forEach((s,i)=>s.no=i+1);
-  });
+  CLASSES.forEach(key=>{const [g,c]=key.split('-');out[key]=[];const n=24+Math.floor(r()*3);const used=new Set();
+    for(let i=1;i<=n;i++){let nm;do{nm=FAM[Math.floor(r()*FAM.length)]+G1[Math.floor(r()*G1.length)]+G2[Math.floor(r()*G2.length)];}while(used.has(nm));used.add(nm);
+      out[key].push({id:`${YEAR}${g}${c}${String(i).padStart(2,'0')}`,g:+g,c:+c,cls:key,no:i,name:nm,gender:r()<.5?'남':'여'});}
+    out[key].sort((a,b)=>a.name.localeCompare(b.name,'ko')).forEach((s,i)=>s.no=i+1);});
   return out;
 }
-function schoolDays(){
-  const d=[];let cur=new Date(TERM_START+'T00:00:00');const end=new Date(TERM_END+'T00:00:00');
-  while(cur<=end){const iso=fmt(cur);const w=cur.getDay();if(w!==0&&w!==6&&!HOLIDAYS[iso])d.push(iso);cur.setDate(cur.getDate()+1);}
-  return d;
-}
-function fmt(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-const DAYS=schoolDays();
-const MONTHS=[...new Set(DAYS.map(d=>d.slice(0,7)))];
 
-/* ═══════════════════════════════════════════════════════════
-   상태
-═══════════════════════════════════════════════════════════ */
-let S=null, me=null, view={top:'att',menu:'att-daily'}, cond={cls:'1-1',date:null,month:null,subj:null,sem:SEM};
-function blank(){
-  return {
-    simDate:'2026-10-27', gradeSystem:'5', // 5등급(2025 입학생~) / 9등급
-    students:makeStudents(),
-    att:{},        // date -> studentId -> {t,r,m}
-    attDone:{},    // cls -> {date:true}  일일 출결 저장(확정) 여부
-    attClose:{},   // cls -> {month:{by,at}}  월마감
-    attFinal:null, // 학기말 출결 마감 {by,at}
-    attNote:{},    // studentId -> 출결특기사항
-    plan:{},       // subj -> {w:[{name,ratio,max}], p:[...]}
-    scores:{},     // subj -> studentId -> {w:[{v,abs}], p:[{v,abs}]}
-    subjClose:{},  // subj -> {by,at}
-    gradeFinal:null,
-    sete:{},       // subj -> studentId -> text
-    behav:{},      // studentId -> text
-    log:[]
-  };
-}
-function seedPlan(){SUBJECTS.forEach(s=>{S.plan[s.id]={w:[{name:'1차 지필',ratio:30,max:100},{name:'2차 지필',ratio:30,max:100}],p:[{name:'논술형 평가',ratio:20,max:20},{name:'프로젝트·발표',ratio:20,max:20}]};});}
+/* ═════════════════ 상태 ═════════════════ */
+let S=null, me=null, view={top:'guide',menu:'gd-steps'}, cond={cls:'1-1',subj:'mat',room:'all',tab:'target'}, queried={}, guideOn=true;
+function blank(){return {
+  simDate:'2026-12-31', students:makeStudents(), withdrawn:{}, score:{}, absent:{},
+  periodClose:{}, dayClose:{}, roomClose:{}, attAll:{done:null,req:null,approved:null},
+  examClose:{}, calcAll:{done:null,req:null,approved:null},
+  msb:{}, msbMgmt:{saved:null,req:null,approved:null}, recReflect:{}, approvals:[], log:[]
+};}
 function seedData(){
-  S=blank();seedPlan();
-  const r=rnd(777);
-  const all=Object.values(S.students).flat();
-  // 출결: 기준일 전까지 일일 저장 처리, 몇 날은 비워 둠(연수용 오류 재현)
-  const past=DAYS.filter(d=>d<=S.simDate);
-  CLASSES.forEach(({g,c})=>{const k=`${g}-${c}`;S.attDone[k]={};past.forEach(d=>{S.attDone[k][d]=true;});});
-  // 10월 몇 날 미저장
-  ['2026-10-14','2026-10-21'].forEach(d=>{delete S.attDone['1-1'][d];});
-  ['2026-10-23'].forEach(d=>{delete S.attDone['1-2'][d];});
-  // 8·9월 마감 처리 완료(연수: 10월부터 마감 연습)
-  CLASSES.forEach(({g,c})=>{const k=`${g}-${c}`;S.attClose[k]={'2026-08':{by:'시스템',at:'2026-09-02 09:12'},'2026-09':{by:'시스템',at:'2026-10-02 10:40'}};});
-  all.forEach(st=>{
-    past.forEach(d=>{
-      const x=r();
-      if(x<0.012)setAtt(d,st.id,{t:'결석',r:r()<.7?'질병':'기타',m:'감기'});
-      else if(x<0.03)setAtt(d,st.id,{t:'지각',r:r()<.6?'질병':'미인정',m:''});
-      else if(x<0.038)setAtt(d,st.id,{t:'조퇴',r:'질병',m:'병원 진료'});
-      else if(x<0.041)setAtt(d,st.id,{t:'결석',r:'인정',m:'교외 대회 참가'});
-    });
+  S=blank();const r=rnd(4242);const all=allStudents();
+  SUBJECTS.forEach(s=>{S.score[s.id]={};S.absent[s.id]={};S.periodClose[s.id]={};S.roomClose[s.id]={};S.examClose[s.id]={written:true,perf:true};S.msb[s.id]={};
+    CLASSES.forEach(c=>{S.periodClose[s.id][c]={};S.msb[s.id][c]={targets:null,exc:{},hours:{},hpc:3,creditApplied:null,closed:null,excSaved:false,hoursSaved:false};
+      PERIODS[s.id].forEach(x=>S.periodClose[s.id][c][x.d+'|'+x.p]=true);});
+    all.forEach(st=>{const base=45+r()*50;const f=v=>Math.round(Math.min(100,Math.max(5,v)));
+      const w1=f(base+(r()-.5)*30),w2=f(base+(r()-.5)*30),p1=f(base+10+(r()-.5)*20),p2=f(base+10+(r()-.5)*20);
+      S.score[s.id][st.id]={w1,w2,p1,p2,final:Math.round(w1*.3+w2*.3+p1*.2+p2*.2)};
+      S.absent[s.id][st.id]=r()<.85?Math.floor(r()*4):Math.floor(r()*12);});
   });
-  // 성적: 1차 지필(중간고사)과 수행평가 1개는 입력됨, 2차 지필은 미입력(기말 전)
-  SUBJECTS.forEach(s=>{
-    S.scores[s.id]={};
-    all.forEach(st=>{
-      const base=50+r()*45;
-      const w1=Math.min(100,Math.max(12,Math.round(base+(r()-.5)*24)));
-      const p1=Math.min(20,Math.max(6,Math.round(base/5+(r()-.5)*4)));
-      S.scores[s.id][st.id]={w:[{v:w1,abs:'none'},{v:null,abs:'none'}],p:[{v:p1,abs:'none'},{v:null,abs:'none'}]};
-    });
-  });
-  // 결시자 한 명 예시
-  const ex=S.students['1-1'][3];S.scores.mat[ex.id].w[0]={v:null,abs:'ill80'};
-  S.log=[];addLog('시스템','가상 자료 생성');
-  save();
+  CLASSES.forEach(c=>{S.dayClose[c]={};DAYS.forEach(d=>S.dayClose[c][d]=true);});
+  const pick=(c,i)=>S.students[c][i];
+  [['mat','1-1',2],['mat','1-1',7],['mat','1-2',4],['mat','1-3',11],['mat','1-3',19],['kor','1-2',9],['kor','1-3',3],['eng','1-1',14],['eng','1-2',16]].forEach(([s,c,i])=>{const st=pick(c,i);const sc=S.score[s][st.id];sc.w1=22;sc.w2=28;sc.p1=50;sc.p2=45;sc.final=Math.round(sc.w1*.3+sc.w2*.3+sc.p1*.2+sc.p2*.2);});
+  const a1=pick('1-2',12);S.absent.mat[a1.id]=30;S.absent.kor[a1.id]=28;S.absent.eng[a1.id]=27;
+  const a2=pick('1-1',20);S.absent.mat[a2.id]=26;
+  const wd=pick('1-3',5);S.withdrawn[wd.id]={type:'자퇴',date:'2026-12-18',reflected:false};
+  PERIODS.mat.slice(-3).forEach(x=>{delete S.periodClose.mat['1-2'][x.d+'|'+x.p];});
+  delete S.dayClose['1-3']['2026-12-29'];delete S.dayClose['1-3']['2026-12-30'];
+  PERIODS.eng.slice(-1).forEach(x=>{delete S.periodClose.eng['1-1'][x.d+'|'+x.p];});
+  S.examClose.eng.perf=false;
+  S.log=[];addLog('시스템','가상 자료 생성');save();
 }
-function setAtt(d,sid,v){S.att[d]=S.att[d]||{};if(v)S.att[d][sid]=v;else delete S.att[d][sid];}
 function save(){localStorage.setItem(KEY,JSON.stringify(S));}
 function load(){try{const j=localStorage.getItem(KEY);if(j){S=JSON.parse(j);return true;}}catch(e){}return false;}
-function addLog(who,what){S.log.unshift(`${nowStr()} [${who}] ${what}`);if(S.log.length>300)S.log.length=300;}
+function addLog(who,what){S.log.unshift(`${nowStr()} [${who}] ${what}`);if(S.log.length>400)S.log.length=400;}
 function nowStr(){const d=new Date();return `${S.simDate} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
 
-/* ═══════════════════════════════════════════════════════════
-   공통 UI
-═══════════════════════════════════════════════════════════ */
+/* ═════════════════ 공통 ═════════════════ */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200);}
-function modal(title,body,btns){
-  $('#mTitle').textContent=title;$('#mBody').innerHTML=body;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600);}
+function modal(title,body,btns,opt){
+  $('#mTitle').textContent=title;const mb=$('#mBody');mb.innerHTML=body;mb.className='mb'+(opt&&opt.html?'':' pre');
   const f=$('#mFoot');f.innerHTML='';
-  (btns||[{t:'확인',p:true}]).forEach(b=>{const el=document.createElement('button');el.className='btn'+(b.p?' p':'')+(b.d?' d':'');el.textContent=b.t;el.onclick=()=>{closeModal();b.f&&b.f();};f.appendChild(el);});
+  (btns||[{t:'확인',p:true}]).forEach(b=>{const el=document.createElement('button');el.className='btn'+(b.p?' p':'')+(b.d?' d':'');el.textContent=b.t;if(b.id)el.id=b.id;el.onclick=()=>{closeModal();b.f&&b.f();};f.appendChild(el);});
   $('#scrim').classList.add('on');
 }
 function closeModal(){$('#scrim').classList.remove('on');}
-function confirmBox(title,body,onOk,okText){modal(title,body,[{t:'취소'},{t:okText||'확인',p:true,f:onOk}]);}
-const can={
-  attEdit:cls=>me.role==='admin'||(me.role==='homeroom'&&me.cls===cls),
-  attClose:cls=>me.role==='admin'||(me.role==='homeroom'&&me.cls===cls),
-  attView:cls=>true,
-  scoreEdit:subj=>me.role==='admin'||me.subj===subj,
-  admin:()=>me.role==='admin',
-};
-const clsName=k=>{const [g,c]=k.split('-');return `${g}학년 ${c}반`;};
-const subjName=id=>(SUBJECTS.find(s=>s.id===id)||{}).name||id;
+function confirmBox(title,body,onOk,okText){modal(title,body,[{t:'취소'},{t:okText||'확인',p:true,f:onOk,id:'b-modal-ok'}]);}
+function alertBox(title,body){modal(title,body,[{t:'확인',p:true}]);}
+const subj=id=>SUBJECTS.find(s=>s.id===id);
+const subjLabel=id=>`${subj(id).name}(${subj(id).credit})`;
 const userName=id=>(USERS.find(u=>u.id===id)||{}).name||id;
 const students=cls=>S.students[cls]||[];
 const allStudents=()=>Object.values(S.students).flat();
-const isMonthClosed=(cls,m)=>!!(S.attClose[cls]&&S.attClose[cls][m]);
+const studentById=id=>allStudents().find(s=>s.id===id);
+const clsName=k=>{const [g,c]=k.split('-');return `${g}학년 ${c}반`;};
+const can={
+  teacherOf:s=>me.role==='admin'||(me.role==='teacher'&&me.subj===s),
+  homeroomOf:c=>me.role==='admin'||(me.role==='teacher'&&me.cls===c),
+  admin:()=>me.role==='admin', approver:()=>me.role==='approver',
+};
+const total=s=>PERIODS[s].length;
+const attendOf=(s,sid)=>total(s)-(S.absent[s][sid]||0);
+const needAttend=s=>Math.ceil(total(s)*2/3);
+const attOK=(s,sid)=>attendOf(s,sid)>=needAttend(s);
+const achieve=v=>v>=90?'A':v>=80?'B':v>=70?'C':v>=60?'D':'E';
+const finalOf=(s,sid)=>S.score[s][sid].final;
+const achOK=(s,sid)=>finalOf(s,sid)>=40;
+function shortfall(s,sid){const f=[];if(!attOK(s,sid))f.push('출석');if(!achOK(s,sid))f.push('학업성취율');return f;}
+const periodCloseCnt=(s,c)=>Object.keys(S.periodClose[s][c]).length;
+const dayCloseCnt=(s,c)=>PERIODS[s].filter(x=>S.dayClose[c][x.d]).length;
+const roomClosed=(s,c)=>!!S.roomClose[s][c];
+const allRoomsClosed=()=>SUBJECTS.every(s=>CLASSES.every(c=>roomClosed(s.id,c)));
+const attAllApproved=()=>!!S.attAll.approved;
+const calcAllApproved=()=>!!S.calcAll.approved;
+const msbOf=(s,c)=>S.msb[s][c];
 
-/* ═══════════════════════════════════════════════════════════
-   로그인 / 메뉴
-═══════════════════════════════════════════════════════════ */
-function renderLogin(){
-  $('#userList').innerHTML=USERS.map(u=>`<button class="user-btn" onclick="login('${u.id}')"><span class="av">${u.name[0]}</span><span><div class="nm">${u.name}</div><div class="rl">${u.title}</div></span></button>`).join('');
-}
+/* ═════════════════ 로그인·메뉴 ═════════════════ */
+function renderLogin(){$('#userList').innerHTML=USERS.map(u=>`<button class="user-btn" onclick="login('${u.id}')"><span class="av">${u.name[0]}</span><span><div class="nm">${u.name}</div><div class="rl">${u.title}</div></span></button>`).join('');}
 function login(id){
-  me=USERS.find(u=>u.id===id);
-  if(!load())seedData();
-  cond.cls=me.cls||'1-1';cond.subj=me.subj||'kor';cond.date=cond.date||S.simDate;cond.month=cond.month||S.simDate.slice(0,7);
+  me=USERS.find(u=>u.id===id);if(!load())seedData();
+  if(me.subj)cond.subj=me.subj;if(me.cls)cond.cls=me.cls;cond.room='all';queried={};
   $('#login').style.display='none';$('#app').classList.add('on');
   $('#gSchool').textContent=`${SCHOOL} · ${YEAR}학년도 ${SEM}학기`;
   $('#gUser').innerHTML=`<b>${me.name}</b> ${me.title}`;
   addLog(me.name,'로그인');save();
-  go(view.top,view.menu);
+  go(me.role==='approver'?'appr':'guide',me.role==='approver'?'appr-box':'gd-steps');
 }
-function logout(){me=null;$('#app').classList.remove('on');$('#login').style.display='flex';}
+function logout(){me=null;$('#app').classList.remove('on');$('#login').style.display='flex';$('#gpanel').classList.remove('on');}
 
-const TOP=[
-  {id:'att',name:'학생생활(출결)'},
-  {id:'score',name:'성적'},
-  {id:'rec',name:'학교생활기록부'},
-  {id:'guide',name:'연수도우미',guide:true},
-];
+const TOP=[{id:'hak',name:'학적'},{id:'score',name:'성적'},{id:'rec',name:'학생부'},{id:'appr',name:'업무승인(결재)'},{id:'guide',name:'연수도우미',guide:true}];
 const MENUS={
-  att:[{grp:'출결관리',items:[
-      {id:'att-daily',name:'일일출결관리'},
-      {id:'att-month',name:'월별 출결현황'},
-      {id:'att-close',name:'출결 월마감'},
-      {id:'att-note',name:'출결특기사항'}]},
-     {grp:'학기말 출결',items:[
-      {id:'att-stat',name:'출결상황 통계(학기)'},
-      {id:'att-final',name:'학기말 출결마감(교무)',admin:true}]}],
-  score:[{grp:'평가관리',items:[
-      {id:'sc-plan',name:'평가계획(반영비율)'},
-      {id:'sc-written',name:'지필평가 성적입력'},
-      {id:'sc-perf',name:'수행평가 성적입력'}]},
-     {grp:'성적처리',items:[
-      {id:'sc-calc',name:'성적산출(성취도·석차등급)'},
-      {id:'sc-close',name:'과목별 성적마감'},
-      {id:'sc-final',name:'학기말 성적마감(교무)',admin:true},
-      {id:'sc-sheet',name:'성적일람표·개인별 성적표'}]}],
-  rec:[{grp:'교과학습발달상황',items:[
-      {id:'rec-sete',name:'세부능력 및 특기사항'}]},
-     {grp:'담임 기재',items:[
-      {id:'rec-att',name:'출결상황(학생부 반영)'},
-      {id:'rec-behav',name:'행동특성 및 종합의견'}]}],
-  guide:[{grp:'연수도우미',items:[
-      {id:'gd-steps',name:'학기말 마감 시나리오'},
-      {id:'gd-setting',name:'기준일·등급제 설정'},
-      {id:'gd-log',name:'처리 이력(로그)'},
-      {id:'gd-reset',name:'자료 초기화'}]}],
+  hak:[{grp:'출결관리',items:[
+        {id:'att-day',name:'일일출결마감(학급담임용)',role:'학급담임'},
+        {sub:'과목별출결관리'},
+        {id:'att-period',name:'과목출결마감(교시별)',role:'교과담임'},
+        {id:'att-room',name:'학기별과목출결마감(창의적체험활동제외)',role:'교과담임'},
+        {id:'att-all',name:'과목전체마감',role:'업무담당'}]},
+       {grp:'학업중단관리',items:[{id:'hak-wd',name:'휴학/자퇴/퇴학/제적관리'}]},
+       {grp:'시간표관리',items:[{id:'hak-tt',name:'전체시간표관리(총수업수)'}]}],
+  score:[{grp:'정기시험',items:[{id:'ex-written',name:'정기시험마감관리'}]},
+         {grp:'수행평가',items:[{id:'ex-perf',name:'수행평가마감관리'}]},
+         {grp:'성적처리',items:[
+           {id:'calc-close',name:'성적산출마감관리',role:'업무담당'},
+           {id:'msb-manage',name:'최소성취수준보장지도(추가학습)이수관리'},
+           {id:'msb-view',name:'최소성취수준보장지도(추가학습)조회'},
+           {id:'msb-mgmt',name:'최소성취수준보장지도(추가학습)마감관리',role:'업무담당'}]}],
+  rec:[{grp:'학교생활기록부',items:[{id:'rec-reflect',name:'학생부반영',role:'학급담임'},{id:'rec-view',name:'교과학습발달상황(조회)'}]}],
+  appr:[{grp:'업무승인',items:[{id:'appr-box',name:'결재함'}]}],
+  guide:[{grp:'연수도우미',items:[{id:'gd-steps',name:'업무 흐름도(8단계)'},{id:'gd-rule',name:'학점이수 기준·최성보 변경 안내'},{id:'gd-setting',name:'설정·초기화·로그'}]}],
 };
+const MENU_PATH={};Object.entries(MENUS).forEach(([top,groups])=>{const tn=TOP.find(t=>t.id===top).name;groups.forEach(g=>{let sub='';g.items.forEach(i=>{if(i.sub){sub=i.sub+' › ';return;}MENU_PATH[i.id]=`${tn} › ${g.grp} › ${sub}${i.name}`;});});});
 function go(top,menu){
-  view.top=top;view.menu=menu||MENUS[top][0].items[0].id;
-  $('#lnb').innerHTML=TOP.map(t=>`<button class="${t.guide?'guide ':''}${view.top===t.id?'on':''}" onclick="go('${t.id}')">${t.name}</button>`).join('');
-  $('#tree').innerHTML=`<h3>${TOP.find(t=>t.id===top).name}</h3>`+MENUS[top].map(g=>`<div class="grp">${g.grp}</div>`+g.items.filter(i=>!i.admin||can.admin()).map(i=>`<button class="it ${view.menu===i.id?'on':''}" onclick="go('${top}','${i.id}')">${i.name}${badge(i.id)}</button>`).join('')).join('');
+  view.top=top;view.menu=menu||MENUS[top][0].items.find(i=>i.id).id;
+  const pend=S.approvals.filter(a=>a.status==='대기').length;const na=guideOn?nextAction():null;
+  $('#lnb').innerHTML=TOP.map(t=>`<button class="${t.guide?'guide ':''}${view.top===t.id?'on':''}" onclick="go('${t.id}')">${t.name}${t.id==='appr'&&pend?`<span class="badge">${pend}</span>`:''}</button>`).join('');
+  $('#tree').innerHTML=`<h3>${TOP.find(t=>t.id===top).name}</h3>`+MENUS[top].map(g=>`<div class="grp">${g.grp}</div>`+g.items.map(i=>i.sub?`<div class="sub">▸ ${i.sub}</div>`:`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" onclick="go('${top}','${i.id}')">${i.name}${i.role?`<span class="role">${i.role}</span>`:''}</button>`).join('')).join('');
   $('#gDate').textContent=`기준일 ${S.simDate}`;
   render();
 }
-function badge(id){
-  if(id==='att-daily'&&me.cls){const n=DAYS.filter(d=>d<=S.simDate&&!(S.attDone[me.cls]||{})[d]).length;if(n)return `<span class="cnt">${n}</span>`;}
-  if(id==='sc-close'&&me.subj&&!S.subjClose[me.subj]){const n=validateSubject(me.subj).length;if(n)return `<span class="cnt">${n}</span>`;}
-  return '';
-}
-function crumb(...p){return `<div class="crumb">${p.map((x,i)=>i===p.length-1?`<b>${x}</b>`:x).join(' &gt; ')}</div>`;}
+function render(){const f=SCREENS[view.menu];$('#main').innerHTML=(f?f():'<p>준비 중</p>');$('#main').scrollTop=0;renderGuide();}
+function wtabs(name){return `<div class="wtabs"><span class="wt">🏠</span><span class="wt on">${name}</span></div>`;}
 function title(t,help){return `<div class="ttl"><h2>${t}</h2><span class="help">${help||''}</span></div>`;}
-function selCls(onchange){return `<label><b>학급</b><select onchange="${onchange||'cond.cls=this.value;render()'}">${CLASSES.map(({g,c})=>`<option value="${g}-${c}" ${cond.cls===`${g}-${c}`?'selected':''}>${g}학년 ${c}반</option>`).join('')}</select></label>`;}
-function selSubj(){const list=me.role==='admin'?SUBJECTS:SUBJECTS.filter(s=>s.id===me.subj);if(!list.find(s=>s.id===cond.subj))cond.subj=list[0].id;return `<label><b>과목</b><select onchange="cond.subj=this.value;render()">${list.map(s=>`<option value="${s.id}" ${cond.subj===s.id?'selected':''}>${s.name}</option>`).join('')}</select></label>`;}
-function fixedCond(){return `<label><b>학년도</b><input value="${YEAR}" disabled style="width:64px"></label><label><b>학기</b><input value="${SEM}" disabled style="width:40px"></label>`;}
-function render(){
-  const f=SCREENS[view.menu];
-  $('#main').innerHTML=f?f():'<p>준비 중</p>';
-  $('#main').scrollTop=0;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   출결
-═══════════════════════════════════════════════════════════ */
-function attOf(d,sid){return (S.att[d]||{})[sid]||null;}
-function attLabel(a){if(!a||!a.t)return '';return a.r==='인정'?`${a.t}(인정)`:`${a.t}(${a.r})`;}
-function attStats(sid,from,to){
-  const r={days:0,abs:{질병:0,미인정:0,기타:0},late:{질병:0,미인정:0,기타:0},early:{질병:0,미인정:0,기타:0},skip:{질병:0,미인정:0,기타:0},rec:0};
-  DAYS.filter(d=>d>=from&&d<=to&&d<=S.simDate).forEach(d=>{
-    r.days++;const a=attOf(d,sid);if(!a)return;
-    if(a.r==='인정'){r.rec++;return;}
-    const k={결석:'abs',지각:'late',조퇴:'early',결과:'skip'}[a.t];r[k][a.r]++;
-  });
-  return r;
-}
-const sumR=o=>o.질병+o.미인정+o.기타;
+function L(req,label,inner,id){return `<label id="${id||''}"><b class="${req?'req':''}">${label}</b>${inner}</label>`;}
+function fixedCond(){return L(1,'학년도',`<select disabled><option>${YEAR}</option></select>`)+L(1,'학기',`<select disabled><option>${SEM}학기</option></select>`)+L(1,'학년',`<select disabled><option>1</option></select>`);}
+function selSubj(){return L(1,'과목',`<select onchange="cond.subj=this.value;unq();render()">${SUBJECTS.map(s=>`<option value="${s.id}" ${cond.subj===s.id?'selected':''}>${subjLabel(s.id)}</option>`).join('')}</select>`,'f-subj');}
+function selRoom(all){if(!all&&cond.room==='all')cond.room=CLASSES[0];return L(1,'강의실',`<select onchange="cond.room=this.value;unq();render()">${all?`<option value="all" ${cond.room==='all'?'selected':''}>전체</option>`:''}${CLASSES.map(c=>`<option value="${c}" ${cond.room===c?'selected':''}>${clsName(c)}</option>`).join('')}</select>`,'f-room');}
+function selCls(){return L(1,'반',`<select onchange="cond.cls=this.value;unq();render()">${CLASSES.map(c=>`<option value="${c}" ${cond.cls===c?'selected':''}>${c.split('-')[1]}</option>`).join('')}</select>`,'f-cls');}
+function unq(){queried[view.menu]=false;}
+function qbtn(){return `<button class="btn q" id="b-query" onclick="queried['${view.menu}']=true;render()">조회</button>`;}
+function needQuery(){return queried[view.menu]?'':`<div class="empty">조회 조건을 확인한 뒤 <b>[조회]</b> 버튼을 누르세요.</div>`;}
+const roomsOf=()=>cond.room==='all'?CLASSES:[cond.room];
+function wdMark(sid){const w=S.withdrawn[sid];return w?`<span class="chip crit">${w.type}</span>`:'';}
 
 SCREENS={};
-SCREENS['att-daily']=()=>{
-  const cls=cond.cls, d=cond.date, m=d.slice(0,7);
-  const editable=can.attEdit(cls)&&!isMonthClosed(cls,m)&&!S.attFinal&&d<=S.simDate&&DAYS.includes(d);
-  const done=!!(S.attDone[cls]||{})[d];
-  const status=!DAYS.includes(d)?'<span class="chip lock">수업일 아님</span>':d>S.simDate?'<span class="chip lock">기준일 이후</span>':isMonthClosed(cls,m)?'<span class="chip lock">월마감 완료 · 수정 불가</span>':done?'<span class="chip ok">저장됨</span>':'<span class="chip crit">미저장(미처리)</span>';
-  const cal=renderCal(cls,m);
-  const rows=students(cls).map(st=>{
-    const a=attOf(d,st.id)||{};
-    return `<tr><td class="fix">${st.no}</td><td class="fix2 l">${st.name}</td><td>${st.gender}</td>
-      <td class="${a.t?'abs':''}"><div class="att-cell">
-        <select ${editable?'':'disabled'} onchange="attChange('${d}','${st.id}','t',this.value)"><option value="">출석</option>${ATT_TYPES.map(t=>`<option ${a.t===t?'selected':''}>${t}</option>`).join('')}</select>
-        <select ${editable&&a.t?'':'disabled'} onchange="attChange('${d}','${st.id}','r',this.value)">${ATT_REASONS.map(t=>`<option ${a.r===t?'selected':''}>${t}</option>`).join('')}</select>
-      </div></td>
-      <td class="l"><input class="wide" type="text" ${editable&&a.t?'':'disabled'} value="${esc(a.m||'')}" placeholder="사유·비고" onchange="attChange('${d}','${st.id}','m',this.value)"></td>
-      <td class="l" style="font-size:11px;color:#888">${attLabel(a)}</td></tr>`;}).join('');
-  const cnt=students(cls).filter(st=>attOf(d,st.id)).length;
-  return crumb('학생생활','출결관리','일일출결관리')+title('일일출결관리','학급 담임이 날짜별로 출결을 입력하고 [저장]합니다. 저장하지 않은 날은 월마감이 되지 않습니다.')
-  +`<div class="cond">${fixedCond()}${selCls()}<label><b>일자</b><input type="date" value="${d}" min="${TERM_START}" max="${TERM_END}" onchange="cond.date=this.value;cond.month=this.value.slice(0,7);render()"></label><label><b>월</b><select onchange="cond.month=this.value;cond.date=firstDay(this.value);render()">${MONTHS.map(x=>`<option ${m===x?'selected':''}>${x}</option>`).join('')}</select></label><span class="status">${SCHOOL_EVENTS[d]?'학사일정: '+SCHOOL_EVENTS[d]:''}</span></div>`
-  +`<div class="two"><div><div class="bar"><span>${clsName(cls)} · ${d} ${status}</span><span class="sp"></span><span class="status">특이사항 ${cnt}명</span>
-    <button class="btn p" ${editable?'':'disabled'} onclick="attSave()">저장</button><button class="btn" ${editable?'':'disabled'} onclick="attAllPresent()">전원 출석</button></div>
-    <div class="grid-wrap"><table class="grid"><thead><tr><th class="fix">번호</th><th class="fix2">성명</th><th>성별</th><th>출결구분 / 사유</th><th style="min-width:160px">비고</th><th>표시</th></tr></thead><tbody>${rows}</tbody></table></div></div>
-    <div><div class="note">달력에서 날짜를 누르면 그 날로 이동합니다. <span class="chip ok">저장</span> <span class="chip crit">미저장</span> 회색은 휴업일·기준일 이후. 월마감된 달은 자물쇠 표시.</div>${cal}</div></div>`;
+/* ═════════════════ 학적 > 출결 ═════════════════ */
+SCREENS['att-day']=()=>{
+  const c=cond.cls;const ed=can.homeroomOf(c);const open=DAYS.filter(d=>!S.dayClose[c][d]);
+  const rows=DAYS.slice().reverse().map(d=>`<tr><td>${d}</td><td>${['일','월','화','수','목','금','토'][new Date(d+'T00:00:00').getDay()]}</td><td>${S.dayClose[c][d]?'<span class="chip lock">마감</span>':'<span class="chip crit">미마감</span>'}</td><td>${S.dayClose[c][d]?'':`<button class="btn s p" ${ed?'':'disabled'} onclick="dayClose('${d}')">출결마감</button>`}</td></tr>`).join('');
+  return wtabs('일일출결마감(학급담임용)')+title('일일출결관리 — 일출결마감','학급담임이 날짜별 출결을 확인하고 {출결마감}합니다. 모든 수업일이 마감되어야 교과담임의 학기별과목마감이 가능합니다.')
+  +`<div class="cond">${fixedCond()}${selCls()}<span class="sp"></span>${qbtn()}</div>`+needQuery()+(queried[view.menu]?
+  `<div class="bar"><span>${clsName(c)} · 수업일 ${DAYS.length}일 · 미마감 ${open.length}일 ${open.length?'<span class="chip crit">'+open.join(', ')+'</span>':'<span class="chip ok">전체 마감</span>'}</span><span class="sp"></span><button class="btn g" id="b-bulk" ${ed&&open.length?'':'disabled'} onclick="bulkDayClose()">미마감 일괄마감</button></div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>일자</th><th>요일</th><th>마감여부</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'');
 };
-function firstDay(m){return DAYS.find(d=>d.startsWith(m))||m+'-01';}
-function renderCal(cls,m){
-  const [y,mo]=m.split('-').map(Number);const first=new Date(y,mo-1,1);const last=new Date(y,mo,0).getDate();
-  let h=`<div class="bar"><b>${y}년 ${mo}월 ${isMonthClosed(cls,m)?'<span class="chip lock">🔒 마감</span>':''}</b></div><div class="cal">`+['일','월','화','수','목','금','토'].map(x=>`<div class="hd">${x}</div>`).join('');
-  for(let i=0;i<first.getDay();i++)h+='<div></div>';
-  for(let dd=1;dd<=last;dd++){
-    const iso=`${m}-${String(dd).padStart(2,'0')}`;const isDay=DAYS.includes(iso);
-    let cl='d';if(!isDay)cl+=' off';else if(iso>S.simDate)cl+=' future';else cl+=(S.attDone[cls]||{})[iso]?' done':' todo';
-    if(iso===cond.date)cl+=' sel';
-    const ev=HOLIDAYS[iso]||SCHOOL_EVENTS[iso]||'';
-    const n=isDay?students(cls).filter(st=>attOf(iso,st.id)).length:0;
-    h+=`<div class="${cl}" ${isDay?`onclick="cond.date='${iso}';render()"`:''}><div class="n">${dd}</div><div class="ev">${ev}</div>${n?`<div>${n}명</div>`:''}</div>`;
+function bulkDayClose(){const c=cond.cls;const open=DAYS.filter(d=>!S.dayClose[c][d]);confirmBox('일출결 일괄마감',`미마감 ${open.length}일을 모두 마감하시겠습니까?`,()=>{open.forEach(d=>S.dayClose[c][d]=true);addLog(me.name,`일출결 일괄마감 ${c}`);save();toast('마감되었습니다.');render();},'마감');}
+function dayClose(d){S.dayClose[cond.cls][d]=true;addLog(me.name,`일출결마감 ${cond.cls} ${d}`);save();toast('마감되었습니다.');render();}
+
+SCREENS['att-period']=()=>{
+  const s=cond.subj;if(cond.room==='all')cond.room=CLASSES[0];const c=cond.room;const ed=can.teacherOf(s);
+  const list=PERIODS[s];const open=list.filter(x=>!S.periodClose[s][c][x.d+'|'+x.p]);
+  const rows=list.slice().reverse().map(x=>{const k=x.d+'|'+x.p;const cl=S.periodClose[s][c][k];return `<tr><td>${x.d}</td><td>${x.p}교시</td><td>${cl?'<span class="chip lock">마감</span>':'<span class="chip crit">미마감</span>'}</td><td>${cl?'':`<button class="btn s p" ${ed?'':'disabled'} onclick="periodClose('${k}')">교시마감</button>`}</td></tr>`;}).join('');
+  return wtabs('과목출결마감(교시별)')+title('과목별출결관리 — 과목출결마감','교과담임이 강의실별로 수업한 교시의 출결을 마감합니다. {과목교시마감수}가 시간표 총수업수와 같아야 학기별과목마감이 가능합니다.')
+  +`<div class="cond">${fixedCond()}${selSubj()}${selRoom()}<span class="sp"></span>${qbtn()}</div>`+needQuery()+(queried[view.menu]?
+  `<div class="bar"><span>${subjLabel(s)} · ${clsName(c)} · 총수업수 ${list.length} · 교시마감수 ${periodCloseCnt(s,c)} · 미마감 ${open.length} ${open.length?'<span class="chip crit">미마감 있음</span>':'<span class="chip ok">전체 마감</span>'}</span><span class="sp"></span><button class="btn g" id="b-bulk" ${ed&&open.length?'':'disabled'} onclick="bulkPeriodClose()">미마감 일괄마감</button></div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>일자</th><th>교시</th><th>마감여부</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'');
+};
+function bulkPeriodClose(){const s=cond.subj,c=cond.room;const open=PERIODS[s].filter(x=>!S.periodClose[s][c][x.d+'|'+x.p]);confirmBox('교시 일괄마감',`미마감 ${open.length}교시를 모두 마감하시겠습니까?`,()=>{open.forEach(x=>S.periodClose[s][c][x.d+'|'+x.p]=true);addLog(me.name,`과목 교시 일괄마감 ${s} ${c}`);save();toast('마감되었습니다.');render();},'마감');}
+function periodClose(k){S.periodClose[cond.subj][cond.room][k]=true;addLog(me.name,`과목 교시마감 ${cond.subj} ${cond.room} ${k}`);save();toast('마감되었습니다.');render();}
+
+function roomIssues(s,c){const a=periodCloseCnt(s,c),b=dayCloseCnt(s,c),t=total(s);const iss=[];if(a!==t)iss.push(`과목교시마감수(${a}) ≠ 시간표총수업수(${t}) — 교과담임이 [과목출결마감(교시별)]에서 미마감 교시를 마감해야 합니다.`);if(b!==t)iss.push(`반별일출결마감수(${b}) ≠ 시간표총수업수(${t}) — ${clsName(c)} 학급담임이 [일일출결마감]에서 미마감 일자를 마감해야 합니다.`);return iss;}
+SCREENS['att-room']=()=>{
+  const s=cond.subj;const ed=can.teacherOf(s);
+  const rows=CLASSES.map(c=>{const a=periodCloseCnt(s,c),b=dayCloseCnt(s,c),t=total(s);const rc=S.roomClose[s][c];const iss=roomIssues(s,c);
+    return `<tr><td>${subjLabel(s)}</td><td>${clsName(c)}</td><td>${userName(subj(s).teacher)}</td><td class="${a!==t?'bad':''}">${a}</td><td class="${b!==t?'bad':''}">${b}</td><td>${t}</td><td>${rc?`<span class="chip lock">마감 (${rc.by} ${rc.at})</span>`:iss.length?'<span class="chip crit">마감 불가</span>':'<span class="chip ok">마감 가능</span>'}</td><td>${rc?`<button class="btn s" ${can.admin()&&!S.attAll.done?'':'disabled'} onclick="roomUnclose('${c}')">마감취소</button>`:`<button class="btn s p" id="b-room-${c}" ${ed?'':'disabled'} onclick="roomCloseTry('${c}')">학기별과목마감</button>`}</td></tr>`;}).join('');
+  return wtabs('학기별과목출결마감(창의적체험활동제외)')+title('학기별과목출결마감','교과담임이 강의실별로 {학기별과목마감}합니다. ※ 과목교시마감수 = 반별일출결마감수 = 시간표총수업수 인 경우에만 마감할 수 있습니다.')
+  +`<div class="cond">${fixedCond()}${selSubj()}<span class="sp"></span>${qbtn()}</div>`+needQuery()+(queried[view.menu]?
+  `${S.attAll.done?'<div class="note">과목전체마감이 완료되어 마감취소는 업무담당자의 전체마감 취소 후에만 가능합니다.</div>':''}
+  <div class="grid-wrap auto"><table class="grid"><thead><tr><th>과목</th><th>강의실</th><th>교과담임</th><th>과목교시마감수</th><th>반별일출결마감수</th><th>시간표총수업수</th><th>마감여부</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'');
+};
+function roomCloseTry(c){const s=cond.subj;const iss=roomIssues(s,c);if(iss.length){alertBox('마감 불가',iss.map(i=>'· '+i).join('\n'));return;}
+  confirmBox('학기별과목마감',`${subjLabel(s)} ${clsName(c)} 강의실의 ${SEM}학기 과목출결을 마감하시겠습니까?`,()=>{S.roomClose[s][c]={by:me.name,at:nowStr()};addLog(me.name,`학기별과목마감 ${s} ${c}`);save();toast('마감되었습니다.');render();},'마감');}
+function roomUnclose(c){confirmBox('마감취소',`${subjLabel(cond.subj)} ${clsName(c)} 학기별과목마감을 취소하시겠습니까?`,()=>{delete S.roomClose[cond.subj][c];addLog(me.name,`학기별과목마감 취소 ${cond.subj} ${c}`);save();render();},'마감취소');}
+
+function approvalRow(a){return a.approved?`<span class="chip ok">결재 완료 (${a.approved.by} ${a.approved.at})</span>`:a.req?`<span class="chip warn">승인요청 중 (결재 대기)</span>`:a.done?`<span class="chip info">마감 완료 · 승인요청 전</span>`:`<span class="chip crit">미마감</span>`;}
+function requestApproval(obj,type,title){obj.req={by:me.name,at:nowStr()};S.approvals.push({id:'A'+Date.now(),type,title,by:me.name,at:nowStr(),status:'대기'});addLog(me.name,`승인요청: ${title}`);save();toast('승인요청(결재 상신)되었습니다. 결재권자(교감)로 로그인하여 [업무승인(결재) › 결재함]에서 결재하세요.');render();}
+
+SCREENS['att-all']=()=>{
+  const rows=SUBJECTS.map(s=>CLASSES.map(c=>{const rc=S.roomClose[s.id][c];return `<tr><td>${subjLabel(s.id)}</td><td>${clsName(c)}</td><td>${userName(s.teacher)}</td><td>${rc?`<span class="chip lock">마감</span>`:'<span class="chip crit">미마감</span>'}</td></tr>`;}).join('')).join('');
+  const ok=allRoomsClosed();const A=S.attAll;
+  return wtabs('과목전체마감')+title('과목별출결관리 — 과목전체마감','업무담당자가 모든 강의실의 학기별과목마감을 확인하고 {전체마감} 후 {승인요청}합니다. 결재권자의 결재를 거쳐야 보장지도 대상자 가져오기가 활성화됩니다.')
+  +`<div class="cond">${fixedCond()}<span class="sp"></span>${qbtn()}</div>`+needQuery()+(queried[view.menu]?
+  `<div class="sumbox"><div class="h">과목전체마감 현황</div><table><tr><td class="k">강의실 마감</td><td class="v">${SUBJECTS.reduce((n,s)=>n+CLASSES.filter(c=>roomClosed(s.id,c)).length,0)} / ${SUBJECTS.length*CLASSES.length}</td></tr><tr><td class="k">전체마감 상태</td><td class="v">${approvalRow(A)}</td></tr></table></div>
+  <div class="bar"><span class="sp"></span>
+    ${A.done?`<button class="btn" ${can.admin()&&!A.req?'':'disabled'} onclick="confirmBox('전체마감 취소','과목전체마감을 취소하시겠습니까?',()=>{S.attAll={done:null,req:null,approved:null};addLog(me.name,'과목전체마감 취소');save();render();},'취소')">전체마감취소</button>`:`<button class="btn n" id="b-attall" ${can.admin()&&ok?'':'disabled'} onclick="confirmBox('과목전체마감','${YEAR}학년도 ${SEM}학기 과목출결을 전체마감하시겠습니까?',()=>{S.attAll.done={by:me.name,at:nowStr()};addLog(me.name,'과목전체마감');save();toast('전체마감되었습니다. 이어서 {승인요청}하세요.');render();},'전체마감')">전체마감</button>`}
+    <button class="btn g" id="b-attreq" ${can.admin()&&A.done&&!A.req?'':'disabled'} onclick="requestApproval(S.attAll,'attAll','${YEAR}학년도 ${SEM}학기 과목출결 전체마감')">승인요청</button></div>
+  ${!ok?'<div class="note crit">학기별과목마감이 되지 않은 강의실이 있습니다. 해당 교과담임에게 마감을 요청하세요.</div>':''}
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>과목</th><th>강의실</th><th>교과담임</th><th>학기별과목마감</th></tr></thead><tbody>${rows}</tbody></table></div>`:'');
+};
+
+SCREENS['hak-wd']=()=>{
+  const rows=Object.entries(S.withdrawn).map(([sid,w])=>{const st=studentById(sid);return `<tr><td><input type="radio" name="wd" ${cond.wdSel===sid?'checked':''} onclick="cond.wdSel='${sid}';render()"></td><td>${st.g}</td><td>${st.c}</td><td>${st.no}</td><td>${st.name}</td><td>${st.gender}</td><td>${w.type}</td><td>${w.date}</td><td>${w.reflected?'<span class="chip ok">반영</span>':'<span class="chip warn">미반영</span>'}</td></tr>`;}).join('');
+  return wtabs('휴학/자퇴/퇴학/제적관리')+title('학업중단관리 — 휴학/자퇴/퇴학/제적관리','2차 정기시험을 응시하고 학업중단(자퇴 등)한 학생은 학기말 성적산출 대상이므로, 최소성취수준보장지도 결과를 반영한 뒤 학적 처리 결과를 학생부에 반영합니다.')
+  +`<div class="cond">${fixedCond()}<label><b>기간</b><input type="date" value="${TERM_START}" disabled> ~ <input type="date" value="${TERM_END}" disabled></label><span class="radio"><label><input type="radio" checked> 미반영자</label><label><input type="radio"> 반영자</label></span><span class="sp"></span>${qbtn()}</div>`+needQuery()+(queried[view.menu]?
+  `<div class="bar"><span class="status">Total ${Object.keys(S.withdrawn).length} · 학생을 선택(○)한 뒤 반영하세요.</span><span class="sp"></span><button class="btn n" id="b-wdreflect" ${can.admin()&&cond.wdSel?'':'disabled'} onclick="wdReflect()">학적처리결과 학생부반영</button></div>
+  <div class="grid-wrap auto"><table class="grid"><thead><tr><th></th><th>학년</th><th>반</th><th>번호</th><th>성명</th><th>성별</th><th>변동구분</th><th>변동일자</th><th>학생부 반영</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="note">자퇴 학생은 [최소성취수준보장지도(추가학습)이수관리]의 대상자 목록에 <span class="chip crit">자퇴</span> 표시로 나타나며, 보장지도 업무가 끝난 뒤 이 화면에서 학적 처리 결과를 반영합니다.</div>`:'');
+};
+function wdReflect(){const sid=cond.wdSel;const w=S.withdrawn[sid];const pending=SUBJECTS.filter(s=>!msbOf(s.id,studentById(sid).cls).closed);
+  if(pending.length){alertBox('반영 불가',`해당 학생의 최소성취수준보장지도 업무가 끝나지 않은 과목이 있습니다.\n${pending.map(s=>'· '+subjLabel(s.id)).join('\n')}\n\n[최소성취수준보장지도(추가학습)이수관리] 마감 후 반영하세요.`);return;}
+  confirmBox('학생부반영',`${studentById(sid).name} 학생의 ${w.type} 처리 결과를 학생부에 반영하시겠습니까?`,()=>{w.reflected=true;addLog(me.name,`학업중단 학생부반영 ${sid}`);save();toast('반영되었습니다.');render();});}
+
+SCREENS['hak-tt']=()=>wtabs('전체시간표관리')+title('전체시간표관리 — 과목별 총수업수','학기 시간표에 등록된 총수업수입니다. 추가 입학·검정고시 합격자 등은 입급일 이후 시수만 조회되고 이수기준 충족 여부는 정상 산정됩니다.')
+  +`<div class="cond">${fixedCond()}<span class="sp"></span>${qbtn()}</div>`+needQuery()+(queried[view.menu]?`<div class="grid-wrap auto"><table class="grid"><thead><tr><th>과목</th><th>학점</th><th>주당 편성</th><th>시간표총수업수</th><th>출석 기준(2/3)</th></tr></thead><tbody>${SUBJECTS.map(s=>`<tr><td>${subjLabel(s.id)}</td><td>${s.credit}</td><td>${Object.entries(TT[s.id]).map(([w,p])=>['일','월','화','수','목','금','토'][w]+p).join(' · ')}</td><td>${total(s.id)}</td><td>${needAttend(s.id)}</td></tr>`).join('')}</tbody></table></div>`:'');
+
+/* ═════════════════ 성적 ═════════════════ */
+function examScreen(kind){
+  const key=kind==='written'?'정기시험':'수행평가';
+  const rows=SUBJECTS.map(s=>{const cl=S.examClose[s.id][kind];return `<tr><td>${subjLabel(s.id)}</td><td>${userName(s.teacher)}</td><td>${kind==='written'?'1차·2차 지필':'논술형·프로젝트'}</td><td>${cl?'<span class="chip lock">마감</span>':'<span class="chip crit">미마감</span>'}</td><td>${cl?`<button class="btn s" ${can.teacherOf(s.id)&&!S.calcAll.done?'':'disabled'} onclick="examToggle('${s.id}','${kind}',false)">마감취소</button>`:`<button class="btn s p" id="b-exam-${s.id}" ${can.teacherOf(s.id)?'':'disabled'} onclick="examToggle('${s.id}','${kind}',true)">마감</button>`}</td></tr>`;}).join('');
+  return wtabs(`${key}마감관리`)+title(`${key}마감관리`,`과목별 ${key} 성적 입력이 끝나면 교과담임이 마감합니다. 미마감 과목은 학업성취율 현황이 조회되지 않습니다.`)
+  +`<div class="cond">${fixedCond()}<span class="sp"></span>${qbtn()}</div>`+needQuery()+(queried[view.menu]?`<div class="grid-wrap auto"><table class="grid"><thead><tr><th>과목</th><th>교과담임</th><th>평가</th><th>마감여부</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'');
+}
+SCREENS['ex-written']=()=>examScreen('written');
+SCREENS['ex-perf']=()=>examScreen('perf');
+function examToggle(s,kind,v){S.examClose[s][kind]=v;addLog(me.name,`${kind==='written'?'정기시험':'수행평가'} ${v?'마감':'마감취소'} ${s}`);save();toast(v?'마감되었습니다.':'마감이 취소되었습니다.');render();}
+
+SCREENS['calc-close']=()=>{
+  const rows=SUBJECTS.map(s=>{const e=S.examClose[s.id];return `<tr><td>${subjLabel(s.id)}</td><td>${userName(s.teacher)}</td><td>${e.written?'<span class="chip lock">마감</span>':'<span class="chip crit">미마감</span>'}</td><td>${e.perf?'<span class="chip lock">마감</span>':'<span class="chip crit">미마감</span>'}</td><td>${e.written&&e.perf?'<span class="chip ok">산출 가능</span>':'<span class="chip crit">산출 불가</span>'}</td></tr>`;}).join('');
+  const ok=SUBJECTS.every(s=>S.examClose[s.id].written&&S.examClose[s.id].perf);const A=S.calcAll;
+  return wtabs('성적산출마감관리')+title('성적처리 — 성적산출마감관리','업무담당자가 {성적산출전체마감} 후 {승인요청}합니다. 결재가 완료되어야 보장지도 대상자 가져오기가 활성화됩니다(1단계 출석률 마감과 순서 무관).')
+  +`<div class="cond">${fixedCond()}<span class="sp"></span>${qbtn()}</div>`+needQuery()+(queried[view.menu]?
+  `<div class="sumbox"><div class="h">성적산출전체마감 현황</div><table><tr><td class="k">전체마감 상태</td><td class="v">${approvalRow(A)}</td></tr></table></div>
+  <div class="bar"><span class="sp"></span>${A.done?`<button class="btn" ${can.admin()&&!A.req?'':'disabled'} onclick="confirmBox('전체마감 취소','성적산출전체마감을 취소하시겠습니까?',()=>{S.calcAll={done:null,req:null,approved:null};addLog(me.name,'성적산출전체마감 취소');save();render();},'취소')">전체마감취소</button>`:`<button class="btn n" id="b-calcall" ${can.admin()&&ok?'':'disabled'} onclick="confirmBox('성적산출전체마감','${YEAR}학년도 ${SEM}학기 학기말 성적산출을 전체마감하시겠습니까?',()=>{S.calcAll.done={by:me.name,at:nowStr()};addLog(me.name,'성적산출전체마감');save();toast('전체마감되었습니다. 이어서 {승인요청}하세요.');render();},'전체마감')">성적산출전체마감</button>`}
+  <button class="btn g" id="b-calcreq" ${can.admin()&&A.done&&!A.req?'':'disabled'} onclick="requestApproval(S.calcAll,'calcAll','${YEAR}학년도 ${SEM}학기 성적산출 전체마감')">승인요청</button></div>
+  ${ok?'':'<div class="note crit">정기시험 또는 수행평가가 마감되지 않은 과목이 있습니다. [정기시험마감관리]·[수행평가마감관리]에서 해당 과목의 마감 여부를 확인하세요.</div>'}
+  <div class="grid-wrap auto"><table class="grid"><thead><tr><th>과목</th><th>교과담임</th><th>정기시험 마감</th><th>수행평가 마감</th><th>학기말 성적산출</th></tr></thead><tbody>${rows}</tbody></table></div>`:'');
+};
+
+/* ── 최소성취수준보장지도(추가학습) 이수관리 ── */
+const MSB_TABS=[['target','최소성취수준보장지도(추가학습)대상자'],['exc','최소성취수준보장지도(추가학습)예외처리'],['hours','최소성취수준보장지도(추가학습)이수관리'],['close','최소성취수준보장지도(추가학습)마감']];
+function msbTargets(s,c){return (msbOf(s,c).targets||[]).map(sid=>studentById(sid));}
+function msbSummary(s){let t=0,cr=0,at=0,ac=0;roomsOf().forEach(c=>msbTargets(s,c).forEach(st=>{t++;const sf=shortfall(s,st.id);if(sf.length)cr++;if(sf.includes('출석'))at++;if(sf.includes('학업성취율'))ac++;}));return {t,cr,at,ac};}
+function roomsCloseText(s){const un=roomsOf().filter(c=>!roomClosed(s,c));return un.length?`<span class="tip">출결이 마감되지 않은 강의실이 있습니다.<span class="tt">마감되지 않은 강의실: ${un.map(clsName).join(', ')}</span></span>`:'마감';}
+SCREENS['msb-manage']=()=>{
+  const s=cond.subj;const t=cond.tab||'target';const na=guideOn?nextAction():null;
+  return `<div class="wtabs"><span class="wt">🏠</span><span class="wt">...최소성취수준보장지도(추가학습)이수관리</span>${MSB_TABS.map(x=>`<span class="wt ${t===x[0]?'on':''} ${na&&na.menu==='msb-manage'&&na.tab===x[0]?'next':''}" style="cursor:pointer" onclick="cond.tab='${x[0]}';unq();render()">${x[1]}</span>`).join('')}</div>`
+  +({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);
+};
+function msbTargetTab(s){
+  const sm=msbSummary(s);const q=queried[view.menu];const rooms=roomsOf();
+  const preOK=attAllApproved()&&calcAllApproved()&&rooms.every(c=>roomClosed(s,c));
+  const fetchedAny=rooms.some(c=>msbOf(s,c).targets);
+  const rows=rooms.flatMap(c=>msbTargets(s,c).map(st=>{const sf=shortfall(s,st.id);const f=finalOf(s,st.id);return `<tr><td>${st.c}</td><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td><td>${subjLabel(s)}</td><td>${subj(s).credit}</td><td>${f}</td><td class="${f<40?'bad':''}">${achieve(f)}</td><td>${attendOf(s,st.id)} / ${total(s)}</td><td class="${attOK(s,st.id)?'':'bad'}">${Math.round(attendOf(s,st.id)/total(s)*100)}%</td><td class="${sf.length?'bad':'good'}">${sf.length?sf.join('·')+' 미도달':'도달'}</td></tr>`;})).join('');
+  return title('최소성취수준보장지도(추가학습)대상자','')
+  +`<div class="cond">${fixedCond()}${selSubj()}${selRoom(true)}<span class="sp"></span>
+    <button class="btn" id="b-ach" onclick="popAchieve('${s}')">지필/수행 학업성취율 현황</button><button class="btn" id="b-att" onclick="popAtt('${s}')">과목별출결현황</button>
+    <button class="btn n" id="b-fetch" ${preOK&&can.teacherOf(s)?'':'disabled'} title="${preOK?'':'출결마감·성적산출전체마감(결재 완료) 후 활성화'}" onclick="fetchTargets('${s}')">대상자가져오기</button>
+    <button class="btn d" id="b-del" ${fetchedAny&&can.teacherOf(s)?'':'disabled'} onclick="deleteTargets('${s}')">대상자삭제</button>${qbtn()}</div>
+  <div class="sumbox"><div class="h">보장지도(추가학습) 대상은 다음과 같습니다.</div><table>
+    <tr><td class="k">성적산출전체마감여부</td><td class="v">${calcAllApproved()?'마감':'<span class="tip">미마감<span class="tt">[성적처리-성적산출마감관리]에서 전체마감 후 승인요청·결재 필요</span></span>'}</td></tr>
+    <tr><td class="k">과목별 출결 마감여부</td><td class="v">${attAllApproved()?roomsCloseText(s):'<span class="tip">미마감<span class="tt">[학적-출결관리-과목별출결관리] 학기별과목마감 → 과목전체마감 → 승인요청·결재 필요</span></span>'}</td></tr>
+    <tr><td class="k">대상자</td><td class="v">${sm.t}명</td></tr><tr class="hl"><td class="k">학점 미도달</td><td class="v">${sm.cr}명</td></tr><tr class="hl"><td class="k">출석 미도달</td><td class="v">${sm.at}명</td></tr><tr class="hl"><td class="k">학업성취율 미도달</td><td class="v">${sm.ac}명</td></tr></table></div>
+  ${!preOK?`<div class="note warn">{대상자가져오기}가 비활성화되어 있습니다. 해당 교과담임이 [학적-출결관리-과목별출결관리-학기별과목출결마감]에서 {학기별과목마감}하고, 업무담당자가 [과목전체마감]·[성적산출마감관리]에서 전체마감 후 {승인요청}하여 결재가 완료되어야 활성화됩니다.</div>`:''}
+  ${q?(rows?`<div class="status" style="margin-bottom:4px">Total ${rows.split('<tr>').length-1}</div><div class="grid-wrap"><table class="grid"><thead><tr><th>반</th><th>번호</th><th class="l">성명</th><th>과목</th><th>학점</th><th>학기말 원점수(성취율)</th><th>성취도</th><th>출석시수/총시수</th><th>출석률</th><th>미도달 구분</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty">대상자가 없습니다. ${preOK?'<b>[대상자가져오기]</b>를 눌러 미도달 학생을 가져오세요.':''}</div>`):needQuery()}`;
+}
+function fetchTargets(s){const rooms=roomsOf();
+  confirmBox('확인',`[대상자가져오기]로 현재 최소성취수준보장지도 대상자를 가져옵니다.\n실행하시겠습니까?\n\n주의 : 이전에 저장되었던 최소성취수준보장지도 대상자 관련 자료(예외처리·이수관리)를 모두 삭제합니다.`,()=>{
+    rooms.forEach(c=>{const m=msbOf(s,c);m.targets=students(c).filter(st=>shortfall(s,st.id).length).map(st=>st.id);m.exc={};m.hours={};m.creditApplied=null;m.closed=null;m.excSaved=false;m.hoursSaved=false;m.fetchedAt=nowStr();});
+    addLog(me.name,`대상자가져오기 ${s} ${rooms.join(',')}`);save();queried[view.menu]=true;toast('대상자를 가져왔습니다.');render();});}
+function deleteTargets(s){confirmBox('대상자삭제','산출한 대상자를 삭제하시겠습니까? 예외처리·이수관리 입력 내용도 함께 삭제됩니다.',()=>{roomsOf().forEach(c=>{const m=msbOf(s,c);m.targets=null;m.exc={};m.hours={};m.creditApplied=null;m.closed=null;m.excSaved=false;m.hoursSaved=false;});addLog(me.name,`대상자삭제 ${s}`);save();render();},'삭제');}
+function popAchieve(s){const e=S.examClose[s];
+  if(!e.written||!e.perf){alertBox('조회 불가',`${!e.written?'정기시험':''}${!e.written&&!e.perf?'·':''}${!e.perf?'수행평가':''} 성적이 마감되지 않아 학업성취율을 조회할 수 없습니다.\n[성적-정기시험-정기시험마감관리], [성적-수행평가-수행평가마감관리], [성적-성적처리-성적산출마감관리]에서 해당 과목의 마감 유무를 확인하세요.`);return;}
+  const list=roomsOf().flatMap(c=>students(c));const cut=k=>{const v=list.map(st=>S.score[s][st.id][k]);return {avg:Math.round(v.reduce((a,b)=>a+b,0)/v.length*10)/10};};
+  const pt=(name,k)=>`<tr><td>${name}</td><td>${cut(k).avg}</td><td>A/B 89.5</td><td>B/C 79.5</td><td>C/D 69.5</td><td>D/E 59.5</td></tr>`;
+  let tab='w';const body=()=>`<div class="stabs"><button class="${tab==='w'?'on':''}" onclick="msbPopTab('w')">정기시험 성취수준 점수</button><button class="${tab==='p'?'on':''}" onclick="msbPopTab('p')">수행 영역별 성취수준 점수</button><button class="${tab==='f'?'on':''}" onclick="msbPopTab('f')">학기말 성취수준 점수</button></div>`
+    +(tab==='w'?`<table class="grid"><thead><tr><th>평가구분</th><th>평균 성취율</th><th colspan="4">성취수준 분할점수</th></tr></thead><tbody>${pt('1차 지필평가','w1')}${pt('2차 지필평가','w2')}</tbody></table>`
+     :tab==='p'?`<table class="grid"><thead><tr><th>평가영역</th><th>평균 성취율</th><th colspan="4">성취수준 분할점수</th></tr></thead><tbody>${pt('논술형 평가','p1')}${pt('프로젝트·발표','p2')}</tbody></table>`
+     :`<div style="max-height:46vh;overflow:auto"><table class="grid"><thead><tr><th>반</th><th>번호</th><th>성명</th><th>1차지필</th><th>2차지필</th><th>수행1</th><th>수행2</th><th>학기말 성취율</th><th>성취도</th></tr></thead><tbody>${list.map(st=>{const sc=S.score[s][st.id];return `<tr><td>${st.c}</td><td>${st.no}</td><td>${st.name}</td><td>${sc.w1}</td><td>${sc.w2}</td><td>${sc.p1}</td><td>${sc.p2}</td><td class="${sc.final<40?'bad':''}">${sc.final}</td><td class="${sc.final<40?'bad':''}">${achieve(sc.final)}</td></tr>`;}).join('')}</tbody></table></div>`);
+  window.msbPopTab=t=>{tab=t;$('#mBody').innerHTML=body();};
+  modal(`지필/수행 학업성취율 현황 — ${subjLabel(s)} ${cond.room==='all'?'전체':clsName(cond.room)}`,body(),[{t:'닫기',p:true}],{html:1});}
+function popAtt(s){const rooms=roomsOf();const un=rooms.filter(c=>!roomClosed(s,c));
+  if(un.length){alertBox('조회 불가',`과목 출결이 마감되지 않은 강의실(${un.map(clsName).join(', ')})이 있어 학생들의 과목별 출결현황이 조회되지 않습니다.\n\n[교과담임-학적-출결관리-과목별출결관리]에서 교과담당교사가 수업한 '일자'와 '교시'를 {출결마감}하고, [학급담임-학적-출결관리-일일출결관리]에서 해당 일자의 출결마감이 모두 되었는지 확인하세요.`);return;}
+  const list=rooms.flatMap(c=>students(c));
+  modal(`과목별출결현황 — ${subjLabel(s)}`,`<div class="status" style="margin-bottom:6px">※ 출석 기준: 총수업시수의 2/3 이상 출석 (기준출석시수 ${needAttend(s)} / 총수업시수 ${total(s)})</div><div style="max-height:56vh;overflow:auto"><table class="grid"><thead><tr><th>학년</th><th>반</th><th>번호</th><th>성명</th><th>총수업시수</th><th>결석시수</th><th>출석시수</th><th>출석률</th><th>기준출석시수</th><th>출석기준 충족</th></tr></thead><tbody>${list.map(st=>{const a=attendOf(s,st.id);const ok=attOK(s,st.id);return `<tr><td>${st.g}</td><td>${st.c}</td><td>${st.no}</td><td>${st.name}</td><td>${total(s)}</td><td>${S.absent[s][st.id]||0}</td><td>${a}</td><td>${Math.round(a/total(s)*100)}%</td><td>${needAttend(s)}</td><td class="${ok?'good':'bad'}">${ok?'충족':'미충족'}</td></tr>`;}).join('')}</tbody></table></div>`,[{t:'닫기',p:true}],{html:1});}
+
+function msbExcTab(s){
+  const q=queried[view.menu];const rooms=roomsOf();const ed=can.teacherOf(s);const f=cond.filter||'all';
+  const rows=rooms.flatMap(c=>{const m=msbOf(s,c);const locked=!!m.closed;return msbTargets(s,c).filter(st=>f==='all'||(f==='exc'?m.exc[st.id]:!m.exc[st.id])).map(st=>{const e=m.exc[st.id]||{};const sf=shortfall(s,st.id);
+    return `<tr><td><input type="checkbox" disabled></td><td>${st.c}</td><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td><td>${S.withdrawn[st.id]?S.withdrawn[st.id].type:''}</td><td>${subjLabel(s)}</td><td>${subj(s).credit}</td><td>${sf.join('·')} 미도달</td><td>${achieve(finalOf(s,st.id))}</td>
+      <td class="exc-cell"><select ${ed&&!locked?'':'disabled'} onchange="excSet('${s}','${c}','${st.id}','type',this.value)"><option value="">--선택--</option>${EXC_TYPES.map(t=>`<option ${e.type===t?'selected':''}>${t}</option>`).join('')}</select></td>
+      <td><input type="text" class="wide" ${ed&&!locked&&e.type==='기타'?'':'disabled'} value="${esc(e.reason||'')}" placeholder="${e.type==='기타'?'예외사유 입력(필수)':''}" onchange="excSet('${s}','${c}','${st.id}','reason',this.value)"></td></tr>`;});}).join('');
+  return title('최소성취수준보장지도(추가학습)예외처리','학점이수 기준 미도달자 중 예외 대상(특수교육대상자, 학교외 장소 수강, 기타)을 등록하면 예외처리로 학점을 부여합니다. 예외처리된 학생은 이수관리 대상에서 빠집니다.')
+  +`<div class="cond">${fixedCond()}${selSubj()}${selRoom(true)}<span class="radio"><label><input type="radio" name="f" ${f==='all'?'checked':''} onclick="cond.filter='all';render()"> 전체</label><label><input type="radio" name="f" ${f==='exc'?'checked':''} onclick="cond.filter='exc';render()"> 예외</label><label><input type="radio" name="f" ${f==='non'?'checked':''} onclick="cond.filter='non';render()"> 미예외</label></span><span class="sp"></span>${qbtn()}<button class="btn" onclick="window.print()">출력</button><button class="btn g" onclick="toast('엑셀 다운로드는 시뮬레이터에서 지원하지 않습니다.')">엑셀다운로드</button><button class="btn n" id="b-save" ${ed?'':'disabled'} onclick="excSave('${s}')">저장</button></div>
+  ${q?(rows?`<div class="status" style="margin-bottom:4px">Total ${rows.split('<tr>').length-1}</div><div class="grid-wrap"><table class="grid"><thead><tr><th><input type="checkbox" disabled></th><th>반</th><th>번호</th><th class="l">성명</th><th>학적변동</th><th>과목</th><th>학점</th><th>미도달 구분</th><th>성취도</th><th>예외</th><th class="l">예외사유(기타)</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">대상자가 없습니다. [대상자] 탭에서 먼저 <b>[대상자가져오기]</b>를 하세요.</div>'):needQuery()}`;
+}
+function excSet(s,c,sid,k,v){const m=msbOf(s,c);m.exc[sid]=m.exc[sid]||{};if(k==='type'){if(!v)delete m.exc[sid];else{m.exc[sid].type=v;if(v!=='기타')m.exc[sid].reason='';}}else m.exc[sid][k]=v;m.excSaved=false;save();render();}
+function excSave(s){const bad=[];roomsOf().forEach(c=>Object.entries(msbOf(s,c).exc).forEach(([sid,e])=>{if(e.type==='기타'&&!(e.reason||'').trim())bad.push(studentById(sid).name);}));if(bad.length){alertBox('저장 불가',`'기타' 예외는 예외사유를 입력해야 합니다: ${bad.join(', ')}`);return;}roomsOf().forEach(c=>msbOf(s,c).excSaved=true);addLog(me.name,`예외처리 저장 ${s}`);save();toast('저장되었습니다.');render();}
+
+function msbHoursTab(s){
+  const q=queried[view.menu];const rooms=roomsOf();const ed=can.teacherOf(s);const f=cond.filter2||'all';
+  const rows=rooms.flatMap(c=>{const m=msbOf(s,c);const locked=!!m.closed;const need=subj(s).credit*m.hpc;const base=Math.ceil(need*2/3);
+    return msbTargets(s,c).filter(st=>!m.exc[st.id]).map(st=>{const h=m.hours[st.id]||{};const done=h.h!=null&&h.h>=base;
+      if(f==='done'&&!done)return'';if(f==='undone'&&done)return'';
+      return `<tr><td><input type="checkbox" disabled></td><td>${st.c}</td><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td><td>${S.withdrawn[st.id]?S.withdrawn[st.id].type:''}</td><td>${subjLabel(s)}</td><td>${subj(s).credit}</td><td><input type="number" min="1" max="5" value="${m.hpc}" ${ed&&!locked?'':'disabled'} onchange="hpcSet('${s}','${c}',this.value)"></td><td>${attOK(s,st.id)?'도달':'<span class="bad">미도달</span>'}</td><td>${achieve(finalOf(s,st.id))}</td><td>${need}</td><td>${base}</td>
+        <td class="${h.h==null?'hours-cell':''}"><input type="number" min="0" max="${need}" value="${h.h??''}" ${ed&&!locked?'':'disabled'} onchange="hoursSet('${s}','${c}','${st.id}','h',this.value)"></td><td class="${h.h==null?'':done?'good':'bad'}">${h.h==null?'-':done?'이수':'미이수'}</td>
+        <td><input type="text" class="wide" value="${esc(h.note||'')}" ${ed&&!locked?'':'disabled'} placeholder="예) 최소 성취수준 보장지도 추가학습 이수" onchange="hoursSet('${s}','${c}','${st.id}','note',this.value)"></td><td>${m.creditApplied?'Y':'N'}</td></tr>`;});}).join('');
+  return title('최소성취수준보장지도(추가학습)이수관리','보장지도(추가학습)에 참여한 시수를 입력하면 이수기준 시수(필요시수의 2/3) 이상일 때 이수로 처리됩니다. 학점당 시수 기본 3시수(전문교과 2시수).')
+  +`<div class="cond">${fixedCond()}${selSubj()}${selRoom(true)}<span class="radio"><label><input type="radio" name="f2" ${f==='all'?'checked':''} onclick="cond.filter2='all';render()"> 전체</label><label><input type="radio" name="f2" ${f==='done'?'checked':''} onclick="cond.filter2='done';render()"> 이수</label><label><input type="radio" name="f2" ${f==='undone'?'checked':''} onclick="cond.filter2='undone';render()"> 미이수</label></span><span class="sp"></span>${qbtn()}<button class="btn" onclick="hpcApply('${s}')" ${ed?'':'disabled'}>시수적용</button><button class="btn" onclick="window.print()">출력</button><button class="btn g" onclick="toast('엑셀 다운로드는 시뮬레이터에서 지원하지 않습니다.')">엑셀다운로드</button><button class="btn n" id="b-save" ${ed?'':'disabled'} onclick="hoursSave('${s}')">저장</button></div>
+  ${q?(rows?`<div class="status" style="margin-bottom:4px">Total ${rows.split('<tr>').length-1}</div><div class="grid-wrap"><table class="grid"><thead><tr><th><input type="checkbox" disabled></th><th>반</th><th>번호</th><th class="l">성명</th><th>학적변동</th><th>과목</th><th>학점</th><th>학점당 시수</th><th>출석</th><th>성취도</th><th>필요시수</th><th>이수기준 시수</th><th>참여시수</th><th>이수여부</th><th class="l">비고</th><th>학점 반영여부</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">이수관리 대상자가 없습니다(대상자 미산출 또는 전원 예외처리).</div>'):needQuery()}`;
+}
+function hpcSet(s,c,v){msbOf(s,c).hpc=+v||3;save();render();}
+function hpcApply(s){confirmBox('시수적용','현재 입력한 학점당 시수를 선택 강의실의 모든 대상자에게 적용하시겠습니까?\n(특성화고등학교는 2시수로 수정 후 적용)',()=>{save();toast('적용되었습니다.');render();});}
+function hoursSet(s,c,sid,k,v){const m=msbOf(s,c);m.hours[sid]=m.hours[sid]||{};m.hours[sid][k]=k==='h'?(v===''?null:+v):v;m.hoursSaved=false;save();render();}
+function hoursSave(s){roomsOf().forEach(c=>msbOf(s,c).hoursSaved=true);addLog(me.name,`이수관리 저장 ${s}`);save();toast('저장되었습니다.');render();}
+
+function msbRoomStats(s,c){const m=msbOf(s,c);const need=subj(s).credit*m.hpc,base=Math.ceil(need*2/3);const T=msbTargets(s,c);let ex=0,done=0,un=0,pending=0;T.forEach(st=>{if(m.exc[st.id])ex++;else{const h=(m.hours[st.id]||{}).h;if(h==null)pending++;else if(h>=base)done++;else un++;}});return {t:T.length,ex,done,un,pending,applied:m.creditApplied?T.length:0};}
+function msbCloseTab(s){
+  const q=queried[view.menu];const rooms=roomsOf();const ed=can.teacherOf(s);
+  const agg=rooms.reduce((a,c)=>{const r=msbRoomStats(s,c);Object.keys(r).forEach(k=>a[k]=(a[k]||0)+r[k]);return a;},{});
+  const fetched=rooms.every(c=>msbOf(s,c).targets);const allApplied=rooms.every(c=>msbOf(s,c).creditApplied||!(msbOf(s,c).targets||[]).length);const allClosed=rooms.every(c=>msbOf(s,c).closed);
+  const rows=rooms.map(c=>{const r=msbRoomStats(s,c);const m=msbOf(s,c);return `<tr><td>${subjLabel(s)}</td><td>${clsName(c)}</td><td>${m.targets?r.t:'-'}</td><td>${r.ex}</td><td>${r.done}</td><td>${r.un}</td><td class="${r.pending?'bad':''}">${r.pending}</td><td>${m.creditApplied?`<span class="chip ok">반영 (${m.creditApplied.at})</span>`:'N'}</td><td>${m.closed?`<span class="chip lock">마감 (${m.closed.by} ${m.closed.at})</span>`:'<span class="chip warn">미마감</span>'}</td></tr>`;}).join('');
+  return title('최소성취수준보장지도(추가학습)마감','{학점반영} → {마감} 순으로 처리합니다. 학점반영 시 대상자의 이수/미이수 결과가 과목별 이수 여부로 성적 처리되며, 이후 학급담임이 [학생부반영]에서 교과학습발달상황에 반영합니다.')
+  +`<div class="cond">${fixedCond()}${selSubj()}${selRoom(true)}<span class="sp"></span>${qbtn()}
+    <button class="btn n" id="b-credit" ${ed&&fetched&&!agg.pending&&!allApplied?'':'disabled'} onclick="creditApply('${s}')">학점반영</button>
+    ${allClosed&&fetched?`<button class="btn" ${ed&&!S.msbMgmt.saved?'':'disabled'} onclick="msbUnclose('${s}')">마감취소</button>`:`<button class="btn d" id="b-close" ${ed&&allApplied&&fetched?'':'disabled'} onclick="msbClose('${s}')">마감</button>`}</div>
+  ${q?`<div class="sumbox"><div class="h">보장지도(추가학습) 대상은 다음과 같습니다.</div><table><tr><td class="k">대상자</td><td class="v">${agg.t}명</td></tr><tr><td class="k">예외처리자</td><td class="v">${agg.ex}명</td></tr><tr><td class="k">이수자</td><td class="v">${agg.done}명</td></tr><tr><td class="k">미이수자</td><td class="v">${agg.un}명</td></tr><tr class="${agg.pending?'hl':''}"><td class="k">참여시수 미입력</td><td class="v">${agg.pending}명</td></tr><tr><td class="k">학점반영자</td><td class="v">${agg.applied}명</td></tr></table></div>
+  ${!fetched?'<div class="note warn">대상자를 가져오지 않은 강의실이 있습니다.</div>':agg.pending?'<div class="note crit">참여시수가 입력되지 않은 대상자가 있어 학점반영을 할 수 없습니다. [이수관리] 탭에서 참여시수를 입력하세요.</div>':''}
+  <div class="grid-wrap auto"><table class="grid"><thead><tr><th>과목</th><th>강의실</th><th>대상자</th><th>예외처리자</th><th>이수자</th><th>미이수자</th><th>시수 미입력</th><th>학점반영</th><th>마감여부</th></tr></thead><tbody>${rows}</tbody></table></div>`:needQuery()}`;
+}
+function creditApply(s){const rooms=roomsOf();confirmBox('학점반영',`${subjLabel(s)} ${cond.room==='all'?'전체 강의실':clsName(cond.room)}의 보장지도 결과를 학점에 반영하시겠습니까?\n\n· 이수자·예외처리자 → 학점 부여(이수)\n· 미이수자 → 미이수`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.creditApplied={by:me.name,at:nowStr()};});addLog(me.name,`최성보 학점반영 ${s} ${rooms.join(',')}`);save();toast('학점이 반영되었습니다. 이어서 {마감}하세요.');render();});}
+function msbClose(s){const rooms=roomsOf();confirmBox('마감',`${subjLabel(s)} ${cond.room==='all'?'전체 강의실':clsName(cond.room)}의 최소성취수준보장지도(추가학습)를 마감하시겠습니까?\n마감 후에는 예외처리·참여시수를 수정할 수 없습니다.`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.closed={by:me.name,at:nowStr()};});addLog(me.name,`최성보 마감 ${s} ${rooms.join(',')}`);save();toast('마감되었습니다.');render();},'마감');}
+function msbUnclose(s){confirmBox('마감취소','마감을 취소하시겠습니까? 학점반영도 함께 취소됩니다.',()=>{roomsOf().forEach(c=>{const m=msbOf(s,c);m.closed=null;m.creditApplied=null;});addLog(me.name,`최성보 마감취소 ${s}`);save();render();},'마감취소');}
+
+/* 조회 */
+function msbResult(s,c,sid){const m=msbOf(s,c);if(!m.targets||!m.targets.includes(sid))return null;const need=subj(s).credit*m.hpc,base=Math.ceil(need*2/3);const e=m.exc[sid];const h=(m.hours[sid]||{});return {exc:e,need,base,h:h.h,note:h.note,done:e?true:(h.h!=null&&h.h>=base),pending:!e&&h.h==null,applied:!!m.creditApplied,closed:!!m.closed};}
+function viewRow(st,s,r){return `<tr><td>${st.c}</td><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td><td>${S.withdrawn[st.id]?S.withdrawn[st.id].type:''}</td><td>${subjLabel(s)}</td><td>${subj(s).credit}</td><td>${r.exc?r.exc.type:''}</td><td>${r.exc?esc(r.exc.reason||''):''}</td><td>${shortfall(s,st.id).join('·')}</td><td>${achieve(finalOf(s,st.id))}</td><td>${r.need}</td><td>${r.base}</td><td>${r.h??''}</td><td class="${r.pending?'':r.done?'good':'bad'}">${r.exc?'예외':r.pending?'-':r.done?'이수':'미이수'}</td><td class="l">${esc(r.note||'')}</td></tr>`;}
+SCREENS['msb-view']=()=>{
+  const mode=cond.vmode||'cls';const q=queried[view.menu];const f=cond.vf||'all';let rows='';
+  if(mode==='cls'){const c=cond.cls;students(c).forEach(st=>SUBJECTS.forEach(s=>{const r=msbResult(s.id,c,st.id);if(r&&(f==='all'||!r.done))rows+=viewRow(st,s.id,r);}));}
+  else{const s=cond.subj;roomsOf().forEach(c=>students(c).forEach(st=>{const r=msbResult(s,c,st.id);if(r&&(f==='all'||!r.done))rows+=viewRow(st,s,r);}));}
+  return wtabs('최소성취수준보장지도(추가학습)조회')+title('최소성취수준보장지도(추가학습)조회',mode==='cls'?'[학급담임용] 소속반 기준으로 대상 학생들의 내용을 확인합니다.':'[교과담임용] 수강과목 강의실 기준으로 대상 학생들의 내용을 확인합니다.')
+  +`<div class="stabs"><button class="${mode==='cls'?'on':''}" onclick="cond.vmode='cls';unq();render()">소속반 기준(학급담임용)</button><button class="${mode==='subj'?'on':''}" onclick="cond.vmode='subj';unq();render()">수강과목 강의실 기준(교과담임용)</button></div>
+  <div class="cond">${fixedCond()}${mode==='cls'?selCls():selSubj()+selRoom(true)}<span class="radio"><label><input type="radio" name="vf" ${f==='all'?'checked':''} onclick="cond.vf='all';render()"> 전체</label><label><input type="radio" name="vf" ${f==='un'?'checked':''} onclick="cond.vf='un';render()"> 미이수</label></span><span class="sp"></span>${qbtn()}<button class="btn" onclick="window.print()">출력</button></div>
+  ${q?(rows?`<div class="status" style="margin-bottom:4px">Total ${rows.split('<tr>').length-1}</div><div class="grid-wrap"><table class="grid"><thead><tr><th>반</th><th>번호</th><th class="l">성명</th><th>학적변동</th><th>과목</th><th>학점</th><th>예외</th><th>예외사유(기타)</th><th>미도달 구분</th><th>성취도</th><th>필요시수</th><th>이수기준 시수</th><th>참여시수</th><th>이수여부</th><th class="l">비고</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 대상자가 없습니다.</div>'):needQuery()}`;
+};
+
+/* 마감관리 */
+SCREENS['msb-mgmt']=()=>{
+  const q=queried[view.menu];const M=S.msbMgmt;
+  const rows=SUBJECTS.flatMap(s=>CLASSES.map(c=>{const r=msbRoomStats(s.id,c);const m=msbOf(s.id,c);return `<tr><td><input type="checkbox" checked disabled></td><td>일반계</td><td>일반학과</td><td>${subjLabel(s.id)}</td><td>${clsName(c)}</td><td>${userName(s.teacher)}</td><td>${m.targets?r.t:'-'}</td><td>${r.ex}</td><td>${r.done}</td><td>${r.un}</td><td>${r.applied}</td><td>${m.closed?'<span class="chip lock">마감</span>':'<span class="chip crit">미마감</span>'}</td></tr>`;})).join('');
+  const allClosed=SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed));
+  return wtabs('최소성취수준보장지도(추가학습)마감관리')+title('최소성취수준보장지도(추가학습)마감관리','업무담당자가 강의실별 마감여부를 확인하고 {마감정보저장} → {승인요청}합니다. 결재가 완료되면 해당 학기 최소 성취수준 보장지도 업무가 종료됩니다. ※ 승인요청은 학년 또는 계열/학년/학과 단위로 하며 과목별로 할 수 없습니다.')
+  +`<div class="cond">${fixedCond()}<span class="sp"></span>${qbtn()}<button class="btn n" id="b-mgmtsave" ${can.admin()&&allClosed&&!M.saved?'':'disabled'} onclick="confirmBox('마감정보저장','1학년 최소성취수준보장지도(추가학습) 마감정보를 저장하시겠습니까?',()=>{S.msbMgmt.saved={by:me.name,at:nowStr()};S.msbMgmt.done=S.msbMgmt.saved;addLog(me.name,'최성보 마감정보저장');save();toast('저장되었습니다. 이어서 {승인요청}하세요.');render();})">마감정보저장</button><button class="btn g" id="b-mgmtreq" ${can.admin()&&M.saved&&!M.req?'':'disabled'} onclick="requestApproval(S.msbMgmt,'msb','${YEAR}학년도 ${SEM}학기 1학년 최소성취수준보장지도(추가학습) 마감')">승인요청</button></div>
+  ${q?`<div class="sumbox"><div class="h">마감관리 현황</div><table><tr><td class="k">강의실별 마감</td><td class="v">${SUBJECTS.reduce((n,s)=>n+CLASSES.filter(c=>msbOf(s.id,c).closed).length,0)} / ${SUBJECTS.length*CLASSES.length}</td></tr><tr><td class="k">마감정보 상태</td><td class="v">${approvalRow(M)}</td></tr></table></div>
+  ${allClosed?'':'<div class="note crit">미마감 강의실이 있습니다. 해당 교과담임이 [이수관리 › 마감] 탭에서 {학점반영} → {마감}해야 합니다.</div>'}
+  <div class="status" style="margin-bottom:4px">Total ${SUBJECTS.length*CLASSES.length}</div>
+  <div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" checked disabled></th><th>계열</th><th>학과</th><th>과목명(학년)</th><th>강의실/반</th><th>담당교사</th><th>보장지도대상인원</th><th>예외처리인원</th><th>이수처리인원</th><th>미이수처리인원</th><th>학점반영인원</th><th>강의실별 마감여부</th></tr></thead><tbody>${rows}</tbody></table></div>`:needQuery()}`;
+};
+
+/* ═════════════════ 학생부 ═════════════════ */
+function recRows(c){return students(c).map(st=>`<tr><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td>${SUBJECTS.map(s=>{const f=finalOf(s.id,st.id);const r=msbResult(s.id,c,st.id);const sf=shortfall(s.id,st.id);const stat=!sf.length?'이수':r&&r.applied?(r.done?'이수':'미이수'):'<span class="bad">미반영</span>';return `<td>${f}</td><td class="${f<40?'bad':''}">${achieve(f)}</td><td class="${stat==='이수'?'good':stat==='미이수'?'bad':''}">${stat}</td>`;}).join('')}</tr>`).join('');}
+const recHead=`<thead><tr><th rowspan="2">번호</th><th rowspan="2" class="l">성명</th>${SUBJECTS.map(s=>`<th colspan="3">${subjLabel(s.id)}</th>`).join('')}</tr><tr>${SUBJECTS.map(()=>'<th class="l2">원점수</th><th class="l2">성취도</th><th class="l2">이수여부</th>').join('')}</tr></thead>`;
+SCREENS['rec-reflect']=()=>{
+  const c=cond.cls;const q=queried[view.menu];const ed=can.homeroomOf(c);const R=S.recReflect[c];const unclosed=SUBJECTS.filter(s=>!msbOf(s.id,c).closed);
+  return wtabs('학생부반영')+title('학교생활기록부 — 학생부반영(교과학습발달상황)','학급담임이 {학생부반영}을 누르면 과목별 이수/미이수 결과가 교과학습발달상황에 반영됩니다. 변경된 지침에 따라 비고란에 별도 기재사항은 없습니다.')
+  +`<div class="cond">${fixedCond()}${selCls()}<span class="sp"></span>${qbtn()}<button class="btn n" id="b-reflect" ${ed&&!unclosed.length&&!R?'':'disabled'} onclick="confirmBox('학생부반영','${clsName(c)} 교과학습발달상황(이수 여부)을 학생부에 반영하시겠습니까?',()=>{S.recReflect['${c}']={by:me.name,at:nowStr()};addLog(me.name,'학생부반영 ${c}');save();toast('반영되었습니다.');render();})">학생부반영</button></div>
+  ${q?`${R?`<div class="note ok">학생부반영 완료 — ${R.by}, ${R.at}</div>`:unclosed.length?`<div class="note warn">최소성취수준보장지도가 마감되지 않은 과목이 있어 반영할 수 없습니다: ${unclosed.map(s=>subjLabel(s.id)).join(', ')}</div>`:'<div class="note">모든 과목의 보장지도가 마감되었습니다. {학생부반영}을 누르세요.</div>'}
+  <div class="grid-wrap"><table class="grid">${recHead}<tbody>${recRows(c)}</tbody></table></div>`:needQuery()}`;
+};
+SCREENS['rec-view']=()=>{const c=cond.cls;const q=queried[view.menu];return wtabs('교과학습발달상황')+title('교과학습발달상황(조회)',S.recReflect[c]?'학생부반영 완료 자료':'※ 학생부반영 전 자료(가변)')+`<div class="cond">${fixedCond()}${selCls()}<span class="sp"></span>${qbtn()}<button class="btn" onclick="window.print()">출력</button></div>${q?`<div class="grid-wrap"><table class="grid">${recHead}<tbody>${recRows(c)}</tbody></table></div>`:needQuery()}`;};
+
+/* ═════════════════ 결재 ═════════════════ */
+SCREENS['appr-box']=()=>{
+  const list=S.approvals.slice().reverse();
+  const rows=list.map(a=>`<tr><td>${a.at}</td><td class="l">${a.title}</td><td>${a.by}</td><td>${a.status==='대기'?'<span class="chip warn">결재 대기</span>':a.status==='승인'?'<span class="chip ok">승인</span>':'<span class="chip crit">반려</span>'}</td><td>${a.decidedAt||''}</td><td>${a.status==='대기'?`<button class="btn s p" id="b-approve" ${can.approver()?'':'disabled'} onclick="decide('${a.id}','승인')">결재(승인)</button> <button class="btn s" ${can.approver()?'':'disabled'} onclick="decide('${a.id}','반려')">반려</button>`:''}</td></tr>`).join('');
+  return wtabs('결재함')+title('업무승인 — 결재함','업무담당자가 {승인요청}한 건을 결재권자(교감)가 결재합니다. 실제 나이스에서는 업무승인과정(결재선)에 따라 처리됩니다.')
+  +`<div class="cond">${fixedCond()}<span class="sp"></span>${qbtn()}</div>${queried[view.menu]?(rows?`<div class="grid-wrap auto"><table class="grid"><thead><tr><th>요청일시</th><th class="l">제목</th><th>요청자</th><th>상태</th><th>결재일시</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">결재 요청 건이 없습니다.</div>'):needQuery()}`;
+};
+function decide(id,st){const a=S.approvals.find(x=>x.id===id);const obj={attAll:S.attAll,calcAll:S.calcAll,msb:S.msbMgmt}[a.type];
+  confirmBox(st,`"${a.title}" 건을 ${st}하시겠습니까?`,()=>{a.status=st;a.decidedAt=nowStr();if(st==='승인')obj.approved={by:me.name,at:nowStr()};else{obj.req=null;}addLog(me.name,`결재 ${st}: ${a.title}`);save();toast(`${st} 처리되었습니다.`);render();});}
+
+/* ═════════════════ 다음에 누를 버튼(순서 안내) ═════════════════ */
+/* 현재 상태에서 해야 할 "다음 행동"을 계산: 단계, 메뉴, 필요한 조회조건, 버튼 순서(①②③), 필요한 권한 */
+function nextAction(){
+  const Q=m=>!!queried[m];
+  const seq=(...a)=>a;
+  // 1단계: 출석률 마감
+  for(const s of SUBJECTS)for(const c of CLASSES){
+    if(roomClosed(s.id,c))continue;
+    const t=total(s.id);
+    if(periodCloseCnt(s.id,c)!==t)return {step:1,title:'[1단계] 과목 출석률 마감 — 교시 마감 보완',role:`교과담임(${userName(s.teacher)})`,ok:me.subj===s.id||can.admin(),menu:'att-period',set:{subj:s.id,room:c},
+      why:`${subjLabel(s.id)} ${clsName(c)} 강의실은 과목교시마감수가 시간표총수업수와 달라 학기별과목마감이 안 됩니다. 미마감 교시를 먼저 마감합니다.`,
+      seq:seq({t:`조회조건: 과목 <b>${subjLabel(s.id)}</b> · 강의실 <b>${clsName(c)}</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('att-period')},{t:'[미마감 일괄마감]',b:'b-bulk'},{t:'확인창 [마감]',b:'b-modal-ok'})};
+    const openDays=PERIODS[s.id].filter(x=>!S.dayClose[c][x.d]);
+    if(openDays.length)return {step:1,title:'[1단계] 과목 출석률 마감 — 학급 일출결 마감 보완',role:`${clsName(c)} 학급담임(${userName(USERS.find(u=>u.cls===c).id)})`,ok:me.cls===c||can.admin(),menu:'att-day',set:{cls:c},
+      why:`${clsName(c)}에 일출결이 마감되지 않은 날이 있어 ${subjLabel(s.id)}의 반별일출결마감수가 총수업수와 다릅니다.`,
+      seq:seq({t:`조회조건: 반 <b>${clsName(c)}</b>`,f:'f-cls'},{t:'[조회]',b:'b-query',done:Q('att-day')},{t:'[미마감 일괄마감]',b:'b-bulk'},{t:'확인창 [마감]',b:'b-modal-ok'})};
+    return {step:1,title:'[1단계] 과목 출석률 마감 — 학기별과목마감',role:`교과담임(${userName(s.teacher)})`,ok:me.subj===s.id||can.admin(),menu:'att-room',set:{subj:s.id},
+      why:`${subjLabel(s.id)} ${clsName(c)} 강의실을 학기별과목마감합니다.`,
+      seq:seq({t:`조회조건: 과목 <b>${subjLabel(s.id)}</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('att-room')},{t:`${clsName(c)} 행의 [학기별과목마감]`,b:`b-room-${c}`},{t:'확인창 [마감]',b:'b-modal-ok'})};
   }
-  return h+'</div>';
+  if(!S.attAll.done)return {step:1,title:'[1단계] 과목 출석률 마감 — 과목전체마감',role:'업무담당자(오성적)',ok:can.admin(),menu:'att-all',why:'모든 강의실이 마감되었습니다. 업무담당자가 전체마감하고 승인요청합니다.',
+    seq:seq({t:'[조회]',b:'b-query',done:Q('att-all')},{t:'[전체마감]',b:'b-attall'},{t:'확인창 [전체마감]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-attreq'})};
+  if(!S.attAll.req)return {step:1,title:'[1단계] 과목 출석률 마감 — 승인요청',role:'업무담당자(오성적)',ok:can.admin(),menu:'att-all',why:'전체마감이 끝났습니다. 승인요청(결재 상신)합니다.',seq:seq({t:'[조회]',b:'b-query',done:Q('att-all')},{t:'[승인요청]',b:'b-attreq'})};
+  if(!S.attAll.approved)return apprAction(1,'과목출결 전체마감');
+  // 2단계
+  for(const s of SUBJECTS){const e=S.examClose[s.id];
+    if(!e.written)return examAction(s,'written');
+    if(!e.perf)return examAction(s,'perf');}
+  if(!S.calcAll.done)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 전체마감',role:'업무담당자(오성적)',ok:can.admin(),menu:'calc-close',why:'모든 과목의 정기시험·수행평가가 마감되었습니다. 성적산출전체마감 후 승인요청합니다.',
+    seq:seq({t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[성적산출전체마감]',b:'b-calcall'},{t:'확인창 [전체마감]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-calcreq'})};
+  if(!S.calcAll.req)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 승인요청',role:'업무담당자(오성적)',ok:can.admin(),menu:'calc-close',why:'전체마감이 끝났습니다. 승인요청합니다.',seq:seq({t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[승인요청]',b:'b-calcreq'})};
+  if(!S.calcAll.approved)return apprAction(2,'성적산출 전체마감');
+  // 3~6단계: 과목별
+  for(const s of SUBJECTS){const sid=s.id;const role=`교과담임(${userName(s.teacher)})`;const ok=me.subj===sid||can.admin();const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};
+    const ms=CLASSES.map(c=>msbOf(sid,c));
+    if(ms.some(m=>!m.targets))return Object.assign(base,{step:3,title:'[3단계] 대상자 가져오기',tab:'target',why:`${subjLabel(sid)}의 학점이수 기준 미도달 학생을 가져옵니다. {지필/수행 학업성취율 현황}·{과목별출결현황}으로 근거 자료도 확인해 보세요.`,
+      seq:seq({t:'[대상자] 탭',tab:'target',done:cond.tab==='target'},{t:`조회조건: 과목 <b>${subjLabel(sid)}</b> · 강의실 <b>전체</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='target'},{t:'[대상자가져오기]',b:'b-fetch'},{t:'확인창 [확인]',b:'b-modal-ok'})});
+    if(ms.some(m=>!m.excSaved))return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택합니다. 없더라도 {저장}을 눌러 확인 처리합니다.`,
+      seq:seq({t:'[예외처리] 탭',tab:'exc',done:cond.tab==='exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},{t:'예외 선택(필요한 학생만, 기타는 사유 입력)',cell:'exc-cell'},{t:'[저장]',b:'b-save'})});
+    if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다. 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정됩니다.`,
+      seq:seq({t:'[이수관리] 탭',tab:'hours',done:cond.tab==='hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:'참여시수 입력(전원) · 필요시 비고',cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'})});
+    if(ms.some(m=>!m.creditApplied))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 학점반영',tab:'close',why:`${subjLabel(sid)}의 이수/미이수 결과를 학점에 반영합니다.`,
+      seq:seq({t:'[마감] 탭',tab:'close',done:cond.tab==='close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[학점반영]',b:'b-credit'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[마감]',b:'b-close'})});
+    if(ms.some(m=>!m.closed))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 마감',tab:'close',why:`${subjLabel(sid)} 학점반영이 끝났습니다. 마감합니다.`,
+      seq:seq({t:'[마감] 탭',tab:'close',done:cond.tab==='close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[마감]',b:'b-close'},{t:'확인창 [마감]',b:'b-modal-ok'})});
+  }
+  // 7단계
+  for(const c of CLASSES)if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(USERS.find(u=>u.cls===c).id)})`,ok:me.cls===c||can.admin(),menu:'rec-reflect',set:{cls:c},why:`${clsName(c)} 교과학습발달상황에 이수/미이수를 반영합니다.`,
+    seq:seq({t:`조회조건: 반 <b>${clsName(c)}</b>`,f:'f-cls'},{t:'[조회]',b:'b-query',done:Q('rec-reflect')},{t:'[학생부반영]',b:'b-reflect'},{t:'확인창 [확인]',b:'b-modal-ok'})};
+  const wd=Object.entries(S.withdrawn).find(([sid,w])=>!w.reflected);
+  if(wd)return {step:7,title:'[7단계] 학업중단 학생 학적처리 결과 반영',role:'업무담당자(오성적)',ok:can.admin(),menu:'hak-wd',why:`${studentById(wd[0]).name} 학생(${wd[1].type})은 보장지도 결과 반영 후 학적 처리 결과를 학생부에 반영합니다.`,
+    seq:seq({t:'[조회]',b:'b-query',done:Q('hak-wd')},{t:'학생 선택(○)',done:cond.wdSel===wd[0]},{t:'[학적처리결과 학생부반영]',b:'b-wdreflect'},{t:'확인창 [확인]',b:'b-modal-ok'})};
+  // 8단계
+  if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자(오성적)',ok:can.admin(),menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:seq({t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[마감정보저장]',b:'b-mgmtsave'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-mgmtreq'})};
+  if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자(오성적)',ok:can.admin(),menu:'msb-mgmt',why:'마감정보가 저장되었습니다. 승인요청합니다.',seq:seq({t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[승인요청]',b:'b-mgmtreq'})};
+  if(!S.msbMgmt.approved)return apprAction(8,'최소성취수준보장지도(추가학습) 마감');
+  return null;
 }
-function attChange(d,sid,k,v){
-  const a=attOf(d,sid)||{t:'',r:'질병',m:''};
-  if(k==='t'){if(!v){setAtt(d,sid,null);}else{a.t=v;a.r=a.r||'질병';setAtt(d,sid,a);}}
-  else{a[k]=v;setAtt(d,sid,a);}
-  // 저장 전 변경 → 미저장 상태로
-  if(S.attDone[cond.cls])delete S.attDone[cond.cls][d];
-  save();render();
+function apprAction(step,what){return {step,title:`[${step}단계] ${what} — 결재`,role:'결재권자(교감 김환)',ok:can.approver(),menu:'appr-box',why:`업무담당자가 승인요청한 "${what}" 건을 결재권자가 결재해야 다음 단계로 넘어갑니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried['appr-box']},{t:'해당 건의 [결재(승인)]',b:'b-approve'},{t:'확인창 [확인]',b:'b-modal-ok'}]};}
+function examAction(s,kind){const menu=kind==='written'?'ex-written':'ex-perf';return {step:2,title:`[2단계] 학기말 성적 산출 마감 — ${kind==='written'?'정기시험':'수행평가'} 마감 보완`,role:`교과담임(${userName(s.teacher)})`,ok:me.subj===s.id||can.admin(),menu,why:`${subjLabel(s.id)}의 ${kind==='written'?'정기시험':'수행평가'}이 마감되지 않아 성적산출전체마감을 할 수 없습니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried[menu]},{t:`${subjLabel(s.id)} 행의 [마감]`,b:`b-exam-${s.id}`}]};}
+
+function toggleGuide(v){guideOn=v===undefined?!guideOn:v;$('#gToggle').style.background=guideOn?'var(--orange)':'#fff';$('#gToggle').style.color=guideOn?'#fff':'var(--ink)';go(view.top,view.menu);}
+function guideGo(){const na=nextAction();if(!na)return;Object.assign(cond,na.set||{});if(na.tab)cond.tab=na.tab;unq();const top=Object.keys(MENUS).find(t=>MENUS[t].some(g=>g.items.some(i=>i.id===na.menu)));go(top,na.menu);}
+function renderGuide(){
+  const p=$('#gpanel');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
+  const na=nextAction();const body=$('#gBody'),foot=$('#gFoot');
+  if(!na){body.innerHTML='<div class="all-done">🎉 8단계가 모두 끝났습니다. 최소 성취수준 보장지도 업무가 종료되었습니다.</div><div class="meta">다시 연습하려면 [연수도우미 › 설정·초기화]에서 초기화하세요.</div>';foot.innerHTML='';return;}
+  const here=view.menu===na.menu&&(!na.tab||cond.tab===na.tab);
+  // 순서 중 첫 미완료 찾기
+  let curIdx=-1;const items=na.seq.map((x,i)=>{let done=here&&!!x.done;if(x.f&&here)done=true;if(!done&&curIdx<0)curIdx=i;return {...x,done};});
+  if(!here)curIdx=-1;
+  body.innerHTML=`<div class="step">${na.title}</div><div class="meta">필요 권한: <b>${na.role}</b><br>메뉴: <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${MSB_TABS.find(t=>t[0]===na.tab)[1].replace('최소성취수준보장지도(추가학습)','')} 탭</code>`:''}<br><span style="color:var(--ink-3)">${na.why}</span></div>
+    ${!na.ok?`<div class="role-warn">현재 사용자(${me.name})에게는 이 단계의 권한이 없습니다. [로그아웃] 후 <b>${na.role}</b>으로 로그인하세요.</div>`:''}
+    ${here?'':`<div class="meta" style="color:var(--orange)">▶ 아래 [화면으로 이동]을 누르거나 왼쪽 메뉴에서 주황 표시 메뉴를 여세요.</div>`}
+    <ol>${items.map((x,i)=>`<li class="${x.done?'done':''} ${i===curIdx?'cur':''}"><span class="n">${i+1}</span><span>${x.t}</span></li>`).join('')}</ol>`;
+  foot.innerHTML=`<span class="status">단계 ${na.step}/8</span><span style="flex:1"></span>${here?'':`<button class="btn p" onclick="guideGo()">화면으로 이동</button>`}<button class="btn s" onclick="go('guide','gd-steps')">전체 흐름도</button>`;
+  // 화면의 버튼에 번호·강조 표시
+  if(here){items.forEach((x,i)=>{if(x.b&&x.b!=='b-modal-ok'){const el=document.getElementById(x.b);if(el){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=i+1;el.appendChild(n);if(i===curIdx)el.classList.add('next');}}
+      if(x.f&&i===curIdx){const el=document.getElementById(x.f);if(el)el.classList.add('next-field');}
+      if(x.cell&&i===curIdx){document.querySelectorAll('.'+x.cell).forEach(td=>td.classList.add('next-cell'));}});
+    // 다음 순서 탭 강조
+    if(na.tab&&cond.tab!==na.tab){}
+  }
 }
-function attSave(){S.attDone[cond.cls]=S.attDone[cond.cls]||{};S.attDone[cond.cls][cond.date]=true;addLog(me.name,`일일출결 저장 ${clsName(cond.cls)} ${cond.date}`);save();toast('저장되었습니다.');go(view.top,view.menu);}
-function attAllPresent(){students(cond.cls).forEach(st=>setAtt(cond.date,st.id,null));attSave();}
 
-SCREENS['att-month']=()=>{
-  const cls=cond.cls,m=cond.month;const days=DAYS.filter(d=>d.startsWith(m));
-  const head=days.map(d=>`<th title="${d}">${+d.slice(8)}</th>`).join('');
-  const rows=students(cls).map(st=>{
-    const cells=days.map(d=>{const a=attOf(d,st.id);const sym=!a?'':a.r==='인정'?'인':({결석:'결',지각:'지',조퇴:'조',결과:'과'}[a.t])+({질병:'·',미인정:'×',기타:'△',인정:''}[a.r]);return `<td class="${a?'abs':''} ${d>S.simDate?'':''}" style="padding:3px 2px;${d>S.simDate?'color:#ccc':''}" title="${attLabel(a)} ${esc(a?.m||'')}">${d>S.simDate?'-':sym}</td>`;}).join('');
-    const s=attStats(st.id,m+'-01',m+'-31');
-    return `<tr><td class="fix">${st.no}</td><td class="fix2 l">${st.name}</td>${cells}<td>${sumR(s.abs)||''}</td><td>${sumR(s.late)||''}</td><td>${sumR(s.early)||''}</td><td>${sumR(s.skip)||''}</td><td>${s.rec||''}</td></tr>`;}).join('');
-  return crumb('학생생활','출결관리','월별 출결현황')+title('월별 출결현황','결·지·조·과 뒤의 기호: · 질병, × 미인정, △ 기타, 인 = 출석인정')
-  +`<div class="cond">${fixedCond()}${selCls()}<label><b>월</b><select onchange="cond.month=this.value;render()">${MONTHS.map(x=>`<option ${m===x?'selected':''}>${x}</option>`).join('')}</select></label><span class="status">수업일수 ${days.filter(d=>d<=S.simDate).length}일 ${isMonthClosed(cls,m)?'<span class="chip lock">마감</span>':'<span class="chip warn">마감 전</span>'}</span></div>`
-  +`<div class="bar"><span class="sp"></span><button class="btn" onclick="window.print()">출력</button></div><div class="grid-wrap"><table class="grid"><thead><tr><th class="fix">번호</th><th class="fix2">성명</th>${head}<th>결석</th><th>지각</th><th>조퇴</th><th>결과</th><th>인정</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-
-function attMonthIssues(cls,m){
-  const days=DAYS.filter(d=>d.startsWith(m)&&d<=S.simDate);
-  const missing=days.filter(d=>!(S.attDone[cls]||{})[d]);
-  const issues=[];
-  if(!days.length)issues.push('해당 월에 기준일까지 도달한 수업일이 없습니다.');
-  const lastDay=DAYS.filter(d=>d.startsWith(m)).slice(-1)[0];
-  if(lastDay&&lastDay>S.simDate)issues.push(`해당 월 수업일이 아직 끝나지 않았습니다(마지막 수업일 ${lastDay}, 기준일 ${S.simDate}).`);
-  if(missing.length)issues.push(`일일출결 미저장(미처리) ${missing.length}일: ${missing.map(d=>d.slice(5)).join(', ')}`);
-  // 사유 누락
-  const noReason=[];days.forEach(d=>students(cls).forEach(st=>{const a=attOf(d,st.id);if(a&&a.t&&!a.r)noReason.push(`${d.slice(5)} ${st.name}`);}));
-  if(noReason.length)issues.push('출결 사유 누락: '+noReason.join(', '));
-  const prev=MONTHS[MONTHS.indexOf(m)-1];
-  if(prev&&!isMonthClosed(cls,prev))issues.push(`전월(${prev})이 먼저 마감되어야 합니다.`);
-  return issues;
-}
-SCREENS['att-close']=()=>{
-  const cls=cond.cls;
-  const rows=MONTHS.map(m=>{
-    const c=(S.attClose[cls]||{})[m];const issues=attMonthIssues(cls,m);
-    const days=DAYS.filter(d=>d.startsWith(m));const past=days.filter(d=>d<=S.simDate);
-    const done=past.filter(d=>(S.attDone[cls]||{})[d]).length;
-    const st=c?`<span class="chip lock">🔒 마감 (${c.by}, ${c.at})</span>`:issues.length?`<span class="chip crit">마감 불가</span>`:`<span class="chip ok">마감 가능</span>`;
-    const btn=c?`<button class="btn s" ${can.admin()&&!S.attFinal?'':'disabled'} onclick="attUnclose('${m}')">마감취소(교무)</button>`:`<button class="btn s p" ${can.attClose(cls)&&!issues.length?'':'disabled'} onclick="attCloseMonth('${m}')">마감</button>`;
-    return `<tr><td>${m}</td><td>${days.length}</td><td>${past.length}</td><td class="${done<past.length?'miss':''}">${done} / ${past.length}</td><td class="l">${st}</td><td class="l" style="white-space:normal;font-size:11px;color:var(--crit)">${c?'':issues.map(i=>'· '+esc(i)).join('<br>')}</td><td>${btn}</td></tr>`;}).join('');
-  return crumb('학생생활','출결관리','출결 월마감')+title('출결 월마감','담임이 월별로 마감합니다. 마감하면 그 달 일일출결은 수정할 수 없고, 수정이 필요하면 교무부(권한자)가 마감취소 후 담임이 수정합니다.')
-  +`<div class="cond">${fixedCond()}${selCls()}${S.attFinal?'<span class="chip lock">학기말 출결마감 완료</span>':''}</div>
-  <div class="note"><b>마감 조건</b> ① 해당 월 수업일이 모두 지났을 것 ② 모든 수업일의 일일출결이 [저장]되어 있을 것 ③ 전월이 마감되어 있을 것. 조건이 안 맞으면 오른쪽 사유를 확인하고 <a href="#" onclick="go('att','att-daily');return false">일일출결관리</a>에서 보완하세요.</div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th>월</th><th>수업일수</th><th>경과 수업일</th><th>저장 완료</th><th class="l">상태</th><th class="l" style="min-width:260px">마감 불가 사유</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-function attCloseMonth(m){
-  const cls=cond.cls;const issues=attMonthIssues(cls,m);
-  if(issues.length){modal('마감 불가',issues.map(i=>'· '+esc(i)).join('\n'));return;}
-  const tot=students(cls).reduce((acc,st)=>{const s=attStats(st.id,m+'-01',m+'-31');acc.a+=sumR(s.abs);acc.l+=sumR(s.late);acc.e+=sumR(s.early);acc.k+=sumR(s.skip);return acc;},{a:0,l:0,e:0,k:0});
-  confirmBox('출결 월마감',`${clsName(cls)} ${m} 출결을 마감하시겠습니까?\n\n결석 ${tot.a} · 지각 ${tot.l} · 조퇴 ${tot.e} · 결과 ${tot.k}\n\n마감 후에는 해당 월 일일출결을 수정할 수 없습니다.`,()=>{
-    S.attClose[cls]=S.attClose[cls]||{};S.attClose[cls][m]={by:me.name,at:nowStr()};addLog(me.name,`출결 월마감 ${clsName(cls)} ${m}`);save();toast('마감되었습니다.');render();
-  },'마감');
-}
-function attUnclose(m){confirmBox('마감취소',`${clsName(cond.cls)} ${m} 출결 마감을 취소하시겠습니까?\n담임이 수정 후 다시 마감해야 합니다.`,()=>{delete S.attClose[cond.cls][m];addLog(me.name,`출결 월마감 취소 ${clsName(cond.cls)} ${m}`);save();toast('마감이 취소되었습니다.');render();},'마감취소');}
-
-SCREENS['att-note']=()=>{
-  const cls=cond.cls;const editable=can.attEdit(cls)&&!S.attFinal;
-  const rows=students(cls).map(st=>{const s=attStats(st.id,TERM_START,TERM_END);const auto=autoAttNote(s);
-    return `<tr><td>${st.no}</td><td class="l">${st.name}</td><td class="l" style="color:#888;font-size:11px">${auto||'-'}</td><td class="l" style="min-width:320px"><input class="wide" type="text" maxlength="100" ${editable?'':'disabled'} value="${esc(S.attNote[st.id]||'')}" onchange="S.attNote['${st.id}']=this.value;save()" placeholder="예) 질병결석: 독감(진단서 제출)"></td></tr>`;}).join('');
-  return crumb('학생생활','출결관리','출결특기사항')+title('출결특기사항','학생부 출결상황 특기사항란에 기재될 내용(미인정 결석 사유, 장기결석 등). 1,000바이트 이내.')
-  +`<div class="cond">${fixedCond()}${selCls()}</div><div class="grid-wrap"><table class="grid"><thead><tr><th>번호</th><th>성명</th><th class="l">자동 참고(학기 누계)</th><th class="l">특기사항</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-function autoAttNote(s){const p=[];if(sumR(s.abs))p.push(`결석 ${sumR(s.abs)}`);if(s.abs.미인정||s.late.미인정||s.early.미인정||s.skip.미인정)p.push('미인정 포함');if(s.rec)p.push(`출석인정 ${s.rec}`);return p.join(', ');}
-
-function attSemesterRows(cls){
-  return students(cls).map(st=>{const s=attStats(st.id,TERM_START,TERM_END);
-    return `<tr><td>${st.no}</td><td class="l">${st.name}</td><td>${s.days}</td><td>${s.abs.질병||''}</td><td>${s.abs.미인정||''}</td><td>${s.abs.기타||''}</td><td>${s.late.질병||''}</td><td>${s.late.미인정||''}</td><td>${s.late.기타||''}</td><td>${s.early.질병||''}</td><td>${s.early.미인정||''}</td><td>${s.early.기타||''}</td><td>${s.skip.질병||''}</td><td>${s.skip.미인정||''}</td><td>${s.skip.기타||''}</td><td>${s.rec||''}</td><td class="l" style="white-space:normal;font-size:11px">${esc(S.attNote[st.id]||'')}</td></tr>`;}).join('');
-}
-const attHead=`<thead><tr><th rowspan="2">번호</th><th rowspan="2">성명</th><th rowspan="2">수업일수</th><th colspan="3">결석일수</th><th colspan="3">지각</th><th colspan="3">조퇴</th><th colspan="3">결과</th><th rowspan="2">출석인정</th><th rowspan="2" class="l">특기사항</th></tr><tr>${'<th class="l2">질병</th><th class="l2">미인정</th><th class="l2">기타</th>'.repeat(4)}</tr></thead>`;
-SCREENS['att-stat']=()=>{
-  const cls=cond.cls;
-  return crumb('학생생활','학기말 출결','출결상황 통계')+title('출결상황 통계(학기)',`${YEAR}학년도 ${SEM}학기 누계. 기준일(${S.simDate})까지 집계.`)
-  +`<div class="cond">${fixedCond()}${selCls()}</div><div class="bar"><span class="sp"></span><button class="btn" onclick="window.print()">출력</button></div><div class="grid-wrap"><table class="grid">${attHead}<tbody>${attSemesterRows(cls)}</tbody></table></div>`;
-};
-SCREENS['att-final']=()=>{
-  const rows=CLASSES.map(({g,c})=>{const k=`${g}-${c}`;const closed=MONTHS.filter(m=>isMonthClosed(k,m));const open=MONTHS.filter(m=>!isMonthClosed(k,m));
-    return `<tr><td>${clsName(k)}</td><td class="l">${userName(USERS.find(u=>u.cls===k)?.id)}</td><td>${closed.length} / ${MONTHS.length}</td><td class="l ${open.length?'miss':''}">${open.join(', ')||'<span class="chip ok">전체 마감</span>'}</td></tr>`;}).join('');
-  const allOk=CLASSES.every(({g,c})=>MONTHS.every(m=>isMonthClosed(`${g}-${c}`,m)));
-  const termOver=S.simDate>=DAYS[DAYS.length-1];
-  return crumb('학생생활','학기말 출결','학기말 출결마감')+title('학기말 출결마감(교무)','모든 학급의 월마감이 끝나면 교무부가 학기 출결을 최종 마감합니다. 이후 출결 자료가 학교생활기록부에 반영됩니다.')
-  +`<div class="cond">${fixedCond()}<span class="status">학기 마지막 수업일 ${DAYS[DAYS.length-1]} · 기준일 ${S.simDate}</span></div>
-  ${S.attFinal?`<div class="note ok">학기말 출결마감 완료 — ${S.attFinal.by}, ${S.attFinal.at}</div>`:allOk&&termOver?'<div class="note ok">모든 학급 월마감 완료. 학기말 마감이 가능합니다.</div>':`<div class="note warn">${termOver?'':'학기 수업일이 끝나지 않았습니다(연수도우미 &gt; 기준일 설정에서 기준일을 12-31로 옮겨 연습). '}${allOk?'':'월마감이 끝나지 않은 학급이 있습니다.'}</div>`}
-  <div class="bar"><span class="sp"></span>${S.attFinal?`<button class="btn" onclick="confirmBox('학기말 출결마감 취소','학기말 출결마감을 취소하시겠습니까?',()=>{S.attFinal=null;addLog(me.name,'학기말 출결마감 취소');save();render();},'마감취소')">마감취소</button>`:`<button class="btn p" ${allOk&&termOver?'':'disabled'} onclick="confirmBox('학기말 출결마감','${YEAR}학년도 ${SEM}학기 출결을 최종 마감하시겠습니까?\\n마감 후 담임의 출결 수정·월마감 취소가 모두 막힙니다.',()=>{S.attFinal={by:me.name,at:nowStr()};addLog(me.name,'학기말 출결마감');save();toast('학기말 출결마감 완료');render();},'최종 마감')">학기말 마감</button>`}</div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th>학급</th><th class="l">담임</th><th>월마감</th><th class="l">미마감 월</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-
-/* ═══════════════════════════════════════════════════════════
-   성적
-═══════════════════════════════════════════════════════════ */
-function planOf(subj){return S.plan[subj];}
-function planIssues(subj){const p=planOf(subj);const iss=[];const sum=[...p.w,...p.p].reduce((a,x)=>a+(+x.ratio||0),0);if(Math.abs(sum-100)>0.001)iss.push(`반영비율 합계가 100%가 아닙니다(현재 ${sum}%).`);[...p.w,...p.p].forEach(x=>{if(!x.name)iss.push('평가명이 비어 있습니다.');if(!(+x.max>0))iss.push(`'${x.name}' 만점이 0 이하입니다.`);});if(!p.w.length)iss.push('지필평가가 하나도 없습니다.');return iss;}
-function classMean(subj,kind,idx){const vals=[];allStudents().forEach(st=>{const sc=S.scores[subj][st.id][kind][idx];if(sc&&sc.v!=null&&sc.abs==='none')vals.push(+sc.v);});return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;}
-function effScore(subj,st,kind,idx){ // 반영점수(만점 환산 전 원점수 포함), 결시 인정점 처리
-  const p=planOf(subj)[kind][idx];const sc=S.scores[subj][st.id][kind][idx]||{v:null,abs:'none'};
-  let raw;
-  if(sc.abs&&sc.abs!=='none'){const rule=ABSENT_RULES.find(r=>r.id===sc.abs);raw=rule.ratio===0?0:classMean(subj,kind,idx)*rule.ratio;}
-  else raw=sc.v==null?null:+sc.v;
-  if(raw==null)return {raw:null,w:null};
-  return {raw,w:raw/p.max*p.ratio};
-}
-function computeSubject(subj){
-  const p=planOf(subj);const list=allStudents();
-  const res=list.map(st=>{let tot=0,inc=false;const parts=[];
-    p.w.forEach((x,i)=>{const e=effScore(subj,st,'w',i);parts.push(e);if(e.w==null)inc=true;else tot+=e.w;});
-    p.p.forEach((x,i)=>{const e=effScore(subj,st,'p',i);parts.push(e);if(e.w==null)inc=true;else tot+=e.w;});
-    return {st,parts,total:inc?null:Math.round(tot*100)/100,inc};});
-  const valid=res.filter(r=>!r.inc);
-  const n=valid.length;const mean=n?valid.reduce((a,r)=>a+r.total,0)/n:0;
-  const sd=n?Math.sqrt(valid.reduce((a,r)=>a+Math.pow(r.total-mean,2),0)/n):0;
-  // 석차(동석차 중간석차 백분율)
-  const sorted=[...valid].sort((a,b)=>b.total-a.total);
-  const rounded=r=>Math.round(r.total);
-  sorted.forEach((r,i)=>{if(r.rank)return;const same=sorted.filter(x=>rounded(x)===rounded(r));const rank=i+1;same.forEach(x=>{x.rank=rank;x.same=same.length;x.mid=rank+(same.length-1)/2;x.pct=x.mid/n*100;});});
-  valid.forEach(r=>{r.ach=achieve(Math.round(r.total));r.grade=S.gradeSystem==='9'?grade9(r.pct):grade5(r.pct);});
-  return {res,n,mean:Math.round(mean*10)/10,sd:Math.round(sd*10)/10};
-}
-const achieve=s=>s>=90?'A':s>=80?'B':s>=70?'C':s>=60?'D':'E';
-const grade9=p=>p<=4?1:p<=11?2:p<=23?3:p<=40?4:p<=60?5:p<=77?6:p<=89?7:p<=96?8:9;
-const grade5=p=>p<=10?1:p<=34?2:p<=66?3:p<=90?4:5;
-function validateSubject(subj){
-  const iss=[...planIssues(subj)];const p=planOf(subj);
-  allStudents().forEach(st=>{const sc=S.scores[subj][st.id];
-    ['w','p'].forEach(k=>p[k].forEach((x,i)=>{const c=sc[k][i]||{};if(c.abs&&c.abs!=='none')return;if(c.v==null||c.v==='')iss.push(`${clsName(`${st.g}-${st.c}`)} ${st.no}번 ${st.name} — ${x.name} 미입력`);else if(+c.v<0||+c.v>+x.max)iss.push(`${st.name} — ${x.name} 점수 범위 오류(${c.v}/${x.max})`);}));});
-  return iss;
-}
-const subjLocked=subj=>!!S.subjClose[subj]||!!S.gradeFinal;
-
-SCREENS['sc-plan']=()=>{
-  const subj=cond.subj;const p=planOf(subj);const ed=can.scoreEdit(subj)&&!subjLocked(subj);
-  const row=(k,x,i)=>`<tr><td>${k==='w'?'지필':'수행'}</td><td><input type="text" class="wide" style="width:160px;text-align:left" ${ed?'':'disabled'} value="${esc(x.name)}" onchange="planSet('${k}',${i},'name',this.value)"></td><td><input type="number" ${ed?'':'disabled'} value="${x.ratio}" min="0" max="100" onchange="planSet('${k}',${i},'ratio',this.value)"></td><td><input type="number" ${ed?'':'disabled'} value="${x.max}" min="1" onchange="planSet('${k}',${i},'max',this.value)"></td><td><button class="btn s" ${ed?'':'disabled'} onclick="planDel('${k}',${i})">삭제</button></td></tr>`;
-  const sum=[...p.w,...p.p].reduce((a,x)=>a+(+x.ratio||0),0);const iss=planIssues(subj);
-  return crumb('성적','평가관리','평가계획')+title('평가계획(반영비율)','지필·수행평가 영역과 반영비율을 정합니다. 합계 100%. 과목 마감 후에는 변경할 수 없습니다.')
-  +`<div class="cond">${fixedCond()}${selSubj()}<span class="status">${subjLocked(subj)?'<span class="chip lock">마감 · 변경 불가</span>':''}</span></div>
-  ${iss.length?`<div class="note crit"><ul>${iss.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`:'<div class="note ok">평가계획 검증 통과 (반영비율 합계 100%)</div>'}
-  <div class="bar"><button class="btn" ${ed?'':'disabled'} onclick="planAdd('w')">+ 지필평가</button><button class="btn" ${ed?'':'disabled'} onclick="planAdd('p')">+ 수행평가 영역</button><span class="sp"></span><span class="status">합계 <b style="color:${sum===100?'var(--ok)':'var(--crit)'}">${sum}%</b></span></div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th>구분</th><th>평가명</th><th>반영비율(%)</th><th>만점</th><th></th></tr></thead><tbody>${p.w.map((x,i)=>row('w',x,i)).join('')}${p.p.map((x,i)=>row('p',x,i)).join('')}</tbody></table></div>`;
-};
-function planSet(k,i,f,v){S.plan[cond.subj][k][i][f]=f==='name'?v:+v;save();render();}
-function planAdd(k){const p=S.plan[cond.subj];p[k].push(k==='w'?{name:`${p.w.length+1}차 지필`,ratio:0,max:100}:{name:'새 영역',ratio:0,max:20});allStudents().forEach(st=>S.scores[cond.subj][st.id][k].push({v:null,abs:'none'}));save();render();}
-function planDel(k,i){const p=S.plan[cond.subj];if(p[k].length<=(k==='w'?1:0)){toast('지필평가는 1개 이상 필요합니다.');return;}confirmBox('삭제','이 평가를 삭제하면 입력된 점수도 함께 삭제됩니다.',()=>{p[k].splice(i,1);allStudents().forEach(st=>S.scores[cond.subj][st.id][k].splice(i,1));save();render();},'삭제');}
-
-function scoreScreen(kind){
-  const subj=cond.subj,cls=cond.cls;const p=planOf(subj)[kind];const ed=can.scoreEdit(subj)&&!subjLocked(subj);
-  const head=p.map(x=>`<th>${esc(x.name)}<br><small>${x.ratio}% / ${x.max}점</small></th><th>결시처리</th>`).join('');
-  const rows=students(cls).map(st=>{const sc=S.scores[subj][st.id][kind];
-    const cells=p.map((x,i)=>{const c=sc[i]||{v:null,abs:'none'};const abs=c.abs&&c.abs!=='none';const miss=!abs&&(c.v==null||c.v==='');const over=!abs&&c.v!=null&&(+c.v>x.max||+c.v<0);const e=effScore(subj,st,kind,i);
-      return `<td class="${miss?'miss':over?'miss':abs?'abs':''}"><input type="number" step="0.5" min="0" max="${x.max}" ${ed&&!abs?'':'disabled'} value="${abs?'':(c.v??'')}" placeholder="${abs?(e.raw!=null?'인정 '+(Math.round(e.raw*10)/10):''):''}" onchange="scoreSet('${kind}','${st.id}',${i},this.value)"></td><td><select ${ed?'':'disabled'} onchange="absSet('${kind}','${st.id}',${i},this.value)">${ABSENT_RULES.map(r=>`<option value="${r.id}" ${c.abs===r.id?'selected':''}>${r.name}</option>`).join('')}</select></td>`;}).join('');
-    return `<tr><td class="fix">${st.no}</td><td class="fix2 l">${st.name}</td>${cells}</tr>`;}).join('');
-  const means=p.map((x,i)=>`<td>${(Math.round(classMean(subj,kind,i)*10)/10)}</td><td></td>`).join('');
-  const missN=students(cls).reduce((a,st)=>a+S.scores[subj][st.id][kind].filter((c,i)=>i<p.length&&(!c.abs||c.abs==='none')&&(c.v==null||c.v==='')).length,0);
-  return crumb('성적','평가관리',kind==='w'?'지필평가 성적입력':'수행평가 성적입력')+title(kind==='w'?'지필평가 성적입력':'수행평가 성적입력',kind==='w'?'원점수를 입력합니다. 결시자는 결시처리를 선택하면 학교 규정(인정점 비율)에 따라 자동 산출됩니다.':'영역별 점수를 입력합니다. 만점을 넘는 값은 빨간색으로 표시되며 마감되지 않습니다.')
-  +`<div class="cond">${fixedCond()}${selSubj()}${selCls()}<span class="status">${subjLocked(subj)?'<span class="chip lock">마감 · 수정 불가</span>':ed?'':'<span class="chip lock">조회만 가능(담당 과목 아님)</span>'}</span></div>
-  <div class="bar"><span class="status">미입력 ${missN}칸 ${missN?'<span class="chip crit">입력 필요</span>':'<span class="chip ok">입력 완료</span>'}</span><span class="sp"></span><button class="btn" ${ed?'':'disabled'} onclick="fillRandom('${kind}')">예시점수 자동입력(연수용)</button><button class="btn p" ${ed?'':'disabled'} onclick="addLog(me.name,'성적 저장 ${subjName(subj)} ${clsName(cls)}');save();toast('저장되었습니다.')">저장</button></div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th class="fix">번호</th><th class="fix2">성명</th>${head}</tr></thead><tbody>${rows}</tbody><tfoot><tr><td class="fix" colspan="2" style="text-align:right">학급 평균(응시자)</td>${means}</tr></tfoot></table></div>`;
-}
-SCREENS['sc-written']=()=>scoreScreen('w');
-SCREENS['sc-perf']=()=>scoreScreen('p');
-function scoreSet(kind,sid,i,v){const c=S.scores[cond.subj][sid][kind][i]||(S.scores[cond.subj][sid][kind][i]={v:null,abs:'none'});c.v=v===''?null:+v;save();render();}
-function absSet(kind,sid,i,v){const c=S.scores[cond.subj][sid][kind][i]||(S.scores[cond.subj][sid][kind][i]={v:null,abs:'none'});c.abs=v;if(v!=='none')c.v=null;save();render();}
-function fillRandom(kind){const r=rnd(Date.now()%100000);const p=planOf(cond.subj)[kind];students(cond.cls).forEach(st=>{const sc=S.scores[cond.subj][st.id][kind];p.forEach((x,i)=>{const c=sc[i]||(sc[i]={v:null,abs:'none'});if(c.abs!=='none')return;if(c.v==null)c.v=Math.round(x.max*(0.35+r()*0.65));});});save();render();toast('비어 있는 칸에 예시 점수를 넣었습니다.');}
-
-SCREENS['sc-calc']=()=>{
-  const subj=cond.subj;const p=planOf(subj);const R=computeSubject(subj);const cls=cond.cls;
-  const head=[...p.w.map(x=>`<th>${esc(x.name)}<br><small>${x.ratio}%</small></th>`),...p.p.map(x=>`<th>${esc(x.name)}<br><small>${x.ratio}%</small></th>`)].join('');
-  const rows=R.res.filter(r=>`${r.st.g}-${r.st.c}`===cls).map(r=>`<tr class="${r.inc?'miss':''}"><td>${r.st.no}</td><td class="l">${r.st.name}</td>${r.parts.map(e=>`<td>${e.raw==null?'<span class="chip crit">미입력</span>':Math.round(e.raw*10)/10}</td>`).join('')}<td><b>${r.inc?'-':Math.round(r.total)}</b></td><td>${r.inc?'-':r.ach}</td><td>${r.inc?'-':r.rank+(r.same>1?`<small>(${r.same})</small>`:'')}</td><td>${r.inc?'-':r.grade}</td></tr>`).join('');
-  const dist={};R.res.forEach(r=>{if(!r.inc)dist[r.ach]=(dist[r.ach]||0)+1;});
-  const gd={};R.res.forEach(r=>{if(!r.inc)gd[r.grade]=(gd[r.grade]||0)+1;});
-  return crumb('성적','성적처리','성적산출')+title('성적산출(성취도·석차등급)',`원점수 = Σ(점수/만점×반영비율). 성취도 A(90↑)~E. 석차등급은 ${S.gradeSystem}등급제, 동석차 중간석차 백분율 적용. 수강자 ${R.n}명 기준.`)
-  +`<div class="cond">${fixedCond()}${selSubj()}${selCls()}</div>
-  <div class="sum"><div class="card"><div class="k">수강자수(산출 가능)</div><div class="v">${R.n}<small> / ${R.res.length}</small></div></div><div class="card"><div class="k">과목평균</div><div class="v">${R.mean}</div></div><div class="card"><div class="k">표준편차</div><div class="v">${R.sd}</div></div><div class="card"><div class="k">성취도 분포</div><div class="v" style="font-size:14px">${['A','B','C','D','E'].map(a=>`${a} ${dist[a]||0}`).join(' · ')}</div></div><div class="card"><div class="k">등급 분포(${S.gradeSystem}등급)</div><div class="v" style="font-size:14px">${Object.keys(gd).sort().map(g=>`${g}등급 ${gd[g]}`).join(' · ')||'-'}</div></div></div>
-  ${R.res.some(r=>r.inc)?'<div class="note crit">미입력 점수가 있는 학생은 산출에서 제외되었습니다. 모든 점수를 입력(또는 결시처리)해야 과목 마감이 가능합니다.</div>':''}
-  <div class="grid-wrap"><table class="grid"><thead><tr><th>번호</th><th>성명</th>${head}<th>원점수</th><th>성취도</th><th>석차(동석차)</th><th>석차등급</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-
-SCREENS['sc-close']=()=>{
-  const list=me.role==='admin'?SUBJECTS:SUBJECTS.filter(s=>s.id===me.subj);
-  const rows=list.map(s=>{const c=S.subjClose[s.id];const iss=validateSubject(s.id);const R=computeSubject(s.id);
-    const teacher=USERS.find(u=>u.subj===s.id);
-    return `<tr><td class="l">${s.name}</td><td class="l">${teacher?.name||''}</td><td>${R.n} / ${R.res.length}</td><td>${R.mean}</td><td>${R.sd}</td><td class="l">${c?`<span class="chip lock">🔒 마감 (${c.by}, ${c.at})</span>`:iss.length?`<span class="chip crit">오류 ${iss.length}건</span>`:'<span class="chip ok">마감 가능</span>'}</td>
-    <td>${c?`<button class="btn s" ${can.admin()&&!S.gradeFinal?'':'disabled'} onclick="subjUnclose('${s.id}')">마감취소(교무)</button>`:`<button class="btn s" onclick="showIssues('${s.id}')" ${iss.length?'':'disabled'}>오류 보기</button> <button class="btn s p" ${can.scoreEdit(s.id)&&!iss.length?'':'disabled'} onclick="subjClose('${s.id}')">과목 마감</button>`}</td></tr>`;}).join('');
-  return crumb('성적','성적처리','과목별 성적마감')+title('과목별 성적마감','교과교사가 담당 과목의 입력을 끝내고 마감합니다. 마감 조건: 평가계획 100% · 전원 점수 입력(또는 결시처리) · 만점 초과 없음.')
-  +`<div class="cond">${fixedCond()}${S.gradeFinal?'<span class="chip lock">학기말 성적마감 완료</span>':''}</div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th class="l">과목</th><th class="l">담당</th><th>산출/전체</th><th>평균</th><th>표준편차</th><th class="l">상태</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-function showIssues(subj){const iss=validateSubject(subj);modal(`${subjName(subj)} 마감 불가 사유 (${iss.length}건)`,iss.slice(0,60).map(i=>'· '+esc(i)).join('\n')+(iss.length>60?`\n… 외 ${iss.length-60}건`:''),[{t:'성적입력으로 이동',f:()=>{cond.subj=subj;go('score','sc-written');}},{t:'닫기',p:true}]);}
-function subjClose(subj){const iss=validateSubject(subj);if(iss.length){showIssues(subj);return;}const R=computeSubject(subj);
-  confirmBox('과목 성적마감',`${subjName(subj)} 성적을 마감하시겠습니까?\n\n수강자 ${R.n}명 · 평균 ${R.mean} · 표준편차 ${R.sd}\n\n마감 후에는 평가계획·점수를 수정할 수 없습니다. 수정이 필요하면 교무부에 마감취소를 요청해야 합니다.`,()=>{S.subjClose[subj]={by:me.name,at:nowStr()};addLog(me.name,`과목 성적마감 ${subjName(subj)}`);save();toast('마감되었습니다.');render();},'마감');}
-function subjUnclose(subj){confirmBox('마감취소',`${subjName(subj)} 과목 마감을 취소하시겠습니까?`,()=>{delete S.subjClose[subj];addLog(me.name,`과목 성적마감 취소 ${subjName(subj)}`);save();render();},'마감취소');}
-
-SCREENS['sc-final']=()=>{
-  const rows=SUBJECTS.map(s=>{const c=S.subjClose[s.id];return `<tr><td class="l">${s.name}</td><td class="l">${USERS.find(u=>u.subj===s.id)?.name||''}</td><td class="l">${c?`<span class="chip lock">🔒 ${c.at}</span>`:'<span class="chip crit">미마감</span>'}</td></tr>`;}).join('');
-  const allOk=SUBJECTS.every(s=>S.subjClose[s.id]);
-  return crumb('성적','성적처리','학기말 성적마감')+title('학기말 성적마감(교무)','모든 과목이 마감되면 교무부가 학기 성적을 최종 마감합니다. 이후 성적일람표·성적표 출력과 학생부 반영이 확정됩니다.')
-  +`<div class="cond">${fixedCond()}<label><b>등급제</b><input value="${S.gradeSystem}등급" disabled style="width:60px"></label></div>
-  ${S.gradeFinal?`<div class="note ok">학기말 성적마감 완료 — ${S.gradeFinal.by}, ${S.gradeFinal.at}</div>`:allOk?'<div class="note ok">모든 과목 마감 완료. 학기말 성적마감이 가능합니다.</div>':'<div class="note warn">미마감 과목이 있습니다. 해당 교과교사에게 과목 마감을 요청하세요.</div>'}
-  <div class="bar"><span class="sp"></span>${S.gradeFinal?`<button class="btn" onclick="confirmBox('학기말 성적마감 취소','학기말 성적마감을 취소하시겠습니까?',()=>{S.gradeFinal=null;addLog(me.name,'학기말 성적마감 취소');save();render();},'마감취소')">마감취소</button>`:`<button class="btn p" ${allOk?'':'disabled'} onclick="confirmBox('학기말 성적마감','${YEAR}학년도 ${SEM}학기 성적을 최종 마감하시겠습니까?\\n마감 후 과목 마감취소가 막히며 성적이 확정됩니다.',()=>{S.gradeFinal={by:me.name,at:nowStr()};addLog(me.name,'학기말 성적마감');save();toast('학기말 성적마감 완료');render();},'최종 마감')">학기말 마감</button>`}</div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th class="l">과목</th><th class="l">담당</th><th class="l">과목 마감</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-
-SCREENS['sc-sheet']=()=>{
-  const cls=cond.cls;const comp={};SUBJECTS.forEach(s=>comp[s.id]=computeSubject(s.id));
-  const head=SUBJECTS.map(s=>`<th colspan="3">${s.name}<br><small>${s.credit}단위 · 평균 ${comp[s.id].mean} / SD ${comp[s.id].sd}</small></th>`).join('');
-  const head2=SUBJECTS.map(()=>'<th class="l2">원점수</th><th class="l2">성취도</th><th class="l2">등급</th>').join('');
-  const rows=students(cls).map(st=>`<tr><td class="fix">${st.no}</td><td class="fix2 l">${st.name}</td>${SUBJECTS.map(s=>{const r=comp[s.id].res.find(x=>x.st.id===st.id);return r.inc?'<td colspan="3" class="miss">미산출</td>':`<td>${Math.round(r.total)}</td><td>${r.ach}</td><td>${r.grade}</td>`;}).join('')}<td><button class="btn s" onclick="personal('${st.id}')">성적표</button></td></tr>`).join('');
-  return crumb('성적','성적처리','성적일람표')+title('성적일람표',S.gradeFinal?'학기말 성적마감 완료 — 확정 자료':'※ 마감 전 자료입니다(가변). 학기말 성적마감 후 확정됩니다.')
-  +`<div class="cond">${fixedCond()}${selCls()}</div><div class="bar"><span class="sp"></span><button class="btn" onclick="window.print()">출력</button></div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th class="fix" rowspan="2">번호</th><th class="fix2" rowspan="2">성명</th>${head}<th rowspan="2"></th></tr><tr>${head2}</tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-function personal(sid){const st=allStudents().find(s=>s.id===sid);const a=attStats(sid,TERM_START,TERM_END);
-  const rows=SUBJECTS.map(s=>{const R=computeSubject(s.id);const r=R.res.find(x=>x.st.id===sid);return `<tr><td class="l">${s.name}</td><td>${s.credit}</td><td>${r.inc?'-':Math.round(r.total)}</td><td>${R.mean}(${R.sd})</td><td>${r.inc?'-':r.ach}</td><td>${r.inc?'-':r.grade}</td><td>${R.n}</td></tr>`;}).join('');
-  modal(`${YEAR}학년도 ${SEM}학기 개인별 성적표 — ${st.g}학년 ${st.c}반 ${st.no}번 ${st.name}`,`<table class="grid" style="font-size:12px"><thead><tr><th>과목</th><th>단위</th><th>원점수</th><th>과목평균(표준편차)</th><th>성취도</th><th>석차등급</th><th>수강자수</th></tr></thead><tbody>${rows}</tbody></table><p style="font-size:12px">출결: 수업일수 ${a.days} · 결석 ${sumR(a.abs)} · 지각 ${sumR(a.late)} · 조퇴 ${sumR(a.early)} · 결과 ${sumR(a.skip)}</p>${S.gradeFinal?'':'<p class="status">※ 마감 전 가변 자료</p>'}`);}
-
-/* ═══════════════════════════════════════════════════════════
-   학교생활기록부
-═══════════════════════════════════════════════════════════ */
-const bytes=s=>{let b=0;for(const ch of s||''){b+=ch.charCodeAt(0)>127?3:1;}return b;};
-SCREENS['rec-sete']=()=>{
-  const subj=cond.subj,cls=cond.cls;const ed=can.scoreEdit(subj);S.sete[subj]=S.sete[subj]||{};const LIM=1500;
-  const R=computeSubject(subj);
-  const rows=students(cls).map(st=>{const t=S.sete[subj][st.id]||'';const b=bytes(t);const r=R.res.find(x=>x.st.id===st.id);
-    return `<tr><td style="vertical-align:top">${st.no}</td><td class="l" style="vertical-align:top">${st.name}<br><small style="color:#888">${r.inc?'':`${Math.round(r.total)}점 · ${r.ach}`}</small></td><td class="l" style="white-space:normal"><textarea class="txt" ${ed?'':'disabled'} oninput="S.sete['${subj}']['${st.id}']=this.value;save();this.nextElementSibling.textContent=bytes(this.value)+' / ${LIM} bytes';this.nextElementSibling.className='cnt'+(bytes(this.value)>${LIM}?' over':'')">${esc(t)}</textarea><div class="cnt ${b>LIM?'over':''}">${b} / ${LIM} bytes</div></td></tr>`;}).join('');
-  return crumb('학교생활기록부','교과학습발달상황','세부능력 및 특기사항')+title('세부능력 및 특기사항','과목별 500자(1,500바이트) 이내. 수업 중 관찰한 성취 수준·태도·탐구 과정을 구체적으로 기재. 점수·등급·석차 숫자는 기재하지 않습니다.')
-  +`<div class="cond">${fixedCond()}${selSubj()}${selCls()}</div><div class="bar"><span class="status">입력 ${students(cls).filter(st=>(S.sete[subj][st.id]||'').trim()).length} / ${students(cls).length}명</span><span class="sp"></span><button class="btn p" ${ed?'':'disabled'} onclick="addLog(me.name,'세특 저장 ${subjName(subj)} ${clsName(cls)}');save();toast('저장되었습니다.')">저장</button></div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th>번호</th><th>성명</th><th class="l">세부능력 및 특기사항</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-SCREENS['rec-att']=()=>{
-  const cls=cond.cls;
-  return crumb('학교생활기록부','담임 기재','출결상황')+title('출결상황(학생부 반영)',S.attFinal?'학기말 출결마감 완료 — 학생부 반영 확정':'※ 학기말 출결마감 전 자료입니다. 마감 후 확정됩니다.')
-  +`<div class="cond">${fixedCond()}${selCls()}</div>${S.attFinal?'':'<div class="note warn">출결마감(월마감 → 학기말 마감)이 끝나야 학생부 출결상황이 확정됩니다.</div>'}<div class="grid-wrap"><table class="grid">${attHead}<tbody>${attSemesterRows(cls)}</tbody></table></div>`;
-};
-SCREENS['rec-behav']=()=>{
-  const cls=cond.cls;const ed=can.attEdit(cls);const LIM=1500;
-  const rows=students(cls).map(st=>{const t=S.behav[st.id]||'';const b=bytes(t);
-    return `<tr><td style="vertical-align:top">${st.no}</td><td class="l" style="vertical-align:top">${st.name}</td><td class="l" style="white-space:normal"><textarea class="txt" ${ed?'':'disabled'} oninput="S.behav['${st.id}']=this.value;save();this.nextElementSibling.textContent=bytes(this.value)+' / ${LIM} bytes';this.nextElementSibling.className='cnt'+(bytes(this.value)>${LIM}?' over':'')">${esc(t)}</textarea><div class="cnt ${b>LIM?'over':''}">${b} / ${LIM} bytes</div></td></tr>`;}).join('');
-  return crumb('학교생활기록부','담임 기재','행동특성 및 종합의견')+title('행동특성 및 종합의견','담임이 학년 단위로 500자(1,500바이트) 이내 기재. 학생의 변화·성장을 구체적 사례 중심으로.')
-  +`<div class="cond">${fixedCond()}${selCls()}</div><div class="bar"><span class="sp"></span><button class="btn p" ${ed?'':'disabled'} onclick="addLog(me.name,'행특 저장 ${clsName(cls)}');save();toast('저장되었습니다.')">저장</button></div>
-  <div class="grid-wrap"><table class="grid"><thead><tr><th>번호</th><th>성명</th><th class="l">행동특성 및 종합의견</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-};
-
-/* ═══════════════════════════════════════════════════════════
-   연수도우미
-═══════════════════════════════════════════════════════════ */
-function stepList(){
-  const myCls=me.cls||'1-1', mySubj=me.subj||'kor';
-  return [
-    {t:'일일출결 입력·저장',d:`담임: ${clsName(myCls)}의 미저장(빨간 날짜)을 모두 저장합니다.`,ok:()=>DAYS.filter(d=>d<=S.simDate).every(d=>(S.attDone[myCls]||{})[d]),go:['att','att-daily']},
-    {t:'출결 월마감',d:'담임: 기준일까지 지난 달을 순서대로 마감합니다(10월 마감은 기준일을 11월 이후로).',ok:()=>MONTHS.filter(m=>DAYS.filter(d=>d.startsWith(m)).slice(-1)[0]<=S.simDate).every(m=>isMonthClosed(myCls,m)),go:['att','att-close']},
-    {t:'평가계획 확인',d:'교과교사: 담당 과목 반영비율 합계 100% 확인.',ok:()=>!planIssues(mySubj).length,go:['score','sc-plan']},
-    {t:'지필·수행평가 점수 입력',d:'교과교사: 2차 지필·수행평가 2영역을 전 학급에 입력하고 결시자는 결시처리.',ok:()=>!validateSubject(mySubj).length,go:['score','sc-written']},
-    {t:'성적산출 확인',d:'원점수·성취도·석차등급을 확인합니다.',ok:()=>!validateSubject(mySubj).length,go:['score','sc-calc']},
-    {t:'과목 성적마감',d:'교과교사: 담당 과목을 마감합니다.',ok:()=>!!S.subjClose[mySubj],go:['score','sc-close']},
-    {t:'세부능력 및 특기사항 입력',d:'교과교사: 담당 학급 학생 세특 작성(1,500바이트).',ok:()=>students(myCls).every(st=>((S.sete[mySubj]||{})[st.id]||'').trim()),go:['rec','rec-sete']},
-    {t:'학기말 출결마감(교무)',d:'교무부 계정으로 로그인하여 전 학급 월마감 확인 후 최종 마감. 기준일을 12-31로 바꿔야 가능합니다.',ok:()=>!!S.attFinal,go:['att','att-final']},
-    {t:'학기말 성적마감(교무)',d:'교무부 계정으로 전 과목 마감 확인 후 최종 마감.',ok:()=>!!S.gradeFinal,go:['score','sc-final']},
-    {t:'행동특성 및 종합의견',d:'담임: 학급 학생 행특 기재.',ok:()=>students(myCls).every(st=>(S.behav[st.id]||'').trim()),go:['rec','rec-behav']},
-  ];
-}
-SCREENS['gd-steps']=()=>{
-  const steps=stepList();const done=steps.filter(s=>s.ok()).length;
-  return crumb('연수도우미','학기말 마감 시나리오')+title('학기말 마감 시나리오',`현재 사용자(${me.name}) 기준으로 진행 상황을 자동 확인합니다. ${done} / ${steps.length} 단계 완료`)
-  +`<div class="note">실제 나이스 업무 순서: <b>담임</b>(일일출결 → 월마감) → <b>교과교사</b>(평가계획 → 점수입력 → 산출확인 → 과목마감 → 세특) → <b>교무부</b>(학기말 출결·성적 마감) → <b>담임</b>(행특·학생부 점검). 오류 상황(미저장 날짜, 결시자, 비율 오류, 미입력 점수)이 미리 심어져 있으니 직접 해결해 보세요.</div>
-  <ol class="steps">${steps.map((s,i)=>`<li class="${s.ok()?'done':''}"><span class="no">${s.ok()?'✓':i+1}</span><div><div class="t">${s.t}</div><div class="d">${s.d}</div></div><button class="btn s go" onclick="go('${s.go[0]}','${s.go[1]}')">이동</button></li>`).join('')}</ol>`;
-};
-SCREENS['gd-setting']=()=>crumb('연수도우미','기준일·등급제 설정')+title('기준일·등급제 설정','시뮬레이션의 "오늘"을 바꿔 학기말 상황을 만들 수 있습니다.')
-  +`<div class="card" style="max-width:560px"><p><b>시뮬레이션 기준일</b> <input type="date" value="${S.simDate}" min="${TERM_START}" max="${TERM_END}" onchange="S.simDate=this.value;addLog(me.name,'기준일 변경 '+this.value);save();go(view.top,view.menu)"> <span class="status">기준일까지의 수업일만 출결 입력·집계 대상이 됩니다. 기준일을 뒤로 옮기면 그 사이 날짜는 '미저장'이 되어 실제처럼 입력 후 저장해야 합니다.</span></p>
-  <p><button class="btn" onclick="S.simDate='${DAYS[DAYS.length-1]}';save();go(view.top,view.menu)">학기 마지막 수업일(${DAYS[DAYS.length-1]})로</button> <button class="btn" onclick="S.simDate='2026-10-27';save();go(view.top,view.menu)">10-27로 되돌리기</button> <button class="btn" onclick="bulkSaveAtt()">기준일까지 모든 학급 일일출결 일괄 저장(연수 단축)</button></p>
-  <hr style="border:0;border-top:1px solid var(--line-2)">
-  <p><b>석차등급제</b> <select onchange="S.gradeSystem=this.value;save();render()"><option value="5" ${S.gradeSystem==='5'?'selected':''}>5등급제 (2025학년도 입학생부터·고교학점제)</option><option value="9" ${S.gradeSystem==='9'?'selected':''}>9등급제 (2024학년도 이전 입학생)</option></select></p>
-  <p class="status">5등급 누적비율: 1등급 10% · 2등급 34% · 3등급 66% · 4등급 90% · 5등급 100%<br>9등급 누적비율: 4 · 11 · 23 · 40 · 60 · 77 · 89 · 96 · 100%</p>
-  <hr style="border:0;border-top:1px solid var(--line-2)">
-  <p><b>결시 인정점 규정(가상)</b> 인정결시 100% · 질병결시 80% · 미인정결시 0점 — 응시자 평균 기준. 실제 학교 학업성적관리규정에 따라 다릅니다.</p></div>`;
-function bulkSaveAtt(){CLASSES.forEach(({g,c})=>{const k=`${g}-${c}`;S.attDone[k]=S.attDone[k]||{};DAYS.filter(d=>d<=S.simDate).forEach(d=>S.attDone[k][d]=true);});addLog(me.name,'일일출결 일괄 저장(연수 단축)');save();toast('일괄 저장했습니다.');render();}
-SCREENS['gd-log']=()=>crumb('연수도우미','처리 이력')+title('처리 이력(로그)','누가 언제 무엇을 저장·마감·취소했는지 기록합니다.')+`<div class="log">${S.log.map(l=>`<div>${esc(l)}</div>`).join('')||'<div>기록 없음</div>'}</div>`;
-SCREENS['gd-reset']=()=>crumb('연수도우미','자료 초기화')+title('자료 초기화','연수를 처음부터 다시 하려면 초기화합니다.')
-  +`<div class="card" style="max-width:560px"><p>모든 출결·성적·마감·기재 내용을 지우고 가상 자료를 새로 만듭니다. 이 브라우저에 저장된 자료만 지워집니다.</p><button class="btn d" onclick="confirmBox('자료 초기화','정말 초기화하시겠습니까? 되돌릴 수 없습니다.',()=>{seedData();addLog(me.name,'자료 초기화');save();toast('초기화했습니다.');go('guide','gd-steps');},'초기화')">초기화</button>
-  <button class="btn" onclick="exportJson()">자료 내려받기(JSON)</button> <label class="btn" style="display:inline-block">자료 불러오기<input type="file" accept="application/json" style="display:none" onchange="importJson(this.files[0])"></label></div>`;
-function exportJson(){const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(S));a.download=`neis-sim-${S.simDate}.json`;a.click();}
+/* ═════════════════ 연수도우미 ═════════════════ */
+function steps(){return [
+  {pre:1,t:'[1단계] 과목 출석률 마감',d:'① 교과담임: <code>학적 › 출결관리 › 과목별출결관리 › 학기별과목출결마감</code>에서 강의실별 {학기별과목마감} (과목교시마감수 = 반별일출결마감수 = 시간표총수업수일 때만 가능) ② 업무담당자: <code>과목전체마감</code>에서 {전체마감} → {승인요청} → 결재권자 결재.',ok:()=>attAllApproved(),go:['hak','att-room']},
+  {pre:1,t:'[2단계] 학기말 성적 산출 마감',d:'<code>성적 › 성적처리 › 성적산출마감관리</code>에서 {성적산출전체마감} → {승인요청} → 결재. (1단계와 순서 무관)',ok:()=>calcAllApproved(),go:['score','calc-close']},
+  {t:'[3단계] 대상자 가져오기',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)이수관리 › 대상자</code>에서 {조회} → {대상자가져오기} → {확인}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).targets)),go:['score','msb-manage']},
+  {t:'[4단계] 예외처리 대상자 등록',d:'<code>› 예외처리</code> 탭에서 예외사유(특수교육대상자·학교외 장소 수강·기타) 선택 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).excSaved)),go:['score','msb-manage']},
+  {t:'[5단계] 대상자 이수여부 처리',d:'<code>› 이수관리</code> 탭에서 참여시수 입력 → 이수여부 자동 판정 → 비고 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).hoursSaved&&!msbRoomStats(s.id,c).pending)),go:['score','msb-manage']},
+  {t:'[6단계] 최성보 마감 관리',d:'<code>› 마감</code> 탭에서 {학점반영} → {마감}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed)),go:['score','msb-manage']},
+  {t:'[7단계] 학교생활기록부 자료반영',d:'<code>학생부 › 학교생활기록부 › 학생부반영</code>에서 학급담임이 {학생부반영}. 자퇴 학생은 <code>학적 › 학업중단관리</code>에서 학적처리결과 반영.',ok:()=>CLASSES.every(c=>S.recReflect[c])&&Object.values(S.withdrawn).every(w=>w.reflected),go:['rec','rec-reflect']},
+  {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청} → 결재.',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
+];}
+SCREENS['gd-steps']=()=>{const st=steps();const done=st.filter(s=>s.ok()).length;const na=nextAction();
+  return wtabs('연수도우미')+title('최소 성취수준 보장지도 관리 업무 흐름도',`${done} / ${st.length} 단계 완료 · 현재 사용자 ${me.name}(${me.title})`)
+  +`<div class="note"><b>사전업무</b>(보라색 1·2단계, 순서 무관) → <b>보장지도 관리</b>(3~8단계). 각 단계의 조건이 안 맞으면 실제 나이스처럼 버튼이 비활성화되거나 오류 메시지가 뜹니다. <b>버튼을 누르는 순서가 중요</b>하므로, 모르겠으면 오른쪽 아래 <b>[다음에 누를 버튼]</b> 안내를 따라 ①②③ 순서대로 누르세요. 교과담임 → 업무담당자 → 결재권자로 사용자를 바꿔 가며 진행합니다.</div>
+  <ol class="steps">${st.map((s,i)=>`<li class="${s.ok()?'done':''} ${s.pre?'pre':''} ${na&&na.step===i+1?'cur':''}"><span class="no">${s.ok()?'✓':i+1}</span><div><div class="t">${s.t}</div><div class="d">${s.d}</div></div><button class="btn s go" onclick="go('${s.go[0]}','${s.go[1]}')">이동</button></li>`).join('')}</ol>`;};
+SCREENS['gd-rule']=()=>wtabs('연수도우미')+title('학점이수 기준 및 최소 성취수준 보장지도 변경 안내','2025학년도 2학기부터 적용 (고교학점제 적용 고등학교)')
+  +`<div class="grid-wrap auto"><table class="grid"><thead><tr><th>구분</th><th class="l">항목</th><th class="l">당초</th><th class="l">변경</th></tr></thead><tbody>
+  <tr><td rowspan="3">학점이수 인정기준</td><td class="l">과목 및 창체의 출석률 충족 기준</td><td class="l">실제 수업횟수의 2/3 이상 출석</td><td class="l">1학점당 수업량(16회)의 2/3 이상 출석</td></tr>
+  <tr><td class="l">추가학습 대상자의 학생부 기재</td><td class="l">비고란에 ‘출석률 미달로 인한 추가학습 이수’ 기재</td><td class="l">비고란에 별도 기재사항 없음(1학기 기재 내용은 자동 삭제 처리 예정)</td></tr>
+  <tr><td class="l">대안학교 학생의 전·편입학</td><td class="l">고교학점제 적용교로의 전·편입학 시 학점인정 기준 없음</td><td class="l">귀국학생과 동일하게 전입 이전 학기의 학점(전입교 기준) 모두 이수한 것으로 처리</td></tr>
+  <tr><td rowspan="3">최소 성취수준 보장지도(최성보)</td><td class="l">운영 시수</td><td class="l">1학점당 5시수</td><td class="l">1학점당 3시수 이상 ※ 전문교과는 1학점당 2시수</td></tr>
+  <tr><td class="l">시수 인정 범위</td><td class="l">운영 방법별 최대 인정 시수 범위 규정(권장)</td><td class="l">보충지도(대면지도)를 반드시 포함하여 운영하되, 운영 방법별 시수 인정 범위는 교육감 규정에 따라 학교에서 자율적 운영</td></tr>
+  <tr><td class="l">추가학습 운영 방법</td><td class="l">최성보에 준하여 운영</td><td class="l">100% 온라인 프로그램 운영 가능(시수는 최성보와 동일)</td></tr></tbody></table></div>
+  <div class="note" style="margin-top:10px">이 시뮬레이터의 판정: <b>출석 미도달</b> = 출석시수 &lt; 총수업시수×2/3, <b>학업성취율 미도달</b> = 학기말 성취율 40% 미만(E). 이수기준 시수 = (학점 × 학점당 시수)의 2/3. 실제 기준은 교육청 지침·학교 학업성적관리규정을 따르세요.</div>`;
+SCREENS['gd-setting']=()=>wtabs('연수도우미')+title('설정·초기화·로그','')
+  +`<div class="card" style="max-width:760px;margin-bottom:12px"><p><b>시뮬레이션 기준일</b> <input type="date" value="${S.simDate}" onchange="S.simDate=this.value;save();go(view.top,view.menu)"> <span class="status">(처리 이력의 날짜로만 쓰입니다)</span></p>
+  <p><button class="btn d" onclick="confirmBox('자료 초기화','모든 마감·예외처리·시수·결재 내용을 지우고 가상 자료를 다시 만듭니다. 되돌릴 수 없습니다.',()=>{seedData();addLog(me.name,'자료 초기화');save();queried={};toast('초기화했습니다.');go('guide','gd-steps');},'초기화')">자료 초기화</button>
+  <button class="btn" onclick="confirmBox('사전업무 건너뛰기','1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.',()=>{skipPre();})">사전업무(1·2단계) 완료 처리하고 3단계부터</button>
+  <button class="btn" onclick="exportJson()">자료 내려받기(JSON)</button> <label class="btn" style="display:inline-block">자료 불러오기<input type="file" accept="application/json" style="display:none" onchange="importJson(this.files[0])"></label></p></div>
+  <div class="ttl"><h2>처리 이력(로그)</h2></div><div class="log">${S.log.map(l=>`<div>${esc(l)}</div>`).join('')||'<div>기록 없음</div>'}</div>`;
+function skipPre(){CLASSES.forEach(c=>DAYS.forEach(d=>S.dayClose[c][d]=true));SUBJECTS.forEach(s=>{CLASSES.forEach(c=>{PERIODS[s.id].forEach(x=>S.periodClose[s.id][c][x.d+'|'+x.p]=true);S.roomClose[s.id][c]={by:'시스템',at:nowStr()};});S.examClose[s.id]={written:true,perf:true};});const a={by:'시스템',at:nowStr()};S.attAll={done:a,req:a,approved:a};S.calcAll={done:a,req:a,approved:a};addLog(me.name,'사전업무(1·2단계) 완료 처리');save();toast('완료 처리했습니다.');cond.tab='target';go('score','msb-manage');}
+function exportJson(){const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(S));a.download=`neis-msb-${S.simDate}.json`;a.click();}
 function importJson(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{S=JSON.parse(r.result);save();toast('불러왔습니다.');go('guide','gd-steps');}catch(e){toast('파일을 읽을 수 없습니다.');}};r.readAsText(f);}
 
-/* 시작 */
 renderLogin();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 </script>
