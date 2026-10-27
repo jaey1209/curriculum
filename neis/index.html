@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>가상 나이스 연수 시뮬레이터</title>
+<style>
+:root{
+  --blue:#1b4f9c; --blue-d:#143d7a; --blue-l:#e8eef8; --blue-ll:#f3f6fb;
+  --ink:#222; --ink-2:#555; --ink-3:#888; --line:#c9d1dc; --line-2:#e3e8ef;
+  --grid-h:#eef2f7; --paper:#f5f6f8; --white:#fff;
+  --ok:#1a7f37; --ok-soft:#e3f5e8; --warn:#b25400; --warn-soft:#fff3e0; --crit:#c8102e; --crit-soft:#fde8ea;
+  --lock:#6b7280;
+  --sans:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--paper);line-height:1.5}
+button,select,input,textarea{font-family:inherit;font-size:13px}
+button{cursor:pointer}
+a{color:var(--blue)}
+
+/* ───── 로그인 ───── */
+#login{position:fixed;inset:0;background:linear-gradient(135deg,#17407f,#2d6cc0 60%,#3f8ad6);display:flex;align-items:center;justify-content:center;z-index:50}
+.lg-card{background:#fff;border-radius:10px;width:min(920px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.35);display:grid;grid-template-columns:1.1fr 1fr;overflow:hidden}
+.lg-left{padding:40px 36px;background:#f7f9fc;border-right:1px solid var(--line-2)}
+.lg-left h1{margin:0 0 6px;font-size:26px;color:var(--blue)}
+.lg-left h1 small{display:block;font-size:12px;color:var(--ink-3);font-weight:normal;letter-spacing:.1em;margin-bottom:6px}
+.lg-left p{color:var(--ink-2);font-size:13px}
+.lg-note{margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:8px;background:#fff;font-size:12px;color:var(--ink-2)}
+.lg-note b{color:var(--crit)}
+.lg-right{padding:40px 36px}
+.lg-right h2{margin:0 0 14px;font-size:16px}
+.user-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.user-btn:hover{border-color:var(--blue);background:var(--blue-ll)}
+.user-btn .av{width:36px;height:36px;border-radius:50%;background:var(--blue-l);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;flex:none}
+.user-btn .nm{font-weight:bold}
+.user-btn .rl{font-size:12px;color:var(--ink-3)}
+
+/* ───── 상단 ───── */
+#app{display:none;flex-direction:column;height:100vh}
+#app.on{display:flex}
+.gnb{background:var(--blue);color:#fff;display:flex;align-items:center;height:48px;padding:0 16px;gap:18px}
+.gnb .logo{font-weight:bold;font-size:16px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.gnb .logo .tag{font-size:10px;background:#fff;color:var(--blue);padding:1px 6px;border-radius:3px;font-weight:bold}
+.gnb .school{font-size:12px;opacity:.9;border-left:1px solid rgba(255,255,255,.35);padding-left:14px}
+.gnb .sp{flex:1}
+.gnb .who{font-size:12px;display:flex;align-items:center;gap:10px}
+.gnb .who b{font-size:13px}
+.gnb .who .date{background:rgba(255,255,255,.15);padding:2px 8px;border-radius:3px}
+.gnb button{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;padding:3px 10px;border-radius:3px}
+.gnb button:hover{background:rgba(255,255,255,.15)}
+.lnb{background:#fff;border-bottom:2px solid var(--blue);display:flex;height:40px;padding:0 10px}
+.lnb button{background:none;border:0;padding:0 18px;font-size:14px;font-weight:bold;color:var(--ink-2);border-bottom:3px solid transparent;margin-bottom:-2px}
+.lnb button.on{color:var(--blue);border-bottom-color:var(--blue)}
+.lnb .guide{margin-left:auto;color:var(--warn)}
+.lnb .guide.on{color:var(--warn);border-bottom-color:var(--warn)}
+
+/* ───── 본문 ───── */
+.body{flex:1;display:flex;min-height:0}
+.tree{width:220px;background:#fff;border-right:1px solid var(--line);overflow:auto;flex:none}
+.tree h3{margin:0;padding:12px 14px 8px;font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.tree .grp{padding:6px 14px 2px;font-weight:bold;font-size:13px;color:var(--ink)}
+.tree .grp::before{content:"▾ ";color:var(--ink-3)}
+.tree .it{display:block;width:100%;text-align:left;background:none;border:0;padding:6px 14px 6px 30px;color:var(--ink-2);font-size:13px;position:relative}
+.tree .it::before{content:"·";position:absolute;left:20px;color:var(--ink-3)}
+.tree .it:hover{background:var(--blue-ll)}
+.tree .it.on{background:var(--blue-l);color:var(--blue);font-weight:bold}
+.tree .it .cnt{float:right;font-size:11px;background:var(--crit);color:#fff;border-radius:9px;padding:0 6px}
+.main{flex:1;overflow:auto;padding:14px 18px 40px}
+.crumb{font-size:12px;color:var(--ink-3);margin-bottom:6px}
+.crumb b{color:var(--ink)}
+.ttl{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ttl h2{margin:0;font-size:18px}
+.ttl .help{font-size:12px;color:var(--ink-3)}
+.cond{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin-bottom:10px}
+.cond label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
+.cond label b{color:var(--ink);font-weight:bold;min-width:40px}
+.cond select,.cond input{border:1px solid var(--line);border-radius:3px;padding:4px 6px;background:#fff;min-width:80px}
+.bar{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.bar .sp{flex:1}
+.btn{border:1px solid var(--line);background:#fff;padding:5px 12px;border-radius:3px;color:var(--ink);font-weight:bold}
+.btn:hover{background:var(--blue-ll);border-color:var(--blue)}
+.btn.p{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.p:hover{background:var(--blue-d)}
+.btn.w{background:var(--warn);border-color:var(--warn);color:#fff}
+.btn.d{background:var(--crit);border-color:var(--crit);color:#fff}
+.btn.s{padding:2px 8px;font-weight:normal;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.status{font-size:12px;color:var(--ink-3)}
+.chip{display:inline-block;font-size:11px;padding:1px 7px;border-radius:3px;border:1px solid transparent;font-weight:bold;vertical-align:middle}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.crit{background:var(--crit-soft);color:var(--crit)}
+.chip.lock{background:#eceff3;color:var(--lock)}
+.chip.info{background:var(--blue-l);color:var(--blue)}
+
+/* 그리드 */
+.grid-wrap{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:auto;max-height:calc(100vh - 290px)}
+table.grid{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;white-space:nowrap}
+table.grid th{background:var(--grid-h);border-bottom:1px solid var(--line);border-right:1px solid var(--line-2);padding:6px 6px;font-weight:bold;position:sticky;top:0;z-index:2;text-align:center}
+table.grid th.l2{top:29px}
+table.grid td{border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);padding:3px 6px;text-align:center;font-variant-numeric:tabular-nums}
+table.grid td.l,table.grid th.l{text-align:left}
+table.grid tr:hover td{background:#fbfcfe}
+table.grid td.fix,table.grid th.fix{position:sticky;left:0;background:#fff;z-index:1}
+table.grid th.fix{z-index:3;background:var(--grid-h)}
+table.grid td.fix2,table.grid th.fix2{position:sticky;left:44px;background:#fff;z-index:1}
+table.grid th.fix2{z-index:3;background:var(--grid-h)}
+table.grid input[type=number],table.grid input[type=text]{width:58px;border:1px solid var(--line);border-radius:2px;padding:2px 4px;text-align:right}
+table.grid input.wide{width:100%;text-align:left}
+table.grid select{border:1px solid var(--line);border-radius:2px;padding:2px 3px;font-size:12px;background:#fff}
+table.grid input:disabled,table.grid select:disabled,textarea:disabled{background:#f1f3f5;color:var(--ink-3)}
+table.grid .miss{background:var(--crit-soft)}
+table.grid .abs{background:var(--warn-soft)}
+table.grid tfoot td{background:var(--blue-ll);font-weight:bold}
+.att-cell{display:flex;gap:2px;justify-content:center}
+.att-cell select{width:56px}
+.sum{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 14px;min-width:150px}
+.card .k{font-size:11px;color:var(--ink-3)}
+.card .v{font-size:20px;font-weight:bold}
+.card .v small{font-size:12px;color:var(--ink-3);font-weight:normal}
+.note{background:var(--blue-ll);border:1px solid var(--line-2);border-radius:4px;padding:8px 12px;font-size:12px;color:var(--ink-2);margin-bottom:10px}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.note.crit{background:var(--crit-soft);color:var(--crit)}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note ul{margin:4px 0 0;padding-left:18px}
+textarea.txt{width:100%;min-height:76px;border:1px solid var(--line);border-radius:3px;padding:6px 8px;resize:vertical;line-height:1.5}
+.cnt{font-size:11px;color:var(--ink-3);text-align:right}
+.cnt.over{color:var(--crit);font-weight:bold}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:900px){.two{grid-template-columns:1fr}.tree{width:170px}}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal .d{border:1px solid var(--line-2);border-radius:3px;padding:4px;min-height:48px;font-size:11px;background:#fff;cursor:pointer}
+.cal .d.off{background:#f6f7f9;color:#bbb;cursor:default}
+.cal .d.done{border-color:var(--ok);background:var(--ok-soft)}
+.cal .d.todo{border-color:var(--crit);background:var(--crit-soft)}
+.cal .d.sel{outline:2px solid var(--blue)}
+.cal .d.future{opacity:.5;cursor:default}
+.cal .d .n{font-weight:bold}
+.cal .d .ev{color:var(--ink-2)}
+.cal .hd{text-align:center;font-size:11px;color:var(--ink-3);padding:2px}
+
+/* 모달 */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:60}
+.scrim.on{display:flex}
+.modal{background:#fff;border-radius:6px;min-width:360px;max-width:560px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.modal .mh{padding:12px 16px;border-bottom:1px solid var(--line-2);font-weight:bold;background:var(--blue);color:#fff;border-radius:6px 6px 0 0}
+.modal .mb{padding:16px;max-height:60vh;overflow:auto;white-space:pre-wrap;line-height:1.6}
+.modal .mf{padding:10px 16px;border-top:1px solid var(--line-2);display:flex;justify-content:flex-end;gap:6px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:4px;font-size:13px;opacity:0;transition:.25s;z-index:70;pointer-events:none}
+.toast.on{opacity:.95}
+
+/* 연수도우미 */
+.steps{list-style:none;margin:0;padding:0}
+.steps li{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
+.steps .no{width:26px;height:26px;border-radius:50%;background:var(--blue-l);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;flex:none}
+.steps li.done .no{background:var(--ok);color:#fff}
+.steps li.done{border-color:var(--ok)}
+.steps .t{font-weight:bold}
+.steps .d{font-size:12px;color:var(--ink-2)}
+.steps .go{margin-left:auto}
+.log{font-size:12px;font-family:ui-monospace,Consolas,monospace;background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px 10px;max-height:260px;overflow:auto}
+.log div{border-bottom:1px dashed var(--line-2);padding:2px 0}
+.print-only{display:none}
+@media print{
+  .gnb,.lnb,.tree,.cond,.bar,#login,.note{display:none!important}
+  .main{padding:0}.grid-wrap{max-height:none;border:0}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<!-- ───────── 로그인 ───────── -->
+<div id="login">
+  <div class="lg-card">
+    <div class="lg-left">
+      <h1><small>NEIS TRAINING SIMULATOR</small>가상 나이스<br>연수 시뮬레이터</h1>
+      <p>실제 나이스(NEIS)와 연결되지 않은 <b>연습용 가상 시스템</b>입니다.<br>
+      학기말 <b>출결 마감</b>과 <b>성적 마감</b> 절차를 처음부터 끝까지 실제 화면 흐름대로 연습할 수 있으며,
+      모든 입력은 이 브라우저에만 저장되고 언제든 초기화할 수 있습니다.</p>
+      <div class="lg-note">
+        <b>※ 주의</b> 이 화면의 학생·교사·점수는 모두 가상 자료입니다. 실제 나이스 업무는 반드시 교육청 나이스(neis.go.kr)에서 처리하세요.<br><br>
+        연습 범위: 일일출결 입력 → 출결 월마감 → 평가계획 → 지필·수행평가 점수 입력(결시 인정점 포함) →
+        성적 산출(성취도·석차등급) → 과목 마감 → 학기말 성적 마감 → 세부능력 및 특기사항 → 행동특성 및 종합의견
+      </div>
+    </div>
+    <div class="lg-right">
+      <h2>접속 사용자 선택 <span class="status">(인증서 로그인 대신)</span></h2>
+      <div id="userList"></div>
+      <p class="status" style="margin-top:14px">같은 브라우저에서 사용자를 바꿔 로그인하면 같은 자료를 이어서 봅니다. 담임↔교과교사↔교무부 권한 차이를 그대로 체험할 수 있습니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ───────── 앱 ───────── -->
+<div id="app">
+  <div class="gnb">
+    <div class="logo">가상 나이스 <span class="tag">연수용</span></div>
+    <div class="school" id="gSchool"></div>
+    <div class="sp"></div>
+    <div class="who"><span class="date" id="gDate"></span><span id="gUser"></span><button onclick="logout()">로그아웃</button></div>
+  </div>
+  <div class="lnb" id="lnb"></div>
+  <div class="body">
+    <nav class="tree" id="tree"></nav>
+    <section class="main" id="main"></section>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"><div class="modal"><div class="mh" id="mTitle"></div><div class="mb" id="mBody"></div><div class="mf" id="mFoot"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   기본 자료 (가상)
+═══════════════════════════════════════════════════════════ */
+const KEY='neis-sim-v1';
+const SCHOOL='율천고등학교';
+const YEAR=2026, SEM=2;
+const TERM_START='2026-08-18', TERM_END='2026-12-31';
+const HOLIDAYS={'2026-09-24':'추석 연휴','2026-09-25':'추석','2026-09-26':'추석 연휴','2026-10-09':'한글날','2026-12-25':'성탄절'};
+const SCHOOL_EVENTS={'2026-10-05':'중간고사','2026-10-06':'중간고사','2026-10-07':'중간고사','2026-12-07':'기말고사','2026-12-08':'기말고사','2026-12-09':'기말고사','2026-12-31':'방학식'};
+const CLASSES=[{g:1,c:1},{g:1,c:2},{g:1,c:3}];
+const SUBJECTS=[
+  {id:'kor',name:'공통국어2',credit:4},
+  {id:'mat',name:'공통수학2',credit:4},
+  {id:'eng',name:'공통영어2',credit:4},
+  {id:'soc',name:'통합사회2',credit:4},
+  {id:'sci',name:'통합과학2',credit:4},
+  {id:'his',name:'한국사2',credit:3},
+];
+const USERS=[
+  {id:'t_kim',  name:'김민정', role:'homeroom', title:'1학년 1반 담임 · 국어', cls:'1-1', subj:'kor', classes:['1-1','1-2','1-3']},
+  {id:'t_lee',  name:'이준호', role:'homeroom', title:'1학년 2반 담임 · 수학', cls:'1-2', subj:'mat', classes:['1-1','1-2','1-3']},
+  {id:'t_park', name:'박서연', role:'homeroom', title:'1학년 3반 담임 · 영어', cls:'1-3', subj:'eng', classes:['1-1','1-2','1-3']},
+  {id:'t_choi', name:'최유진', role:'subject',  title:'교과교사 · 통합사회', subj:'soc', classes:['1-1','1-2','1-3']},
+  {id:'t_jung', name:'정현우', role:'subject',  title:'교과교사 · 통합과학', subj:'sci', classes:['1-1','1-2','1-3']},
+  {id:'t_han',  name:'한지우', role:'subject',  title:'교과교사 · 한국사', subj:'his', classes:['1-1','1-2','1-3']},
+  {id:'t_adm',  name:'오성적', role:'admin',    title:'교무부 · 성적처리·출결 담당(권한자)'},
+];
+const ATT_TYPES=['결석','지각','조퇴','결과'];
+const ATT_REASONS=['질병','미인정','기타','인정'];
+const ABSENT_RULES=[{id:'none',name:'해당없음',ratio:null},{id:'rec100',name:'인정결시(100%)',ratio:1},{id:'ill80',name:'질병결시(80%)',ratio:.8},{id:'etc0',name:'미인정결시(0점)',ratio:0}];
+
+const FAM='김이박최정강조윤장임한오서신권황안송류전홍고문양손배백허유남심노정하곽성차주우구민류나진지엄채원천방공현';
+const G1='민서지수현예하준도우시연윤은채서주승지하태진아율라소윤영은세다';
+const G2='준우아연서현민윤호은지빈서율찬우현아연진원영하율리나경수민별우혁';
+function rnd(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>(s=s*16807%2147483647)/2147483647;}
+function makeStudents(){
+  const out={};let r=rnd(20260818);
+  CLASSES.forEach(({g,c})=>{
+    const key=`${g}-${c}`;out[key]=[];
+    const n=24+Math.floor(r()*3);
+    const used=new Set();
+    for(let i=1;i<=n;i++){
+      let nm;do{nm=FAM[Math.floor(r()*FAM.length)]+G1[Math.floor(r()*G1.length)]+G2[Math.floor(r()*G2.length)];}while(used.has(nm));
+      used.add(nm);
+      out[key].push({id:`${YEAR}${g}${c}${String(i).padStart(2,'0')}`,g,c,no:i,name:nm,gender:r()<.5?'남':'여'});
+    }
+    out[key].sort((a,b)=>a.name.localeCompare(b.name,'ko')).forEach((s,i)=>s.no=i+1);
+  });
+  return out;
+}
+function schoolDays(){
+  const d=[];let cur=new Date(TERM_START+'T00:00:00');const end=new Date(TERM_END+'T00:00:00');
+  while(cur<=end){const iso=fmt(cur);const w=cur.getDay();if(w!==0&&w!==6&&!HOLIDAYS[iso])d.push(iso);cur.setDate(cur.getDate()+1);}
+  return d;
+}
+function fmt(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+const DAYS=schoolDays();
+const MONTHS=[...new Set(DAYS.map(d=>d.slice(0,7)))];
+
+/* ═══════════════════════════════════════════════════════════
+   상태
+═══════════════════════════════════════════════════════════ */
+let S=null, me=null, view={top:'att',menu:'att-daily'}, cond={cls:'1-1',date:null,month:null,subj:null,sem:SEM};
+function blank(){
+  return {
+    simDate:'2026-10-27', gradeSystem:'5', // 5등급(2025 입학생~) / 9등급
+    students:makeStudents(),
+    att:{},        // date -> studentId -> {t,r,m}
+    attDone:{},    // cls -> {date:true}  일일 출결 저장(확정) 여부
+    attClose:{},   // cls -> {month:{by,at}}  월마감
+    attFinal:null, // 학기말 출결 마감 {by,at}
+    attNote:{},    // studentId -> 출결특기사항
+    plan:{},       // subj -> {w:[{name,ratio,max}], p:[...]}
+    scores:{},     // subj -> studentId -> {w:[{v,abs}], p:[{v,abs}]}
+    subjClose:{},  // subj -> {by,at}
+    gradeFinal:null,
+    sete:{},       // subj -> studentId -> text
+    behav:{},      // studentId -> text
+    log:[]
+  };
+}
+function seedPlan(){SUBJECTS.forEach(s=>{S.plan[s.id]={w:[{name:'1차 지필',ratio:30,max:100},{name:'2차 지필',ratio:30,max:100}],p:[{name:'논술형 평가',ratio:20,max:20},{name:'프로젝트·발표',ratio:20,max:20}]};});}
+function seedData(){
+  S=blank();seedPlan();
+  const r=rnd(777);
+  const all=Object.values(S.students).flat();
+  // 출결: 기준일 전까지 일일 저장 처리, 몇 날은 비워 둠(연수용 오류 재현)
+  const past=DAYS.filter(d=>d<=S.simDate);
+  CLASSES.forEach(({g,c})=>{const k=`${g}-${c}`;S.attDone[k]={};past.forEach(d=>{S.attDone[k][d]=true;});});
+  // 10월 몇 날 미저장
+  ['2026-10-14','2026-10-21'].forEach(d=>{delete S.attDone['1-1'][d];});
+  ['2026-10-23'].forEach(d=>{delete S.attDone['1-2'][d];});
+  // 8·9월 마감 처리 완료(연수: 10월부터 마감 연습)
+  CLASSES.forEach(({g,c})=>{const k=`${g}-${c}`;S.attClose[k]={'2026-08':{by:'시스템',at:'2026-09-02 09:12'},'2026-09':{by:'시스템',at:'2026-10-02 10:40'}};});
+  all.forEach(st=>{
+    past.forEach(d=>{
+      const x=r();
+      if(x<0.012)setAtt(d,st.id,{t:'결석',r:r()<.7?'질병':'기타',m:'감기'});
+      else if(x<0.03)setAtt(d,st.id,{t:'지각',r:r()<.6?'질병':'미인정',m:''});
+      else if(x<0.038)setAtt(d,st.id,{t:'조퇴',r:'질병',m:'병원 진료'});
+      else if(x<0.041)setAtt(d,st.id,{t:'결석',r:'인정',m:'교외 대회 참가'});
+    });
+  });
+  // 성적: 1차 지필(중간고사)과 수행평가 1개는 입력됨, 2차 지필은 미입력(기말 전)
+  SUBJECTS.forEach(s=>{
+    S.scores[s.id]={};
+    all.forEach(st=>{
+      const base=50+r()*45;
+      const w1=Math.min(100,Math.max(12,Math.round(base+(r()-.5)*24)));
+      const p1=Math.min(20,Math.max(6,Math.round(base/5+(r()-.5)*4)));
+      S.scores[s.id][st.id]={w:[{v:w1,abs:'none'},{v:null,abs:'none'}],p:[{v:p1,abs:'none'},{v:null,abs:'none'}]};
+    });
+  });
+  // 결시자 한 명 예시
+  const ex=S.students['1-1'][3];S.scores.mat[ex.id].w[0]={v:null,abs:'ill80'};
+  S.log=[];addLog('시스템','가상 자료 생성');
+  save();
+}
+function setAtt(d,sid,v){S.att[d]=S.att[d]||{};if(v)S.att[d][sid]=v;else delete S.att[d][sid];}
+function save(){localStorage.setItem(KEY,JSON.stringify(S));}
+function load(){try{const j=localStorage.getItem(KEY);if(j){S=JSON.parse(j);return true;}}catch(e){}return false;}
+function addLog(who,what){S.log.unshift(`${nowStr()} [${who}] ${what}`);if(S.log.length>300)S.log.length=300;}
+function nowStr(){const d=new Date();return `${S.simDate} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+
+/* ═══════════════════════════════════════════════════════════
+   공통 UI
+═══════════════════════════════════════════════════════════ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200);}
+function modal(title,body,btns){
+  $('#mTitle').textContent=title;$('#mBody').innerHTML=body;
+  const f=$('#mFoot');f.innerHTML='';
+  (btns||[{t:'확인',p:true}]).forEach(b=>{const el=document.createElement('button');el.className='btn'+(b.p?' p':'')+(b.d?' d':'');el.textContent=b.t;el.onclick=()=>{closeModal();b.f&&b.f();};f.appendChild(el);});
+  $('#scrim').classList.add('on');
+}
+function closeModal(){$('#scrim').classList.remove('on');}
+function confirmBox(title,body,onOk,okText){modal(title,body,[{t:'취소'},{t:okText||'확인',p:true,f:onOk}]);}
+const can={
+  attEdit:cls=>me.role==='admin'||(me.role==='homeroom'&&me.cls===cls),
+  attClose:cls=>me.role==='admin'||(me.role==='homeroom'&&me.cls===cls),
+  attView:cls=>true,
+  scoreEdit:subj=>me.role==='admin'||me.subj===subj,
+  admin:()=>me.role==='admin',
+};
+const clsName=k=>{const [g,c]=k.split('-');return `${g}학년 ${c}반`;};
+const subjName=id=>(SUBJECTS.find(s=>s.id===id)||{}).name||id;
+const userName=id=>(USERS.find(u=>u.id===id)||{}).name||id;
+const students=cls=>S.students[cls]||[];
+const allStudents=()=>Object.values(S.students).flat();
+const isMonthClosed=(cls,m)=>!!(S.attClose[cls]&&S.attClose[cls][m]);
+
+/* ═══════════════════════════════════════════════════════════
+   로그인 / 메뉴
+═══════════════════════════════════════════════════════════ */
+function renderLogin(){
+  $('#userList').innerHTML=USERS.map(u=>`<button class="user-btn" onclick="login('${u.id}')"><span class="av">${u.name[0]}</span><span><div class="nm">${u.name}</div><div class="rl">${u.title}</div></span></button>`).join('');
+}
+function login(id){
+  me=USERS.find(u=>u.id===id);
+  if(!load())seedData();
+  cond.cls=me.cls||'1-1';cond.subj=me.subj||'kor';cond.date=cond.date||S.simDate;cond.month=cond.month||S.simDate.slice(0,7);
+  $('#login').style.display='none';$('#app').classList.add('on');
+  $('#gSchool').textContent=`${SCHOOL} · ${YEAR}학년도 ${SEM}학기`;
+  $('#gUser').innerHTML=`<b>${me.name}</b> ${me.title}`;
+  addLog(me.name,'로그인');save();
+  go(view.top,view.menu);
+}
+function logout(){me=null;$('#app').classList.remove('on');$('#login').style.display='flex';}
+
+const TOP=[
+  {id:'att',name:'학생생활(출결)'},
+  {id:'score',name:'성적'},
+  {id:'rec',name:'학교생활기록부'},
+  {id:'guide',name:'연수도우미',guide:true},
+];
+const MENUS={
+  att:[{grp:'출결관리',items:[
+      {id:'att-daily',name:'일일출결관리'},
+      {id:'att-month',name:'월별 출결현황'},
+      {id:'att-close',name:'출결 월마감'},
+      {id:'att-note',name:'출결특기사항'}]},
+     {grp:'학기말 출결',items:[
+      {id:'att-stat',name:'출결상황 통계(학기)'},
+      {id:'att-final',name:'학기말 출결마감(교무)',admin:true}]}],
+  score:[{grp:'평가관리',items:[
+      {id:'sc-plan',name:'평가계획(반영비율)'},
+      {id:'sc-written',name:'지필평가 성적입력'},
+      {id:'sc-perf',name:'수행평가 성적입력'}]},
+     {grp:'성적처리',items:[
+      {id:'sc-calc',name:'성적산출(성취도·석차등급)'},
+      {id:'sc-close',name:'과목별 성적마감'},
+      {id:'sc-final',name:'학기말 성적마감(교무)',admin:true},
+      {id:'sc-sheet',name:'성적일람표·개인별 성적표'}]}],
+  rec:[{grp:'교과학습발달상황',items:[
+      {id:'rec-sete',name:'세부능력 및 특기사항'}]},
+     {grp:'담임 기재',items:[
+      {id:'rec-att',name:'출결상황(학생부 반영)'},
+      {id:'rec-behav',name:'행동특성 및 종합의견'}]}],
+  guide:[{grp:'연수도우미',items:[
+      {id:'gd-steps',name:'학기말 마감 시나리오'},
+      {id:'gd-setting',name:'기준일·등급제 설정'},
+      {id:'gd-log',name:'처리 이력(로그)'},
+      {id:'gd-reset',name:'자료 초기화'}]}],
+};
+function go(top,menu){
+  view.top=top;view.menu=menu||MENUS[top][0].items[0].id;
+  $('#lnb').innerHTML=TOP.map(t=>`<button class="${t.guide?'guide ':''}${view.top===t.id?'on':''}" onclick="go('${t.id}')">${t.name}</button>`).join('');
+  $('#tree').innerHTML=`<h3>${TOP.find(t=>t.id===top).name}</h3>`+MENUS[top].map(g=>`<div class="grp">${g.grp}</div>`+g.items.filter(i=>!i.admin||can.admin()).map(i=>`<button class="it ${view.menu===i.id?'on':''}" onclick="go('${top}','${i.id}')">${i.name}${badge(i.id)}</button>`).join('')).join('');
+  $('#gDate').textContent=`기준일 ${S.simDate}`;
+  render();
+}
+function badge(id){
+  if(id==='att-daily'&&me.cls){const n=DAYS.filter(d=>d<=S.simDate&&!(S.attDone[me.cls]||{})[d]).length;if(n)return `<span class="cnt">${n}</span>`;}
+  if(id==='sc-close'&&me.subj&&!S.subjClose[me.subj]){const n=validateSubject(me.subj).length;if(n)return `<span class="cnt">${n}</span>`;}
+  return '';
+}
+function crumb(...p){return `<div class="crumb">${p.map((x,i)=>i===p.length-1?`<b>${x}</b>`:x).join(' &gt; ')}</div>`;}
+function title(t,help){return `<div class="ttl"><h2>${t}</h2><span class="help">${help||''}</span></div>`;}
+function selCls(onchange){return `<label><b>학급</b><select onchange="${onchange||'cond.cls=this.value;render()'}">${CLASSES.map(({g,c})=>`<option value="${g}-${c}" ${cond.cls===`${g}-${c}`?'selected':''}>${g}학년 ${c}반</option>`).join('')}</select></label>`;}
+function selSubj(){const list=me.role==='admin'?SUBJECTS:SUBJECTS.filter(s=>s.id===me.subj);if(!list.find(s=>s.id===cond.subj))cond.subj=list[0].id;return `<label><b>과목</b><select onchange="cond.subj=this.value;render()">${list.map(s=>`<option value="${s.id}" ${cond.subj===s.id?'selected':''}>${s.name}</option>`).join('')}</select></label>`;}
+function fixedCond(){return `<label><b>학년도</b><input value="${YEAR}" disabled style="width:64px"></label><label><b>학기</b><input value="${SEM}" disabled style="width:40px"></label>`;}
+function render(){
+  const f=SCREENS[view.menu];
+  $('#main').innerHTML=f?f():'<p>준비 중</p>';
+  $('#main').scrollTop=0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   출결
+═══════════════════════════════════════════════════════════ */
+function attOf(d,sid){return (S.att[d]||{})[sid]||null;}
+function attLabel(a){if(!a||!a.t)return '';return a.r==='인정'?`${a.t}(인정)`:`${a.t}(${a.r})`;}
+function attStats(sid,from,to){
+  const r={days:0,abs:{질병:0,미인정:0,기타:0},late:{질병:0,미인정:0,기타:0},early:{질병:0,미인정:0,기타:0},skip:{질병:0,미인정:0,기타:0},rec:0};
+  DAYS.filter(d=>d>=from&&d<=to&&d<=S.simDate).forEach(d=>{
+    r.days++;const a=attOf(d,sid);if(!a)return;
+    if(a.r==='인정'){r.rec++;return;}
+    const k={결석:'abs',지각:'late',조퇴:'early',결과:'skip'}[a.t];r[k][a.r]++;
+  });
+  return r;
+}
+const sumR=o=>o.질병+o.미인정+o.기타;
+
+SCREENS={};
+SCREENS['att-daily']=()=>{
+  const cls=cond.cls, d=cond.date, m=d.slice(0,7);
+  const editable=can.attEdit(cls)&&!isMonthClosed(cls,m)&&!S.attFinal&&d<=S.simDate&&DAYS.includes(d);
+  const done=!!(S.attDone[cls]||{})[d];
+  const status=!DAYS.includes(d)?'<span class="chip lock">수업일 아님</span>':d>S.simDate?'<span class="chip lock">기준일 이후</span>':isMonthClosed(cls,m)?'<span class="chip lock">월마감 완료 · 수정 불가</span>':done?'<span class="chip ok">저장됨</span>':'<span class="chip crit">미저장(미처리)</span>';
+  const cal=renderCal(cls,m);
+  const rows=students(cls).map(st=>{
+    const a=attOf(d,st.id)||{};
+    return `<tr><td class="fix">${st.no}</td><td class="fix2 l">${st.name}</td><td>${st.gender}</td>
+      <td class="${a.t?'abs':''}"><div class="att-cell">
+        <select ${editable?'':'disabled'} onchange="attChange('${d}','${st.id}','t',this.value)"><option value="">출석</option>${ATT_TYPES.map(t=>`<option ${a.t===t?'selected':''}>${t}</option>`).join('')}</select>
+        <select ${editable&&a.t?'':'disabled'} onchange="attChange('${d}','${st.id}','r',this.value)">${ATT_REASONS.map(t=>`<option ${a.r===t?'selected':''}>${t}</option>`).join('')}</select>
+      </div></td>
+      <td class="l"><input class="wide" type="text" ${editable&&a.t?'':'disabled'} value="${esc(a.m||'')}" placeholder="사유·비고" onchange="attChange('${d}','${st.id}','m',this.value)"></td>
+      <td class="l" style="font-size:11px;color:#888">${attLabel(a)}</td></tr>`;}).join('');
+  const cnt=students(cls).filter(st=>attOf(d,st.id)).length;
+  return crumb('학생생활','출결관리','일일출결관리')+title('일일출결관리','학급 담임이 날짜별로 출결을 입력하고 [저장]합니다. 저장하지 않은 날은 월마감이 되지 않습니다.')
+  +`<div class="cond">${fixedCond()}${selCls()}<label><b>일자</b><input type="date" value="${d}" min="${TERM_START}" max="${TERM_END}" onchange="cond.date=this.value;cond.month=this.value.slice(0,7);render()"></label><label><b>월</b><select onchange="cond.month=this.value;cond.date=firstDay(this.value);render()">${MONTHS.map(x=>`<option ${m===x?'selected':''}>${x}</option>`).join('')}</select></label><span class="status">${SCHOOL_EVENTS[d]?'학사일정: '+SCHOOL_EVENTS[d]:''}</span></div>`
+  +`<div class="two"><div><div class="bar"><span>${clsName(cls)} · ${d} ${status}</span><span class="sp"></span><span class="status">특이사항 ${cnt}명</span>
+    <button class="btn p" ${editable?'':'disabled'} onclick="attSave()">저장</button><button class="btn" ${editable?'':'disabled'} onclick="attAllPresent()">전원 출석</button></div>
+    <div class="grid-wrap"><table class="grid"><thead><tr><th class="fix">번호</th><th class="fix2">성명</th><th>성별</th><th>출결구분 / 사유</th><th style="min-width:160px">비고</th><th>표시</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+    <div><div class="note">달력에서 날짜를 누르면 그 날로 이동합니다. <span class="chip ok">저장</span> <span class="chip crit">미저장</span> 회색은 휴업일·기준일 이후. 월마감된 달은 자물쇠 표시.</div>${cal}</div></div>`;
+};
+function firstDay(m){return DAYS.find(d=>d.startsWith(m))||m+'-01';}
+function renderCal(cls,m){
+  const [y,mo]=m.split('-').map(Number);const first=new Date(y,mo-1,1);const last=new Date(y,mo,0).getDate();
+  let h=`<div class="bar"><b>${y}년 ${mo}월 ${isMonthClosed(cls,m)?'<span class="chip lock">🔒 마감</span>':''}</b></div><div class="cal">`+['일','월','화','수','목','금','토'].map(x=>`<div class="hd">${x}</div>`).join('');
+  for(let i=0;i<first.getDay();i++)h+='<div></div>';
+  for(let dd=1;dd<=last;dd++){
+    const iso=`${m}-${String(dd).padStart(2,'0')}`;const isDay=DAYS.includes(iso);
+    let cl='d';if(!isDay)cl+=' off';else if(iso>S.simDate)cl+=' future';else cl+=(S.attDone[cls]||{})[iso]?' done':' todo';
+    if(iso===cond.date)cl+=' sel';
+    const ev=HOLIDAYS[iso]||SCHOOL_EVENTS[iso]||'';
+    const n=isDay?students(cls).filter(st=>attOf(iso,st.id)).length:0;
+    h+=`<div class="${cl}" ${isDay?`onclick="cond.date='${iso}';render()"`:''}><div class="n">${dd}</div><div class="ev">${ev}</div>${n?`<div>${n}명</div>`:''}</div>`;
+  }
+  return h+'</div>';
+}
+function attChange(d,sid,k,v){
+  const a=attOf(d,sid)||{t:'',r:'질병',m:''};
+  if(k==='t'){if(!v){setAtt(d,sid,null);}else{a.t=v;a.r=a.r||'질병';setAtt(d,sid,a);}}
+  else{a[k]=v;setAtt(d,sid,a);}
+  // 저장 전 변경 → 미저장 상태로
+  if(S.attDone[cond.cls])delete S.attDone[cond.cls][d];
+  save();render();
+}
+function attSave(){S.attDone[cond.cls]=S.attDone[cond.cls]||{};S.attDone[cond.cls][cond.date]=true;addLog(me.name,`일일출결 저장 ${clsName(cond.cls)} ${cond.date}`);save();toast('저장되었습니다.');go(view.top,view.menu);}
+function attAllPresent(){students(cond.cls).forEach(st=>setAtt(cond.date,st.id,null));attSave();}
+
+SCREENS['att-month']=()=>{
+  const cls=cond.cls,m=cond.month;const days=DAYS.filter(d=>d.startsWith(m));
+  const head=days.map(d=>`<th title="${d}">${+d.slice(8)}</th>`).join('');
+  const rows=students(cls).map(st=>{
+    const cells=days.map(d=>{const a=attOf(d,st.id);const sym=!a?'':a.r==='인정'?'인':({결석:'결',지각:'지',조퇴:'조',결과:'과'}[a.t])+({질병:'·',미인정:'×',기타:'△',인정:''}[a.r]);return `<td class="${a?'abs':''} ${d>S.simDate?'':''}" style="padding:3px 2px;${d>S.simDate?'color:#ccc':''}" title="${attLabel(a)} ${esc(a?.m||'')}">${d>S.simDate?'-':sym}</td>`;}).join('');
+    const s=attStats(st.id,m+'-01',m+'-31');
+    return `<tr><td class="fix">${st.no}</td><td class="fix2 l">${st.name}</td>${cells}<td>${sumR(s.abs)||''}</td><td>${sumR(s.late)||''}</td><td>${sumR(s.early)||''}</td><td>${sumR(s.skip)||''}</td><td>${s.rec||''}</td></tr>`;}).join('');
+  return crumb('학생생활','출결관리','월별 출결현황')+title('월별 출결현황','결·지·조·과 뒤의 기호: · 질병, × 미인정, △ 기타, 인 = 출석인정')
+  +`<div class="cond">${fixedCond()}${selCls()}<label><b>월</b><select onchange="cond.month=this.value;render()">${MONTHS.map(x=>`<option ${m===x?'selected':''}>${x}</option>`).join('')}</select></label><span class="status">수업일수 ${days.filter(d=>d<=S.simDate).length}일 ${isMonthClosed(cls,m)?'<span class="chip lock">마감</span>':'<span class="chip warn">마감 전</span>'}</span></div>`
+  +`<div class="bar"><span class="sp"></span><button class="btn" onclick="window.print()">출력</button></div><div class="grid-wrap"><table class="grid"><thead><tr><th class="fix">번호</th><th class="fix2">성명</th>${head}<th>결석</th><th>지각</th><th>조퇴</th><th>결과</th><th>인정</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+
+function attMonthIssues(cls,m){
+  const days=DAYS.filter(d=>d.startsWith(m)&&d<=S.simDate);
+  const missing=days.filter(d=>!(S.attDone[cls]||{})[d]);
+  const issues=[];
+  if(!days.length)issues.push('해당 월에 기준일까지 도달한 수업일이 없습니다.');
+  const lastDay=DAYS.filter(d=>d.startsWith(m)).slice(-1)[0];
+  if(lastDay&&lastDay>S.simDate)issues.push(`해당 월 수업일이 아직 끝나지 않았습니다(마지막 수업일 ${lastDay}, 기준일 ${S.simDate}).`);
+  if(missing.length)issues.push(`일일출결 미저장(미처리) ${missing.length}일: ${missing.map(d=>d.slice(5)).join(', ')}`);
+  // 사유 누락
+  const noReason=[];days.forEach(d=>students(cls).forEach(st=>{const a=attOf(d,st.id);if(a&&a.t&&!a.r)noReason.push(`${d.slice(5)} ${st.name}`);}));
+  if(noReason.length)issues.push('출결 사유 누락: '+noReason.join(', '));
+  const prev=MONTHS[MONTHS.indexOf(m)-1];
+  if(prev&&!isMonthClosed(cls,prev))issues.push(`전월(${prev})이 먼저 마감되어야 합니다.`);
+  return issues;
+}
+SCREENS['att-close']=()=>{
+  const cls=cond.cls;
+  const rows=MONTHS.map(m=>{
+    const c=(S.attClose[cls]||{})[m];const issues=attMonthIssues(cls,m);
+    const days=DAYS.filter(d=>d.startsWith(m));const past=days.filter(d=>d<=S.simDate);
+    const done=past.filter(d=>(S.attDone[cls]||{})[d]).length;
+    const st=c?`<span class="chip lock">🔒 마감 (${c.by}, ${c.at})</span>`:issues.length?`<span class="chip crit">마감 불가</span>`:`<span class="chip ok">마감 가능</span>`;
+    const btn=c?`<button class="btn s" ${can.admin()&&!S.attFinal?'':'disabled'} onclick="attUnclose('${m}')">마감취소(교무)</button>`:`<button class="btn s p" ${can.attClose(cls)&&!issues.length?'':'disabled'} onclick="attCloseMonth('${m}')">마감</button>`;
+    return `<tr><td>${m}</td><td>${days.length}</td><td>${past.length}</td><td class="${done<past.length?'miss':''}">${done} / ${past.length}</td><td class="l">${st}</td><td class="l" style="white-space:normal;font-size:11px;color:var(--crit)">${c?'':issues.map(i=>'· '+esc(i)).join('<br>')}</td><td>${btn}</td></tr>`;}).join('');
+  return crumb('학생생활','출결관리','출결 월마감')+title('출결 월마감','담임이 월별로 마감합니다. 마감하면 그 달 일일출결은 수정할 수 없고, 수정이 필요하면 교무부(권한자)가 마감취소 후 담임이 수정합니다.')
+  +`<div class="cond">${fixedCond()}${selCls()}${S.attFinal?'<span class="chip lock">학기말 출결마감 완료</span>':''}</div>
+  <div class="note"><b>마감 조건</b> ① 해당 월 수업일이 모두 지났을 것 ② 모든 수업일의 일일출결이 [저장]되어 있을 것 ③ 전월이 마감되어 있을 것. 조건이 안 맞으면 오른쪽 사유를 확인하고 <a href="#" onclick="go('att','att-daily');return false">일일출결관리</a>에서 보완하세요.</div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>월</th><th>수업일수</th><th>경과 수업일</th><th>저장 완료</th><th class="l">상태</th><th class="l" style="min-width:260px">마감 불가 사유</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+function attCloseMonth(m){
+  const cls=cond.cls;const issues=attMonthIssues(cls,m);
+  if(issues.length){modal('마감 불가',issues.map(i=>'· '+esc(i)).join('\n'));return;}
+  const tot=students(cls).reduce((acc,st)=>{const s=attStats(st.id,m+'-01',m+'-31');acc.a+=sumR(s.abs);acc.l+=sumR(s.late);acc.e+=sumR(s.early);acc.k+=sumR(s.skip);return acc;},{a:0,l:0,e:0,k:0});
+  confirmBox('출결 월마감',`${clsName(cls)} ${m} 출결을 마감하시겠습니까?\n\n결석 ${tot.a} · 지각 ${tot.l} · 조퇴 ${tot.e} · 결과 ${tot.k}\n\n마감 후에는 해당 월 일일출결을 수정할 수 없습니다.`,()=>{
+    S.attClose[cls]=S.attClose[cls]||{};S.attClose[cls][m]={by:me.name,at:nowStr()};addLog(me.name,`출결 월마감 ${clsName(cls)} ${m}`);save();toast('마감되었습니다.');render();
+  },'마감');
+}
+function attUnclose(m){confirmBox('마감취소',`${clsName(cond.cls)} ${m} 출결 마감을 취소하시겠습니까?\n담임이 수정 후 다시 마감해야 합니다.`,()=>{delete S.attClose[cond.cls][m];addLog(me.name,`출결 월마감 취소 ${clsName(cond.cls)} ${m}`);save();toast('마감이 취소되었습니다.');render();},'마감취소');}
+
+SCREENS['att-note']=()=>{
+  const cls=cond.cls;const editable=can.attEdit(cls)&&!S.attFinal;
+  const rows=students(cls).map(st=>{const s=attStats(st.id,TERM_START,TERM_END);const auto=autoAttNote(s);
+    return `<tr><td>${st.no}</td><td class="l">${st.name}</td><td class="l" style="color:#888;font-size:11px">${auto||'-'}</td><td class="l" style="min-width:320px"><input class="wide" type="text" maxlength="100" ${editable?'':'disabled'} value="${esc(S.attNote[st.id]||'')}" onchange="S.attNote['${st.id}']=this.value;save()" placeholder="예) 질병결석: 독감(진단서 제출)"></td></tr>`;}).join('');
+  return crumb('학생생활','출결관리','출결특기사항')+title('출결특기사항','학생부 출결상황 특기사항란에 기재될 내용(미인정 결석 사유, 장기결석 등). 1,000바이트 이내.')
+  +`<div class="cond">${fixedCond()}${selCls()}</div><div class="grid-wrap"><table class="grid"><thead><tr><th>번호</th><th>성명</th><th class="l">자동 참고(학기 누계)</th><th class="l">특기사항</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+function autoAttNote(s){const p=[];if(sumR(s.abs))p.push(`결석 ${sumR(s.abs)}`);if(s.abs.미인정||s.late.미인정||s.early.미인정||s.skip.미인정)p.push('미인정 포함');if(s.rec)p.push(`출석인정 ${s.rec}`);return p.join(', ');}
+
+function attSemesterRows(cls){
+  return students(cls).map(st=>{const s=attStats(st.id,TERM_START,TERM_END);
+    return `<tr><td>${st.no}</td><td class="l">${st.name}</td><td>${s.days}</td><td>${s.abs.질병||''}</td><td>${s.abs.미인정||''}</td><td>${s.abs.기타||''}</td><td>${s.late.질병||''}</td><td>${s.late.미인정||''}</td><td>${s.late.기타||''}</td><td>${s.early.질병||''}</td><td>${s.early.미인정||''}</td><td>${s.early.기타||''}</td><td>${s.skip.질병||''}</td><td>${s.skip.미인정||''}</td><td>${s.skip.기타||''}</td><td>${s.rec||''}</td><td class="l" style="white-space:normal;font-size:11px">${esc(S.attNote[st.id]||'')}</td></tr>`;}).join('');
+}
+const attHead=`<thead><tr><th rowspan="2">번호</th><th rowspan="2">성명</th><th rowspan="2">수업일수</th><th colspan="3">결석일수</th><th colspan="3">지각</th><th colspan="3">조퇴</th><th colspan="3">결과</th><th rowspan="2">출석인정</th><th rowspan="2" class="l">특기사항</th></tr><tr>${'<th class="l2">질병</th><th class="l2">미인정</th><th class="l2">기타</th>'.repeat(4)}</tr></thead>`;
+SCREENS['att-stat']=()=>{
+  const cls=cond.cls;
+  return crumb('학생생활','학기말 출결','출결상황 통계')+title('출결상황 통계(학기)',`${YEAR}학년도 ${SEM}학기 누계. 기준일(${S.simDate})까지 집계.`)
+  +`<div class="cond">${fixedCond()}${selCls()}</div><div class="bar"><span class="sp"></span><button class="btn" onclick="window.print()">출력</button></div><div class="grid-wrap"><table class="grid">${attHead}<tbody>${attSemesterRows(cls)}</tbody></table></div>`;
+};
+SCREENS['att-final']=()=>{
+  const rows=CLASSES.map(({g,c})=>{const k=`${g}-${c}`;const closed=MONTHS.filter(m=>isMonthClosed(k,m));const open=MONTHS.filter(m=>!isMonthClosed(k,m));
+    return `<tr><td>${clsName(k)}</td><td class="l">${userName(USERS.find(u=>u.cls===k)?.id)}</td><td>${closed.length} / ${MONTHS.length}</td><td class="l ${open.length?'miss':''}">${open.join(', ')||'<span class="chip ok">전체 마감</span>'}</td></tr>`;}).join('');
+  const allOk=CLASSES.every(({g,c})=>MONTHS.every(m=>isMonthClosed(`${g}-${c}`,m)));
+  const termOver=S.simDate>=DAYS[DAYS.length-1];
+  return crumb('학생생활','학기말 출결','학기말 출결마감')+title('학기말 출결마감(교무)','모든 학급의 월마감이 끝나면 교무부가 학기 출결을 최종 마감합니다. 이후 출결 자료가 학교생활기록부에 반영됩니다.')
+  +`<div class="cond">${fixedCond()}<span class="status">학기 마지막 수업일 ${DAYS[DAYS.length-1]} · 기준일 ${S.simDate}</span></div>
+  ${S.attFinal?`<div class="note ok">학기말 출결마감 완료 — ${S.attFinal.by}, ${S.attFinal.at}</div>`:allOk&&termOver?'<div class="note ok">모든 학급 월마감 완료. 학기말 마감이 가능합니다.</div>':`<div class="note warn">${termOver?'':'학기 수업일이 끝나지 않았습니다(연수도우미 &gt; 기준일 설정에서 기준일을 12-31로 옮겨 연습). '}${allOk?'':'월마감이 끝나지 않은 학급이 있습니다.'}</div>`}
+  <div class="bar"><span class="sp"></span>${S.attFinal?`<button class="btn" onclick="confirmBox('학기말 출결마감 취소','학기말 출결마감을 취소하시겠습니까?',()=>{S.attFinal=null;addLog(me.name,'학기말 출결마감 취소');save();render();},'마감취소')">마감취소</button>`:`<button class="btn p" ${allOk&&termOver?'':'disabled'} onclick="confirmBox('학기말 출결마감','${YEAR}학년도 ${SEM}학기 출결을 최종 마감하시겠습니까?\\n마감 후 담임의 출결 수정·월마감 취소가 모두 막힙니다.',()=>{S.attFinal={by:me.name,at:nowStr()};addLog(me.name,'학기말 출결마감');save();toast('학기말 출결마감 완료');render();},'최종 마감')">학기말 마감</button>`}</div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>학급</th><th class="l">담임</th><th>월마감</th><th class="l">미마감 월</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+
+/* ═══════════════════════════════════════════════════════════
+   성적
+═══════════════════════════════════════════════════════════ */
+function planOf(subj){return S.plan[subj];}
+function planIssues(subj){const p=planOf(subj);const iss=[];const sum=[...p.w,...p.p].reduce((a,x)=>a+(+x.ratio||0),0);if(Math.abs(sum-100)>0.001)iss.push(`반영비율 합계가 100%가 아닙니다(현재 ${sum}%).`);[...p.w,...p.p].forEach(x=>{if(!x.name)iss.push('평가명이 비어 있습니다.');if(!(+x.max>0))iss.push(`'${x.name}' 만점이 0 이하입니다.`);});if(!p.w.length)iss.push('지필평가가 하나도 없습니다.');return iss;}
+function classMean(subj,kind,idx){const vals=[];allStudents().forEach(st=>{const sc=S.scores[subj][st.id][kind][idx];if(sc&&sc.v!=null&&sc.abs==='none')vals.push(+sc.v);});return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;}
+function effScore(subj,st,kind,idx){ // 반영점수(만점 환산 전 원점수 포함), 결시 인정점 처리
+  const p=planOf(subj)[kind][idx];const sc=S.scores[subj][st.id][kind][idx]||{v:null,abs:'none'};
+  let raw;
+  if(sc.abs&&sc.abs!=='none'){const rule=ABSENT_RULES.find(r=>r.id===sc.abs);raw=rule.ratio===0?0:classMean(subj,kind,idx)*rule.ratio;}
+  else raw=sc.v==null?null:+sc.v;
+  if(raw==null)return {raw:null,w:null};
+  return {raw,w:raw/p.max*p.ratio};
+}
+function computeSubject(subj){
+  const p=planOf(subj);const list=allStudents();
+  const res=list.map(st=>{let tot=0,inc=false;const parts=[];
+    p.w.forEach((x,i)=>{const e=effScore(subj,st,'w',i);parts.push(e);if(e.w==null)inc=true;else tot+=e.w;});
+    p.p.forEach((x,i)=>{const e=effScore(subj,st,'p',i);parts.push(e);if(e.w==null)inc=true;else tot+=e.w;});
+    return {st,parts,total:inc?null:Math.round(tot*100)/100,inc};});
+  const valid=res.filter(r=>!r.inc);
+  const n=valid.length;const mean=n?valid.reduce((a,r)=>a+r.total,0)/n:0;
+  const sd=n?Math.sqrt(valid.reduce((a,r)=>a+Math.pow(r.total-mean,2),0)/n):0;
+  // 석차(동석차 중간석차 백분율)
+  const sorted=[...valid].sort((a,b)=>b.total-a.total);
+  const rounded=r=>Math.round(r.total);
+  sorted.forEach((r,i)=>{if(r.rank)return;const same=sorted.filter(x=>rounded(x)===rounded(r));const rank=i+1;same.forEach(x=>{x.rank=rank;x.same=same.length;x.mid=rank+(same.length-1)/2;x.pct=x.mid/n*100;});});
+  valid.forEach(r=>{r.ach=achieve(Math.round(r.total));r.grade=S.gradeSystem==='9'?grade9(r.pct):grade5(r.pct);});
+  return {res,n,mean:Math.round(mean*10)/10,sd:Math.round(sd*10)/10};
+}
+const achieve=s=>s>=90?'A':s>=80?'B':s>=70?'C':s>=60?'D':'E';
+const grade9=p=>p<=4?1:p<=11?2:p<=23?3:p<=40?4:p<=60?5:p<=77?6:p<=89?7:p<=96?8:9;
+const grade5=p=>p<=10?1:p<=34?2:p<=66?3:p<=90?4:5;
+function validateSubject(subj){
+  const iss=[...planIssues(subj)];const p=planOf(subj);
+  allStudents().forEach(st=>{const sc=S.scores[subj][st.id];
+    ['w','p'].forEach(k=>p[k].forEach((x,i)=>{const c=sc[k][i]||{};if(c.abs&&c.abs!=='none')return;if(c.v==null||c.v==='')iss.push(`${clsName(`${st.g}-${st.c}`)} ${st.no}번 ${st.name} — ${x.name} 미입력`);else if(+c.v<0||+c.v>+x.max)iss.push(`${st.name} — ${x.name} 점수 범위 오류(${c.v}/${x.max})`);}));});
+  return iss;
+}
+const subjLocked=subj=>!!S.subjClose[subj]||!!S.gradeFinal;
+
+SCREENS['sc-plan']=()=>{
+  const subj=cond.subj;const p=planOf(subj);const ed=can.scoreEdit(subj)&&!subjLocked(subj);
+  const row=(k,x,i)=>`<tr><td>${k==='w'?'지필':'수행'}</td><td><input type="text" class="wide" style="width:160px;text-align:left" ${ed?'':'disabled'} value="${esc(x.name)}" onchange="planSet('${k}',${i},'name',this.value)"></td><td><input type="number" ${ed?'':'disabled'} value="${x.ratio}" min="0" max="100" onchange="planSet('${k}',${i},'ratio',this.value)"></td><td><input type="number" ${ed?'':'disabled'} value="${x.max}" min="1" onchange="planSet('${k}',${i},'max',this.value)"></td><td><button class="btn s" ${ed?'':'disabled'} onclick="planDel('${k}',${i})">삭제</button></td></tr>`;
+  const sum=[...p.w,...p.p].reduce((a,x)=>a+(+x.ratio||0),0);const iss=planIssues(subj);
+  return crumb('성적','평가관리','평가계획')+title('평가계획(반영비율)','지필·수행평가 영역과 반영비율을 정합니다. 합계 100%. 과목 마감 후에는 변경할 수 없습니다.')
+  +`<div class="cond">${fixedCond()}${selSubj()}<span class="status">${subjLocked(subj)?'<span class="chip lock">마감 · 변경 불가</span>':''}</span></div>
+  ${iss.length?`<div class="note crit"><ul>${iss.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`:'<div class="note ok">평가계획 검증 통과 (반영비율 합계 100%)</div>'}
+  <div class="bar"><button class="btn" ${ed?'':'disabled'} onclick="planAdd('w')">+ 지필평가</button><button class="btn" ${ed?'':'disabled'} onclick="planAdd('p')">+ 수행평가 영역</button><span class="sp"></span><span class="status">합계 <b style="color:${sum===100?'var(--ok)':'var(--crit)'}">${sum}%</b></span></div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>구분</th><th>평가명</th><th>반영비율(%)</th><th>만점</th><th></th></tr></thead><tbody>${p.w.map((x,i)=>row('w',x,i)).join('')}${p.p.map((x,i)=>row('p',x,i)).join('')}</tbody></table></div>`;
+};
+function planSet(k,i,f,v){S.plan[cond.subj][k][i][f]=f==='name'?v:+v;save();render();}
+function planAdd(k){const p=S.plan[cond.subj];p[k].push(k==='w'?{name:`${p.w.length+1}차 지필`,ratio:0,max:100}:{name:'새 영역',ratio:0,max:20});allStudents().forEach(st=>S.scores[cond.subj][st.id][k].push({v:null,abs:'none'}));save();render();}
+function planDel(k,i){const p=S.plan[cond.subj];if(p[k].length<=(k==='w'?1:0)){toast('지필평가는 1개 이상 필요합니다.');return;}confirmBox('삭제','이 평가를 삭제하면 입력된 점수도 함께 삭제됩니다.',()=>{p[k].splice(i,1);allStudents().forEach(st=>S.scores[cond.subj][st.id][k].splice(i,1));save();render();},'삭제');}
+
+function scoreScreen(kind){
+  const subj=cond.subj,cls=cond.cls;const p=planOf(subj)[kind];const ed=can.scoreEdit(subj)&&!subjLocked(subj);
+  const head=p.map(x=>`<th>${esc(x.name)}<br><small>${x.ratio}% / ${x.max}점</small></th><th>결시처리</th>`).join('');
+  const rows=students(cls).map(st=>{const sc=S.scores[subj][st.id][kind];
+    const cells=p.map((x,i)=>{const c=sc[i]||{v:null,abs:'none'};const abs=c.abs&&c.abs!=='none';const miss=!abs&&(c.v==null||c.v==='');const over=!abs&&c.v!=null&&(+c.v>x.max||+c.v<0);const e=effScore(subj,st,kind,i);
+      return `<td class="${miss?'miss':over?'miss':abs?'abs':''}"><input type="number" step="0.5" min="0" max="${x.max}" ${ed&&!abs?'':'disabled'} value="${abs?'':(c.v??'')}" placeholder="${abs?(e.raw!=null?'인정 '+(Math.round(e.raw*10)/10):''):''}" onchange="scoreSet('${kind}','${st.id}',${i},this.value)"></td><td><select ${ed?'':'disabled'} onchange="absSet('${kind}','${st.id}',${i},this.value)">${ABSENT_RULES.map(r=>`<option value="${r.id}" ${c.abs===r.id?'selected':''}>${r.name}</option>`).join('')}</select></td>`;}).join('');
+    return `<tr><td class="fix">${st.no}</td><td class="fix2 l">${st.name}</td>${cells}</tr>`;}).join('');
+  const means=p.map((x,i)=>`<td>${(Math.round(classMean(subj,kind,i)*10)/10)}</td><td></td>`).join('');
+  const missN=students(cls).reduce((a,st)=>a+S.scores[subj][st.id][kind].filter((c,i)=>i<p.length&&(!c.abs||c.abs==='none')&&(c.v==null||c.v==='')).length,0);
+  return crumb('성적','평가관리',kind==='w'?'지필평가 성적입력':'수행평가 성적입력')+title(kind==='w'?'지필평가 성적입력':'수행평가 성적입력',kind==='w'?'원점수를 입력합니다. 결시자는 결시처리를 선택하면 학교 규정(인정점 비율)에 따라 자동 산출됩니다.':'영역별 점수를 입력합니다. 만점을 넘는 값은 빨간색으로 표시되며 마감되지 않습니다.')
+  +`<div class="cond">${fixedCond()}${selSubj()}${selCls()}<span class="status">${subjLocked(subj)?'<span class="chip lock">마감 · 수정 불가</span>':ed?'':'<span class="chip lock">조회만 가능(담당 과목 아님)</span>'}</span></div>
+  <div class="bar"><span class="status">미입력 ${missN}칸 ${missN?'<span class="chip crit">입력 필요</span>':'<span class="chip ok">입력 완료</span>'}</span><span class="sp"></span><button class="btn" ${ed?'':'disabled'} onclick="fillRandom('${kind}')">예시점수 자동입력(연수용)</button><button class="btn p" ${ed?'':'disabled'} onclick="addLog(me.name,'성적 저장 ${subjName(subj)} ${clsName(cls)}');save();toast('저장되었습니다.')">저장</button></div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th class="fix">번호</th><th class="fix2">성명</th>${head}</tr></thead><tbody>${rows}</tbody><tfoot><tr><td class="fix" colspan="2" style="text-align:right">학급 평균(응시자)</td>${means}</tr></tfoot></table></div>`;
+}
+SCREENS['sc-written']=()=>scoreScreen('w');
+SCREENS['sc-perf']=()=>scoreScreen('p');
+function scoreSet(kind,sid,i,v){const c=S.scores[cond.subj][sid][kind][i]||(S.scores[cond.subj][sid][kind][i]={v:null,abs:'none'});c.v=v===''?null:+v;save();render();}
+function absSet(kind,sid,i,v){const c=S.scores[cond.subj][sid][kind][i]||(S.scores[cond.subj][sid][kind][i]={v:null,abs:'none'});c.abs=v;if(v!=='none')c.v=null;save();render();}
+function fillRandom(kind){const r=rnd(Date.now()%100000);const p=planOf(cond.subj)[kind];students(cond.cls).forEach(st=>{const sc=S.scores[cond.subj][st.id][kind];p.forEach((x,i)=>{const c=sc[i]||(sc[i]={v:null,abs:'none'});if(c.abs!=='none')return;if(c.v==null)c.v=Math.round(x.max*(0.35+r()*0.65));});});save();render();toast('비어 있는 칸에 예시 점수를 넣었습니다.');}
+
+SCREENS['sc-calc']=()=>{
+  const subj=cond.subj;const p=planOf(subj);const R=computeSubject(subj);const cls=cond.cls;
+  const head=[...p.w.map(x=>`<th>${esc(x.name)}<br><small>${x.ratio}%</small></th>`),...p.p.map(x=>`<th>${esc(x.name)}<br><small>${x.ratio}%</small></th>`)].join('');
+  const rows=R.res.filter(r=>`${r.st.g}-${r.st.c}`===cls).map(r=>`<tr class="${r.inc?'miss':''}"><td>${r.st.no}</td><td class="l">${r.st.name}</td>${r.parts.map(e=>`<td>${e.raw==null?'<span class="chip crit">미입력</span>':Math.round(e.raw*10)/10}</td>`).join('')}<td><b>${r.inc?'-':Math.round(r.total)}</b></td><td>${r.inc?'-':r.ach}</td><td>${r.inc?'-':r.rank+(r.same>1?`<small>(${r.same})</small>`:'')}</td><td>${r.inc?'-':r.grade}</td></tr>`).join('');
+  const dist={};R.res.forEach(r=>{if(!r.inc)dist[r.ach]=(dist[r.ach]||0)+1;});
+  const gd={};R.res.forEach(r=>{if(!r.inc)gd[r.grade]=(gd[r.grade]||0)+1;});
+  return crumb('성적','성적처리','성적산출')+title('성적산출(성취도·석차등급)',`원점수 = Σ(점수/만점×반영비율). 성취도 A(90↑)~E. 석차등급은 ${S.gradeSystem}등급제, 동석차 중간석차 백분율 적용. 수강자 ${R.n}명 기준.`)
+  +`<div class="cond">${fixedCond()}${selSubj()}${selCls()}</div>
+  <div class="sum"><div class="card"><div class="k">수강자수(산출 가능)</div><div class="v">${R.n}<small> / ${R.res.length}</small></div></div><div class="card"><div class="k">과목평균</div><div class="v">${R.mean}</div></div><div class="card"><div class="k">표준편차</div><div class="v">${R.sd}</div></div><div class="card"><div class="k">성취도 분포</div><div class="v" style="font-size:14px">${['A','B','C','D','E'].map(a=>`${a} ${dist[a]||0}`).join(' · ')}</div></div><div class="card"><div class="k">등급 분포(${S.gradeSystem}등급)</div><div class="v" style="font-size:14px">${Object.keys(gd).sort().map(g=>`${g}등급 ${gd[g]}`).join(' · ')||'-'}</div></div></div>
+  ${R.res.some(r=>r.inc)?'<div class="note crit">미입력 점수가 있는 학생은 산출에서 제외되었습니다. 모든 점수를 입력(또는 결시처리)해야 과목 마감이 가능합니다.</div>':''}
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>번호</th><th>성명</th>${head}<th>원점수</th><th>성취도</th><th>석차(동석차)</th><th>석차등급</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+
+SCREENS['sc-close']=()=>{
+  const list=me.role==='admin'?SUBJECTS:SUBJECTS.filter(s=>s.id===me.subj);
+  const rows=list.map(s=>{const c=S.subjClose[s.id];const iss=validateSubject(s.id);const R=computeSubject(s.id);
+    const teacher=USERS.find(u=>u.subj===s.id);
+    return `<tr><td class="l">${s.name}</td><td class="l">${teacher?.name||''}</td><td>${R.n} / ${R.res.length}</td><td>${R.mean}</td><td>${R.sd}</td><td class="l">${c?`<span class="chip lock">🔒 마감 (${c.by}, ${c.at})</span>`:iss.length?`<span class="chip crit">오류 ${iss.length}건</span>`:'<span class="chip ok">마감 가능</span>'}</td>
+    <td>${c?`<button class="btn s" ${can.admin()&&!S.gradeFinal?'':'disabled'} onclick="subjUnclose('${s.id}')">마감취소(교무)</button>`:`<button class="btn s" onclick="showIssues('${s.id}')" ${iss.length?'':'disabled'}>오류 보기</button> <button class="btn s p" ${can.scoreEdit(s.id)&&!iss.length?'':'disabled'} onclick="subjClose('${s.id}')">과목 마감</button>`}</td></tr>`;}).join('');
+  return crumb('성적','성적처리','과목별 성적마감')+title('과목별 성적마감','교과교사가 담당 과목의 입력을 끝내고 마감합니다. 마감 조건: 평가계획 100% · 전원 점수 입력(또는 결시처리) · 만점 초과 없음.')
+  +`<div class="cond">${fixedCond()}${S.gradeFinal?'<span class="chip lock">학기말 성적마감 완료</span>':''}</div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th class="l">과목</th><th class="l">담당</th><th>산출/전체</th><th>평균</th><th>표준편차</th><th class="l">상태</th><th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+function showIssues(subj){const iss=validateSubject(subj);modal(`${subjName(subj)} 마감 불가 사유 (${iss.length}건)`,iss.slice(0,60).map(i=>'· '+esc(i)).join('\n')+(iss.length>60?`\n… 외 ${iss.length-60}건`:''),[{t:'성적입력으로 이동',f:()=>{cond.subj=subj;go('score','sc-written');}},{t:'닫기',p:true}]);}
+function subjClose(subj){const iss=validateSubject(subj);if(iss.length){showIssues(subj);return;}const R=computeSubject(subj);
+  confirmBox('과목 성적마감',`${subjName(subj)} 성적을 마감하시겠습니까?\n\n수강자 ${R.n}명 · 평균 ${R.mean} · 표준편차 ${R.sd}\n\n마감 후에는 평가계획·점수를 수정할 수 없습니다. 수정이 필요하면 교무부에 마감취소를 요청해야 합니다.`,()=>{S.subjClose[subj]={by:me.name,at:nowStr()};addLog(me.name,`과목 성적마감 ${subjName(subj)}`);save();toast('마감되었습니다.');render();},'마감');}
+function subjUnclose(subj){confirmBox('마감취소',`${subjName(subj)} 과목 마감을 취소하시겠습니까?`,()=>{delete S.subjClose[subj];addLog(me.name,`과목 성적마감 취소 ${subjName(subj)}`);save();render();},'마감취소');}
+
+SCREENS['sc-final']=()=>{
+  const rows=SUBJECTS.map(s=>{const c=S.subjClose[s.id];return `<tr><td class="l">${s.name}</td><td class="l">${USERS.find(u=>u.subj===s.id)?.name||''}</td><td class="l">${c?`<span class="chip lock">🔒 ${c.at}</span>`:'<span class="chip crit">미마감</span>'}</td></tr>`;}).join('');
+  const allOk=SUBJECTS.every(s=>S.subjClose[s.id]);
+  return crumb('성적','성적처리','학기말 성적마감')+title('학기말 성적마감(교무)','모든 과목이 마감되면 교무부가 학기 성적을 최종 마감합니다. 이후 성적일람표·성적표 출력과 학생부 반영이 확정됩니다.')
+  +`<div class="cond">${fixedCond()}<label><b>등급제</b><input value="${S.gradeSystem}등급" disabled style="width:60px"></label></div>
+  ${S.gradeFinal?`<div class="note ok">학기말 성적마감 완료 — ${S.gradeFinal.by}, ${S.gradeFinal.at}</div>`:allOk?'<div class="note ok">모든 과목 마감 완료. 학기말 성적마감이 가능합니다.</div>':'<div class="note warn">미마감 과목이 있습니다. 해당 교과교사에게 과목 마감을 요청하세요.</div>'}
+  <div class="bar"><span class="sp"></span>${S.gradeFinal?`<button class="btn" onclick="confirmBox('학기말 성적마감 취소','학기말 성적마감을 취소하시겠습니까?',()=>{S.gradeFinal=null;addLog(me.name,'학기말 성적마감 취소');save();render();},'마감취소')">마감취소</button>`:`<button class="btn p" ${allOk?'':'disabled'} onclick="confirmBox('학기말 성적마감','${YEAR}학년도 ${SEM}학기 성적을 최종 마감하시겠습니까?\\n마감 후 과목 마감취소가 막히며 성적이 확정됩니다.',()=>{S.gradeFinal={by:me.name,at:nowStr()};addLog(me.name,'학기말 성적마감');save();toast('학기말 성적마감 완료');render();},'최종 마감')">학기말 마감</button>`}</div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th class="l">과목</th><th class="l">담당</th><th class="l">과목 마감</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+
+SCREENS['sc-sheet']=()=>{
+  const cls=cond.cls;const comp={};SUBJECTS.forEach(s=>comp[s.id]=computeSubject(s.id));
+  const head=SUBJECTS.map(s=>`<th colspan="3">${s.name}<br><small>${s.credit}단위 · 평균 ${comp[s.id].mean} / SD ${comp[s.id].sd}</small></th>`).join('');
+  const head2=SUBJECTS.map(()=>'<th class="l2">원점수</th><th class="l2">성취도</th><th class="l2">등급</th>').join('');
+  const rows=students(cls).map(st=>`<tr><td class="fix">${st.no}</td><td class="fix2 l">${st.name}</td>${SUBJECTS.map(s=>{const r=comp[s.id].res.find(x=>x.st.id===st.id);return r.inc?'<td colspan="3" class="miss">미산출</td>':`<td>${Math.round(r.total)}</td><td>${r.ach}</td><td>${r.grade}</td>`;}).join('')}<td><button class="btn s" onclick="personal('${st.id}')">성적표</button></td></tr>`).join('');
+  return crumb('성적','성적처리','성적일람표')+title('성적일람표',S.gradeFinal?'학기말 성적마감 완료 — 확정 자료':'※ 마감 전 자료입니다(가변). 학기말 성적마감 후 확정됩니다.')
+  +`<div class="cond">${fixedCond()}${selCls()}</div><div class="bar"><span class="sp"></span><button class="btn" onclick="window.print()">출력</button></div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th class="fix" rowspan="2">번호</th><th class="fix2" rowspan="2">성명</th>${head}<th rowspan="2"></th></tr><tr>${head2}</tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+function personal(sid){const st=allStudents().find(s=>s.id===sid);const a=attStats(sid,TERM_START,TERM_END);
+  const rows=SUBJECTS.map(s=>{const R=computeSubject(s.id);const r=R.res.find(x=>x.st.id===sid);return `<tr><td class="l">${s.name}</td><td>${s.credit}</td><td>${r.inc?'-':Math.round(r.total)}</td><td>${R.mean}(${R.sd})</td><td>${r.inc?'-':r.ach}</td><td>${r.inc?'-':r.grade}</td><td>${R.n}</td></tr>`;}).join('');
+  modal(`${YEAR}학년도 ${SEM}학기 개인별 성적표 — ${st.g}학년 ${st.c}반 ${st.no}번 ${st.name}`,`<table class="grid" style="font-size:12px"><thead><tr><th>과목</th><th>단위</th><th>원점수</th><th>과목평균(표준편차)</th><th>성취도</th><th>석차등급</th><th>수강자수</th></tr></thead><tbody>${rows}</tbody></table><p style="font-size:12px">출결: 수업일수 ${a.days} · 결석 ${sumR(a.abs)} · 지각 ${sumR(a.late)} · 조퇴 ${sumR(a.early)} · 결과 ${sumR(a.skip)}</p>${S.gradeFinal?'':'<p class="status">※ 마감 전 가변 자료</p>'}`);}
+
+/* ═══════════════════════════════════════════════════════════
+   학교생활기록부
+═══════════════════════════════════════════════════════════ */
+const bytes=s=>{let b=0;for(const ch of s||''){b+=ch.charCodeAt(0)>127?3:1;}return b;};
+SCREENS['rec-sete']=()=>{
+  const subj=cond.subj,cls=cond.cls;const ed=can.scoreEdit(subj);S.sete[subj]=S.sete[subj]||{};const LIM=1500;
+  const R=computeSubject(subj);
+  const rows=students(cls).map(st=>{const t=S.sete[subj][st.id]||'';const b=bytes(t);const r=R.res.find(x=>x.st.id===st.id);
+    return `<tr><td style="vertical-align:top">${st.no}</td><td class="l" style="vertical-align:top">${st.name}<br><small style="color:#888">${r.inc?'':`${Math.round(r.total)}점 · ${r.ach}`}</small></td><td class="l" style="white-space:normal"><textarea class="txt" ${ed?'':'disabled'} oninput="S.sete['${subj}']['${st.id}']=this.value;save();this.nextElementSibling.textContent=bytes(this.value)+' / ${LIM} bytes';this.nextElementSibling.className='cnt'+(bytes(this.value)>${LIM}?' over':'')">${esc(t)}</textarea><div class="cnt ${b>LIM?'over':''}">${b} / ${LIM} bytes</div></td></tr>`;}).join('');
+  return crumb('학교생활기록부','교과학습발달상황','세부능력 및 특기사항')+title('세부능력 및 특기사항','과목별 500자(1,500바이트) 이내. 수업 중 관찰한 성취 수준·태도·탐구 과정을 구체적으로 기재. 점수·등급·석차 숫자는 기재하지 않습니다.')
+  +`<div class="cond">${fixedCond()}${selSubj()}${selCls()}</div><div class="bar"><span class="status">입력 ${students(cls).filter(st=>(S.sete[subj][st.id]||'').trim()).length} / ${students(cls).length}명</span><span class="sp"></span><button class="btn p" ${ed?'':'disabled'} onclick="addLog(me.name,'세특 저장 ${subjName(subj)} ${clsName(cls)}');save();toast('저장되었습니다.')">저장</button></div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>번호</th><th>성명</th><th class="l">세부능력 및 특기사항</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+SCREENS['rec-att']=()=>{
+  const cls=cond.cls;
+  return crumb('학교생활기록부','담임 기재','출결상황')+title('출결상황(학생부 반영)',S.attFinal?'학기말 출결마감 완료 — 학생부 반영 확정':'※ 학기말 출결마감 전 자료입니다. 마감 후 확정됩니다.')
+  +`<div class="cond">${fixedCond()}${selCls()}</div>${S.attFinal?'':'<div class="note warn">출결마감(월마감 → 학기말 마감)이 끝나야 학생부 출결상황이 확정됩니다.</div>'}<div class="grid-wrap"><table class="grid">${attHead}<tbody>${attSemesterRows(cls)}</tbody></table></div>`;
+};
+SCREENS['rec-behav']=()=>{
+  const cls=cond.cls;const ed=can.attEdit(cls);const LIM=1500;
+  const rows=students(cls).map(st=>{const t=S.behav[st.id]||'';const b=bytes(t);
+    return `<tr><td style="vertical-align:top">${st.no}</td><td class="l" style="vertical-align:top">${st.name}</td><td class="l" style="white-space:normal"><textarea class="txt" ${ed?'':'disabled'} oninput="S.behav['${st.id}']=this.value;save();this.nextElementSibling.textContent=bytes(this.value)+' / ${LIM} bytes';this.nextElementSibling.className='cnt'+(bytes(this.value)>${LIM}?' over':'')">${esc(t)}</textarea><div class="cnt ${b>LIM?'over':''}">${b} / ${LIM} bytes</div></td></tr>`;}).join('');
+  return crumb('학교생활기록부','담임 기재','행동특성 및 종합의견')+title('행동특성 및 종합의견','담임이 학년 단위로 500자(1,500바이트) 이내 기재. 학생의 변화·성장을 구체적 사례 중심으로.')
+  +`<div class="cond">${fixedCond()}${selCls()}</div><div class="bar"><span class="sp"></span><button class="btn p" ${ed?'':'disabled'} onclick="addLog(me.name,'행특 저장 ${clsName(cls)}');save();toast('저장되었습니다.')">저장</button></div>
+  <div class="grid-wrap"><table class="grid"><thead><tr><th>번호</th><th>성명</th><th class="l">행동특성 및 종합의견</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+
+/* ═══════════════════════════════════════════════════════════
+   연수도우미
+═══════════════════════════════════════════════════════════ */
+function stepList(){
+  const myCls=me.cls||'1-1', mySubj=me.subj||'kor';
+  return [
+    {t:'일일출결 입력·저장',d:`담임: ${clsName(myCls)}의 미저장(빨간 날짜)을 모두 저장합니다.`,ok:()=>DAYS.filter(d=>d<=S.simDate).every(d=>(S.attDone[myCls]||{})[d]),go:['att','att-daily']},
+    {t:'출결 월마감',d:'담임: 기준일까지 지난 달을 순서대로 마감합니다(10월 마감은 기준일을 11월 이후로).',ok:()=>MONTHS.filter(m=>DAYS.filter(d=>d.startsWith(m)).slice(-1)[0]<=S.simDate).every(m=>isMonthClosed(myCls,m)),go:['att','att-close']},
+    {t:'평가계획 확인',d:'교과교사: 담당 과목 반영비율 합계 100% 확인.',ok:()=>!planIssues(mySubj).length,go:['score','sc-plan']},
+    {t:'지필·수행평가 점수 입력',d:'교과교사: 2차 지필·수행평가 2영역을 전 학급에 입력하고 결시자는 결시처리.',ok:()=>!validateSubject(mySubj).length,go:['score','sc-written']},
+    {t:'성적산출 확인',d:'원점수·성취도·석차등급을 확인합니다.',ok:()=>!validateSubject(mySubj).length,go:['score','sc-calc']},
+    {t:'과목 성적마감',d:'교과교사: 담당 과목을 마감합니다.',ok:()=>!!S.subjClose[mySubj],go:['score','sc-close']},
+    {t:'세부능력 및 특기사항 입력',d:'교과교사: 담당 학급 학생 세특 작성(1,500바이트).',ok:()=>students(myCls).every(st=>((S.sete[mySubj]||{})[st.id]||'').trim()),go:['rec','rec-sete']},
+    {t:'학기말 출결마감(교무)',d:'교무부 계정으로 로그인하여 전 학급 월마감 확인 후 최종 마감. 기준일을 12-31로 바꿔야 가능합니다.',ok:()=>!!S.attFinal,go:['att','att-final']},
+    {t:'학기말 성적마감(교무)',d:'교무부 계정으로 전 과목 마감 확인 후 최종 마감.',ok:()=>!!S.gradeFinal,go:['score','sc-final']},
+    {t:'행동특성 및 종합의견',d:'담임: 학급 학생 행특 기재.',ok:()=>students(myCls).every(st=>(S.behav[st.id]||'').trim()),go:['rec','rec-behav']},
+  ];
+}
+SCREENS['gd-steps']=()=>{
+  const steps=stepList();const done=steps.filter(s=>s.ok()).length;
+  return crumb('연수도우미','학기말 마감 시나리오')+title('학기말 마감 시나리오',`현재 사용자(${me.name}) 기준으로 진행 상황을 자동 확인합니다. ${done} / ${steps.length} 단계 완료`)
+  +`<div class="note">실제 나이스 업무 순서: <b>담임</b>(일일출결 → 월마감) → <b>교과교사</b>(평가계획 → 점수입력 → 산출확인 → 과목마감 → 세특) → <b>교무부</b>(학기말 출결·성적 마감) → <b>담임</b>(행특·학생부 점검). 오류 상황(미저장 날짜, 결시자, 비율 오류, 미입력 점수)이 미리 심어져 있으니 직접 해결해 보세요.</div>
+  <ol class="steps">${steps.map((s,i)=>`<li class="${s.ok()?'done':''}"><span class="no">${s.ok()?'✓':i+1}</span><div><div class="t">${s.t}</div><div class="d">${s.d}</div></div><button class="btn s go" onclick="go('${s.go[0]}','${s.go[1]}')">이동</button></li>`).join('')}</ol>`;
+};
+SCREENS['gd-setting']=()=>crumb('연수도우미','기준일·등급제 설정')+title('기준일·등급제 설정','시뮬레이션의 "오늘"을 바꿔 학기말 상황을 만들 수 있습니다.')
+  +`<div class="card" style="max-width:560px"><p><b>시뮬레이션 기준일</b> <input type="date" value="${S.simDate}" min="${TERM_START}" max="${TERM_END}" onchange="S.simDate=this.value;addLog(me.name,'기준일 변경 '+this.value);save();go(view.top,view.menu)"> <span class="status">기준일까지의 수업일만 출결 입력·집계 대상이 됩니다. 기준일을 뒤로 옮기면 그 사이 날짜는 '미저장'이 되어 실제처럼 입력 후 저장해야 합니다.</span></p>
+  <p><button class="btn" onclick="S.simDate='${DAYS[DAYS.length-1]}';save();go(view.top,view.menu)">학기 마지막 수업일(${DAYS[DAYS.length-1]})로</button> <button class="btn" onclick="S.simDate='2026-10-27';save();go(view.top,view.menu)">10-27로 되돌리기</button> <button class="btn" onclick="bulkSaveAtt()">기준일까지 모든 학급 일일출결 일괄 저장(연수 단축)</button></p>
+  <hr style="border:0;border-top:1px solid var(--line-2)">
+  <p><b>석차등급제</b> <select onchange="S.gradeSystem=this.value;save();render()"><option value="5" ${S.gradeSystem==='5'?'selected':''}>5등급제 (2025학년도 입학생부터·고교학점제)</option><option value="9" ${S.gradeSystem==='9'?'selected':''}>9등급제 (2024학년도 이전 입학생)</option></select></p>
+  <p class="status">5등급 누적비율: 1등급 10% · 2등급 34% · 3등급 66% · 4등급 90% · 5등급 100%<br>9등급 누적비율: 4 · 11 · 23 · 40 · 60 · 77 · 89 · 96 · 100%</p>
+  <hr style="border:0;border-top:1px solid var(--line-2)">
+  <p><b>결시 인정점 규정(가상)</b> 인정결시 100% · 질병결시 80% · 미인정결시 0점 — 응시자 평균 기준. 실제 학교 학업성적관리규정에 따라 다릅니다.</p></div>`;
+function bulkSaveAtt(){CLASSES.forEach(({g,c})=>{const k=`${g}-${c}`;S.attDone[k]=S.attDone[k]||{};DAYS.filter(d=>d<=S.simDate).forEach(d=>S.attDone[k][d]=true);});addLog(me.name,'일일출결 일괄 저장(연수 단축)');save();toast('일괄 저장했습니다.');render();}
+SCREENS['gd-log']=()=>crumb('연수도우미','처리 이력')+title('처리 이력(로그)','누가 언제 무엇을 저장·마감·취소했는지 기록합니다.')+`<div class="log">${S.log.map(l=>`<div>${esc(l)}</div>`).join('')||'<div>기록 없음</div>'}</div>`;
+SCREENS['gd-reset']=()=>crumb('연수도우미','자료 초기화')+title('자료 초기화','연수를 처음부터 다시 하려면 초기화합니다.')
+  +`<div class="card" style="max-width:560px"><p>모든 출결·성적·마감·기재 내용을 지우고 가상 자료를 새로 만듭니다. 이 브라우저에 저장된 자료만 지워집니다.</p><button class="btn d" onclick="confirmBox('자료 초기화','정말 초기화하시겠습니까? 되돌릴 수 없습니다.',()=>{seedData();addLog(me.name,'자료 초기화');save();toast('초기화했습니다.');go('guide','gd-steps');},'초기화')">초기화</button>
+  <button class="btn" onclick="exportJson()">자료 내려받기(JSON)</button> <label class="btn" style="display:inline-block">자료 불러오기<input type="file" accept="application/json" style="display:none" onchange="importJson(this.files[0])"></label></div>`;
+function exportJson(){const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(S));a.download=`neis-sim-${S.simDate}.json`;a.click();}
+function importJson(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{S=JSON.parse(r.result);save();toast('불러왔습니다.');go('guide','gd-steps');}catch(e){toast('파일을 읽을 수 없습니다.');}};r.readAsText(f);}
+
+/* 시작 */
+renderLogin();
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+</script>
+</body>
+</html>
