@@ -1010,3 +1010,24 @@ button.secondary:disabled, button.is-selected:disabled {
 @media (orientation: portrait) {
  #evidencePanel { max-height: 32%; }
 }
+
+/* Header badges and the rapport total in the tool bar. */
+.badge-row { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px; border-radius: 6px; background: #ffffff14; color: #8fa9bf; font-size: .72rem; line-height: 1.2; }
+.badge svg { width: 15px; height: 15px; }
+.badge.is-got { background: #f1ad46; color: #2b2410; }
+.badge small { font-size: .72rem; white-space: nowrap; }
+@media (max-width: 1000px) { .badge small { display: none; } .badge { padding: 2px 4px; } }
+.nav-rapport { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border: 1px solid #e3b3bf55; border-radius: 9px; color: #ffd6df; background: #5a1f3666; font-size: .82rem; min-height: 43px; }
+.nav-rapport svg { width: 18px; height: 18px; color: #ff8fa8; }
+.nav-rapport b { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+@media (orientation: landscape) and (max-height: 500px) {
+ .nav-rapport { flex-direction: column; gap: 0; padding: 4px 2px; min-height: 46px; font-size: .62rem; width: 100%; }
+ .nav-rapport b { font-size: .95rem; }
+ #identity { max-width: 40%; }
+ #identity .badge-row { margin-left: 5px; }
+}
+@media (orientation: portrait) { .nav-rapport { flex-direction: column; gap: 0; padding: 4px 6px; font-size: .68rem; } #identity { max-width: 48%; } .badge { padding: 2px 3px; } .badge-row { margin-left: 4px; gap: 2px; } }
+#identity { display: flex; align-items: center; gap: 2px; overflow: visible; }
+#identity .who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#identity .badge-row { flex: 0 0 auto; }

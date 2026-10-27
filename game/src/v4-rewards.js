@@ -22,6 +22,7 @@ const WORK_NUDGES={audit:'숫자를 맞추기 전에, 어느 과목의 어느 �
 function rewardState(){if(!S.rewards){S.rewards={gifts:{},rapport:{},credited:{},messages:[]};for(const [task,person]of Object.entries(TASK_FRIEND)){if(S.awarded[task]){S.rewards.credited[task]=true;S.rewards.rapport[person]=Math.min(3,(S.rewards.rapport[person]||0)+1);}}}for(const id of COLLEAGUES)S.rewards.rapport[id]??=0;return S.rewards;}
 function rapportLevel(id){const p=rewardState().rapport[id]||0;return p>=9?3:p>=6?2:p>=3?1:0;}
 function rapportPoints(id){return rewardState().rapport[id]||0;}
+function rapportTotal(){const r=rewardState().rapport;return COLLEAGUES.reduce((n,id)=>n+(r[id]||0),0);}
 /* Each task answer moves rapport with the task's colleague: +1 right, -1 wrong (never below 0, capped). Returns the applied change. */
 function taskRapport(task,delta){const r=rewardState(),id=TASK_FRIEND[task]||'03';const before=r.rapport[id]||0;const after=Math.max(0,Math.min(RAPPORT_MAX,before+delta));r.rapport[id]=after;const applied=after-before;const lv=rapportLevel(id);if(applied>0&&lv>0&&r.rapport[id]===RAPPORT_LEVELS[lv]){r.messages.push({person:id,text:REPLIES[id][lv-1],task});}save();return applied;}
 function giftArt(g){return `<span class="gift-art" style="background-image:url('${ASSETS.deskGifts||''}');background-position:${g.cell%3*50}% ${Math.floor(g.cell/3)*100}%" aria-hidden="true"></span>`;}

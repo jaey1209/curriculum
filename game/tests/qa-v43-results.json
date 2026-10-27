@@ -1,7 +1,7 @@
 {
   "viewport": [
-    760,
-    360
+    1280,
+    800
   ],
   "done": [
     "audit",
@@ -27,6 +27,6 @@
     "08": 2
   },
   "wrongTried": 1,
-  "issues": 7,
+  "issues": 0,
   "errors": []
 }
