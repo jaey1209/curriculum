@@ -22,7 +22,7 @@ const {pathToFileURL}=require('url'),path=require('path'),fs=require('fs'),asser
    return out;});
   if(found.length)ISSUES.push({seq:tag,issues:found});
   await page.screenshot({path:path.join(OUT,tag+'.png')});};
- const pick=async(k,v)=>click('task-pick',{key:k,val:v});const picks=async o=>{for(const[k,v]of Object.entries(o))await pick(k,v);};const OUT=process.env.OUT||path.join(__dirname,'audit');fs.mkdirSync(OUT,{recursive:true});let SEQ=0;const ISSUES=[];const shot=async n=>page.screenshot({path:path.join(OUT,'s-'+n+'.png')});
+ const pick=async(k,v)=>{await page.evaluate(k=>{if(typeof taskWizKeys!=='undefined'&&taskWizKeys.length>1){const i=taskWizKeys.indexOf(k);if(i>=0&&taskState().q!==i){taskState().q=i;renderTask(activeTask);}}},k);await click('task-pick',{key:k,val:v});};const picks=async o=>{for(const[k,v]of Object.entries(o))await pick(k,v);};const OUT=process.env.OUT||path.join(__dirname,'audit');fs.mkdirSync(OUT,{recursive:true});let SEQ=0;const ISSUES=[];const shot=async n=>page.screenshot({path:path.join(OUT,'s-'+n+'.png')});
  const state=()=>page.evaluate(()=>JSON.parse(JSON.stringify(S)));
  await page.goto(pathToFileURL(path.join(__dirname,'../dist-v4/index.html')).href);
  await shot('title');assert.equal(await page.locator('input,textarea,select').count(),0);

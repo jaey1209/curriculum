@@ -49,7 +49,20 @@ function taskSplit(evidence,decision){return `<div class="task-layout"><section 
 function taskDetails(id,title,content,open=false){return `<details id="${id}" ${open?'open':''}><summary>${esc(title)}</summary>${content}</details>`;}
 function taskSource(id){return `<p class="task-source">근거: ${esc(TASK_REFS[id])}</p>`;}
 function taskFinish(id){const m=TASK_META[id];taskState(id).errors={};save();finishTask(id,{message:m[2],rule:m[5],skill:m[3],points:m[4]});}
-function taskShow(id,body,footer,kind='task'){const m=TASK_META[id];showTask(id,{title:m[0],person:m[1],kind,body:body,footer,help:''});if(taskState(id).done)taskFinish(id);}
+function taskShow(id,body,footer,kind='task'){const m=TASK_META[id];showTask(id,{title:m[0],person:m[1],kind,body:body,footer,help:''});taskWizard(id);if(taskState(id).done)taskFinish(id);}
+/* One question at a time: when a task body holds two or more question blocks, only the current one is shown with
+   이전/다음 navigation. Picking an answer moves on to the next question; an error jumps back to the field that needs it. */
+let taskWizKeys=[],taskWizLast=null;
+function taskWizard(id){const body=$('#workBody'),t=taskState(id);const fields=Array.from(body.querySelectorAll('section.task-field'));taskWizKeys=[];if(fields.length<2||t.done)return;
+ const keys=fields.map(f=>f.querySelector('button[data-key]')?.dataset.key||'');taskWizKeys=keys;
+ const errIdx=fields.findIndex(f=>f.querySelector('.field-error'));let q=errIdx>=0?errIdx:Number.isInteger(t.q)?t.q:0;q=Math.max(0,Math.min(fields.length-1,q));t.q=q;
+ fields.forEach((f,i)=>{f.hidden=i!==q;});
+ body.querySelectorAll('.note-builder > section').forEach(sec=>{sec.hidden=!sec.contains(fields[q]);});
+ const answered=keys.filter(k=>t[k]!==undefined).length;
+ fields[q].insertAdjacentHTML('afterbegin',`<div class="task-qnav"><span class="task-qstep">질문 ${q+1} / ${fields.length}</span><span class="task-qdots" aria-hidden="true">${keys.map((k,i)=>`<i class="${i===q?'is-current':''}${t[k]!==undefined?' is-done':''}"></i>`).join('')}</span><span class="task-qbtns">${btn('이전','task-q',{val:q-1},q===0?'secondary is-off':'secondary')}${btn('다음','task-q',{val:q+1},q===fields.length-1?'secondary is-off':'secondary')}</span></div>`);
+ if(answered===fields.length&&q===fields.length-1)fields[q].insertAdjacentHTML('beforeend','<p class="helper-text task-qdone">모든 질문에 답했어요. 아래 제출 버튼으로 확인해 주세요.</p>');
+ const key=id+':'+q;if(taskWizLast!==key){taskWizLast=key;requestAnimationFrame(()=>fields[q]?.scrollIntoView({block:'start',behavior:'auto'}));}
+}
 function taskReject(errors,message='자료에서 표시한 부분을 다시 확인해 주세요.'){const t=taskState();t.errors=errors;save();renderTask(activeTask);taskFeedback(message,'error',Object.values(errors));}
 function taskPass(id){taskState(id).errors={};save();renderTask(id);taskFinish(id);}
 function taskInvalidate(t){t.done=false;t.errors={};}
@@ -134,7 +147,9 @@ function taskSubmit(id){const t=taskState(id);let errors={};
  if(Object.keys(errors).length)taskReject(errors);else taskPass(id);
 }
 function taskAction(action,button){if(!action.startsWith('task-'))return false;const id=activeTask,t=taskState(id),d=button.dataset,val=Number(d.val);
+ if(action==='task-q'){const n=taskWizKeys.length;if(n>1&&val>=0&&val<n){t.q=val;save();renderTask(id);}return true;}
  if(action==='task-pick'){
+  if(taskWizKeys.length>1){const i=taskWizKeys.indexOf(d.key);if(i>=0&&i===(t.q||0)&&i<taskWizKeys.length-1)t.q=i+1;}
   if(id==='routes'&&d.student!==undefined){const record=t.draft[Number(d.student)];if(record[d.key]!==val){record[d.key]=val;taskInvalidate(t);t.confirmed=false;delete t.report;t.stage='draft';}}
   else if(t[d.key]!==val){t[d.key]=val;taskInvalidate(t);if(id==='import'&&d.key.startsWith('expected')){t.loaded=t.loaded||{};t.loaded[Number(d.key.replace('expected',''))]=false;}if(id==='hours'&&(d.key==='unit'||d.key.startsWith('proof'))){t.saved=t.saved||{};if(d.key==='unit'){t.saved={};t.units={};}else t.saved[t.course||0]=false;}}
   save();renderTask(id);return true;

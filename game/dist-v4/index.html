@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#153e65"><title>재영고등학교 · 최성보 성장일지</title><style>/* 재영고 v4 · calm blue visual novel. DOM notes are at the end of this file. */
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#153e65"><link rel="manifest" href='data:application/manifest+json,{"name":"재영고등학교 최성보 성장일지","short_name":"성장일지","display":"fullscreen","orientation":"landscape","background_color":"#153e65","theme_color":"#153e65","start_url":"."}'><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><title>재영고등학교 · 최성보 성장일지</title><style>/* 재영고 v4 · calm blue visual novel. DOM notes are at the end of this file. */
 :root {
   color-scheme: light;
   font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
@@ -931,6 +931,29 @@ button.secondary:disabled, button.is-selected:disabled {
  * - Keep all player answers button-based; .inline-picker is a minus/value/plus button group.
  * - This stylesheet never rotates the page and must replace the old orientation CSS.
  */
+
+/* One-question-at-a-time navigation inside work dialogs. */
+.task-qnav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 6px; padding: 6px 0; border-bottom: 1px solid #d3e0ec; }
+.task-qstep { font-weight: 750; color: #1f517d; font-size: .92rem; }
+.task-qdots { display: inline-flex; gap: 5px; align-items: center; }
+.task-qdots i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #c9d9e7; }
+.task-qdots i.is-done { background: #4d8dba; }
+.task-qdots i.is-current { outline: 2px solid #1f5c99; outline-offset: 1px; background: #fff; }
+.task-qbtns { margin-left: auto; display: inline-flex; gap: 6px; }
+.task-qbtns button { min-height: 36px; padding: 4px 12px; font-size: .9rem; }
+.task-qbtns button.is-off { visibility: hidden; }
+.task-field[hidden] { display: none !important; }
+.task-field .task-qdone { margin: 10px 0 0; color: #245c3e; }
+/* Rotate hint for phones held upright. */
+#rotateHint { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; background: #0d2740ee; }
+#rotateHint[hidden] { display: none; }
+.rotate-card { width: min(100%, 360px); padding: 22px 20px; border-radius: 16px; background: #f6fbff; color: #183753; text-align: center; box-shadow: 0 10px 30px #06192b80; }
+.rotate-icon { width: 54px; height: 54px; margin: 0 auto 10px; display: grid; place-items: center; border-radius: 50%; background: #e4f0fa; color: #1f5c99; transform: rotate(90deg); }
+.rotate-icon svg { width: 28px; height: 28px; }
+.rotate-card h2 { font-size: 1.25rem; margin: 0 0 6px; }
+.rotate-card p { font-size: .95rem; color: #526b80; margin: 0 0 14px; }
+.rotate-actions { display: grid; gap: 8px; }
+.rotate-actions button { min-height: 44px; }
 </style><!-- Lucide icons license
 ISC License
 
@@ -1363,18 +1386,26 @@ function downloadRecord(){const c=endingTitle();let txt=`재영고등학교 · �
  txt+='\n\n실제 업무는 최신 공문·학교 계획·나이스 매뉴얼로 확인하세요.';
  const url=URL.createObjectURL(new Blob(['\ufeff'+txt],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='재영고_나의_성장일지.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('성장 기록을 내려받았습니다.');}
 function syncFullscreen(){const on=!!document.fullscreenElement;$('#fullscreenButton').textContent='전체화면 '+(on?'ON':'OFF');$('#fullscreenButton').setAttribute('aria-pressed',String(on));}
+function isTouchPhone(){return matchMedia('(hover: none) and (pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<=600;}
+/* Phones play in landscape by default: entering the story goes full screen and locks landscape (needs a tap, so it rides the start buttons). */
+async function enterLandscape(){if(!isTouchPhone()||document.fullscreenElement)return;try{await document.documentElement.requestFullscreen();try{await screen.orientation?.lock?.('landscape');}catch(e){}}catch(e){}syncFullscreen();}
+function rotateHint(){let el=$('#rotateHint');if(!el){el=document.createElement('div');el.id='rotateHint';el.innerHTML=`<div class="rotate-card"><div class="rotate-icon">${icon('maximize')}</div><h2>가로 화면으로 돌려 주세요</h2><p>이 게임은 휴대전화를 가로로 눕혀 플레이하도록 만들었어요.</p><div class="rotate-actions">${btn('가로 전체화면으로','rotate-landscape')}${btn('세로로 계속','rotate-dismiss',{},'secondary')}</div></div>`;document.body.appendChild(el);}
+ const portrait=innerHeight>innerWidth;el.hidden=!(isTouchPhone()&&portrait&&!rotateDismissed);}
+let rotateDismissed=false;try{rotateDismissed=sessionStorage.getItem('jaeyoung-rotate-dismissed')==='1';}catch(e){}
 async function toggleFullscreen(){try{if(document.fullscreenElement){await document.exitFullscreen();screen.orientation?.unlock?.();}else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen();try{await screen.orientation?.lock?.('landscape');}catch(e){}}else toast('이 브라우저는 전체화면을 지원하지 않아요. 화면 크기에 맞춰 그대로 플레이할 수 있어요.');}catch(e){toast('전체화면 전환이 지원되지 않았어요. 현재 화면에서도 플레이할 수 있어요.');}syncFullscreen();if(infoPage==='menu')menu();}
 function restart(){openInfo('새 학기말을 시작할까요?','<p>지금까지의 진행은 새 이야기로 바뀝니다. 필요한 기록은 먼저 내려받아 주세요.</p>',btn('성장 기록 내려받기','download',{},'secondary')+btn('현재 이야기 유지','close-info',{},'secondary')+btn('새로 시작하기','confirm-restart'));}
-function boot(){S=readSave()||fresh();renderTitle();document.addEventListener('fullscreenchange',()=>{syncFullscreen();requestAnimationFrame(paintActors);if(infoPage==='menu')menu();});new ResizeObserver(()=>requestAnimationFrame(paintActors)).observe($('#actors'));
+function boot(){S=readSave()||fresh();renderTitle();rotateHint();addEventListener('resize',rotateHint);document.addEventListener('fullscreenchange',()=>{syncFullscreen();requestAnimationFrame(paintActors);if(infoPage==='menu')menu();});new ResizeObserver(()=>requestAnimationFrame(paintActors)).observe($('#actors'));
  document.addEventListener('input',event=>{if(event.target.id==='nickname')setupName=event.target.value;});
  document.addEventListener('click',event=>{const b=event.target.closest('button[data-action]');if(!b)return;const a=b.dataset.action;if(a.startsWith('task-')&&a!=='task-return'){if(typeof taskAction==='function')taskAction(a,b);return;}
  switch(a){
- case 'setup':if(S.started)restart();else renderSetup();break;
+ case 'rotate-landscape':enterLandscape();break;
+ case 'rotate-dismiss':rotateDismissed=true;try{sessionStorage.setItem('jaeyoung-rotate-dismissed','1');}catch(e){}rotateHint();break;
+ case 'setup':enterLandscape();if(S.started)restart();else renderSetup();break;
  case 'hero':setupHero=b.dataset.id;renderSetup();break;
  case 'name':setupName=b.dataset.name;renderSetup();break;
  case 'more-names':namePage=1-namePage;renderSetup();break;
  case 'begin':setupName=($('#nickname')?.value||'').trim().slice(0,12)||'하늘';$('#nickname')?.blur();S=fresh();S.hero=setupHero;S.name=setupName;S.started=true;renderStory();break;
- case 'continue':closeInfo();renderStory();break;
+ case 'continue':enterLandscape();closeInfo();renderStory();break;
  case 'title':renderTitle();break;
  case 'next':advance();break;
  case 'story-choice':chooseStory(Number(b.dataset.index));break;
@@ -1515,7 +1546,20 @@ function taskSplit(evidence,decision){return `<div class="task-layout"><section 
 function taskDetails(id,title,content,open=false){return `<details id="${id}" ${open?'open':''}><summary>${esc(title)}</summary>${content}</details>`;}
 function taskSource(id){return `<p class="task-source">근거: ${esc(TASK_REFS[id])}</p>`;}
 function taskFinish(id){const m=TASK_META[id];taskState(id).errors={};save();finishTask(id,{message:m[2],rule:m[5],skill:m[3],points:m[4]});}
-function taskShow(id,body,footer,kind='task'){const m=TASK_META[id];showTask(id,{title:m[0],person:m[1],kind,body:body,footer,help:''});if(taskState(id).done)taskFinish(id);}
+function taskShow(id,body,footer,kind='task'){const m=TASK_META[id];showTask(id,{title:m[0],person:m[1],kind,body:body,footer,help:''});taskWizard(id);if(taskState(id).done)taskFinish(id);}
+/* One question at a time: when a task body holds two or more question blocks, only the current one is shown with
+   이전/다음 navigation. Picking an answer moves on to the next question; an error jumps back to the field that needs it. */
+let taskWizKeys=[],taskWizLast=null;
+function taskWizard(id){const body=$('#workBody'),t=taskState(id);const fields=Array.from(body.querySelectorAll('section.task-field'));taskWizKeys=[];if(fields.length<2||t.done)return;
+ const keys=fields.map(f=>f.querySelector('button[data-key]')?.dataset.key||'');taskWizKeys=keys;
+ const errIdx=fields.findIndex(f=>f.querySelector('.field-error'));let q=errIdx>=0?errIdx:Number.isInteger(t.q)?t.q:0;q=Math.max(0,Math.min(fields.length-1,q));t.q=q;
+ fields.forEach((f,i)=>{f.hidden=i!==q;});
+ body.querySelectorAll('.note-builder > section').forEach(sec=>{sec.hidden=!sec.contains(fields[q]);});
+ const answered=keys.filter(k=>t[k]!==undefined).length;
+ fields[q].insertAdjacentHTML('afterbegin',`<div class="task-qnav"><span class="task-qstep">질문 ${q+1} / ${fields.length}</span><span class="task-qdots" aria-hidden="true">${keys.map((k,i)=>`<i class="${i===q?'is-current':''}${t[k]!==undefined?' is-done':''}"></i>`).join('')}</span><span class="task-qbtns">${btn('이전','task-q',{val:q-1},q===0?'secondary is-off':'secondary')}${btn('다음','task-q',{val:q+1},q===fields.length-1?'secondary is-off':'secondary')}</span></div>`);
+ if(answered===fields.length&&q===fields.length-1)fields[q].insertAdjacentHTML('beforeend','<p class="helper-text task-qdone">모든 질문에 답했어요. 아래 제출 버튼으로 확인해 주세요.</p>');
+ const key=id+':'+q;if(taskWizLast!==key){taskWizLast=key;requestAnimationFrame(()=>fields[q]?.scrollIntoView({block:'start',behavior:'auto'}));}
+}
 function taskReject(errors,message='자료에서 표시한 부분을 다시 확인해 주세요.'){const t=taskState();t.errors=errors;save();renderTask(activeTask);taskFeedback(message,'error',Object.values(errors));}
 function taskPass(id){taskState(id).errors={};save();renderTask(id);taskFinish(id);}
 function taskInvalidate(t){t.done=false;t.errors={};}
@@ -1600,7 +1644,9 @@ function taskSubmit(id){const t=taskState(id);let errors={};
  if(Object.keys(errors).length)taskReject(errors);else taskPass(id);
 }
 function taskAction(action,button){if(!action.startsWith('task-'))return false;const id=activeTask,t=taskState(id),d=button.dataset,val=Number(d.val);
+ if(action==='task-q'){const n=taskWizKeys.length;if(n>1&&val>=0&&val<n){t.q=val;save();renderTask(id);}return true;}
  if(action==='task-pick'){
+  if(taskWizKeys.length>1){const i=taskWizKeys.indexOf(d.key);if(i>=0&&i===(t.q||0)&&i<taskWizKeys.length-1)t.q=i+1;}
   if(id==='routes'&&d.student!==undefined){const record=t.draft[Number(d.student)];if(record[d.key]!==val){record[d.key]=val;taskInvalidate(t);t.confirmed=false;delete t.report;t.stage='draft';}}
   else if(t[d.key]!==val){t[d.key]=val;taskInvalidate(t);if(id==='import'&&d.key.startsWith('expected')){t.loaded=t.loaded||{};t.loaded[Number(d.key.replace('expected',''))]=false;}if(id==='hours'&&(d.key==='unit'||d.key.startsWith('proof'))){t.saved=t.saved||{};if(d.key==='unit'){t.saved={};t.units={};}else t.saved[t.course||0]=false;}}
   save();renderTask(id);return true;

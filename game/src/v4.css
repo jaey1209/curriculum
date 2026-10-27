@@ -930,3 +930,26 @@ button.secondary:disabled, button.is-selected:disabled {
  * - Keep all player answers button-based; .inline-picker is a minus/value/plus button group.
  * - This stylesheet never rotates the page and must replace the old orientation CSS.
  */
+
+/* One-question-at-a-time navigation inside work dialogs. */
+.task-qnav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 6px; padding: 6px 0; border-bottom: 1px solid #d3e0ec; }
+.task-qstep { font-weight: 750; color: #1f517d; font-size: .92rem; }
+.task-qdots { display: inline-flex; gap: 5px; align-items: center; }
+.task-qdots i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #c9d9e7; }
+.task-qdots i.is-done { background: #4d8dba; }
+.task-qdots i.is-current { outline: 2px solid #1f5c99; outline-offset: 1px; background: #fff; }
+.task-qbtns { margin-left: auto; display: inline-flex; gap: 6px; }
+.task-qbtns button { min-height: 36px; padding: 4px 12px; font-size: .9rem; }
+.task-qbtns button.is-off { visibility: hidden; }
+.task-field[hidden] { display: none !important; }
+.task-field .task-qdone { margin: 10px 0 0; color: #245c3e; }
+/* Rotate hint for phones held upright. */
+#rotateHint { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; background: #0d2740ee; }
+#rotateHint[hidden] { display: none; }
+.rotate-card { width: min(100%, 360px); padding: 22px 20px; border-radius: 16px; background: #f6fbff; color: #183753; text-align: center; box-shadow: 0 10px 30px #06192b80; }
+.rotate-icon { width: 54px; height: 54px; margin: 0 auto 10px; display: grid; place-items: center; border-radius: 50%; background: #e4f0fa; color: #1f5c99; transform: rotate(90deg); }
+.rotate-icon svg { width: 28px; height: 28px; }
+.rotate-card h2 { font-size: 1.25rem; margin: 0 0 6px; }
+.rotate-card p { font-size: .95rem; color: #526b80; margin: 0 0 14px; }
+.rotate-actions { display: grid; gap: 8px; }
+.rotate-actions button { min-height: 44px; }

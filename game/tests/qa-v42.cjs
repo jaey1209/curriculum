@@ -4,7 +4,7 @@ const {pathToFileURL}=require('url'),path=require('path'),fs=require('fs'),asser
  const browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHANNEL?{channel:process.env.PLAYWRIGHT_CHANNEL}:{})});const page=await browser.newPage({viewport:{width:1366,height:768}});page.setDefaultTimeout(8000);
  const errors=[],network=[],done=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))network.push(r.url())});
  const click=async(a,d={})=>{let s=`button[data-action="${a}"]`;for(const[k,v]of Object.entries(d))s+=`[data-${k}="${v}"]`;await page.locator(s+':visible').last().click();};
- const pick=async(k,v)=>click('task-pick',{key:k,val:v});const picks=async o=>{for(const[k,v]of Object.entries(o))await pick(k,v);};const shot=async n=>page.screenshot({path:path.join(__dirname,'v42-'+n+'.png')});
+ const pick=async(k,v)=>{await page.evaluate(k=>{if(typeof taskWizKeys!=='undefined'&&taskWizKeys.length>1){const i=taskWizKeys.indexOf(k);if(i>=0&&taskState().q!==i){taskState().q=i;renderTask(activeTask);}}},k);await click('task-pick',{key:k,val:v});};const picks=async o=>{for(const[k,v]of Object.entries(o))await pick(k,v);};const shot=async n=>page.screenshot({path:path.join(__dirname,'v42-'+n+'.png')});
  const state=()=>page.evaluate(()=>JSON.parse(JSON.stringify(S)));
  await page.goto(pathToFileURL(path.join(__dirname,'../dist-v4/index.html')).href);
  await shot('title');assert.equal(await page.locator('input,textarea,select').count(),0);

@@ -158,18 +158,26 @@ function downloadRecord(){const c=endingTitle();let txt=`재영고등학교 · �
  txt+='\n\n실제 업무는 최신 공문·학교 계획·나이스 매뉴얼로 확인하세요.';
  const url=URL.createObjectURL(new Blob(['\ufeff'+txt],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='재영고_나의_성장일지.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('성장 기록을 내려받았습니다.');}
 function syncFullscreen(){const on=!!document.fullscreenElement;$('#fullscreenButton').textContent='전체화면 '+(on?'ON':'OFF');$('#fullscreenButton').setAttribute('aria-pressed',String(on));}
+function isTouchPhone(){return matchMedia('(hover: none) and (pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<=600;}
+/* Phones play in landscape by default: entering the story goes full screen and locks landscape (needs a tap, so it rides the start buttons). */
+async function enterLandscape(){if(!isTouchPhone()||document.fullscreenElement)return;try{await document.documentElement.requestFullscreen();try{await screen.orientation?.lock?.('landscape');}catch(e){}}catch(e){}syncFullscreen();}
+function rotateHint(){let el=$('#rotateHint');if(!el){el=document.createElement('div');el.id='rotateHint';el.innerHTML=`<div class="rotate-card"><div class="rotate-icon">${icon('maximize')}</div><h2>가로 화면으로 돌려 주세요</h2><p>이 게임은 휴대전화를 가로로 눕혀 플레이하도록 만들었어요.</p><div class="rotate-actions">${btn('가로 전체화면으로','rotate-landscape')}${btn('세로로 계속','rotate-dismiss',{},'secondary')}</div></div>`;document.body.appendChild(el);}
+ const portrait=innerHeight>innerWidth;el.hidden=!(isTouchPhone()&&portrait&&!rotateDismissed);}
+let rotateDismissed=false;try{rotateDismissed=sessionStorage.getItem('jaeyoung-rotate-dismissed')==='1';}catch(e){}
 async function toggleFullscreen(){try{if(document.fullscreenElement){await document.exitFullscreen();screen.orientation?.unlock?.();}else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen();try{await screen.orientation?.lock?.('landscape');}catch(e){}}else toast('이 브라우저는 전체화면을 지원하지 않아요. 화면 크기에 맞춰 그대로 플레이할 수 있어요.');}catch(e){toast('전체화면 전환이 지원되지 않았어요. 현재 화면에서도 플레이할 수 있어요.');}syncFullscreen();if(infoPage==='menu')menu();}
 function restart(){openInfo('새 학기말을 시작할까요?','<p>지금까지의 진행은 새 이야기로 바뀝니다. 필요한 기록은 먼저 내려받아 주세요.</p>',btn('성장 기록 내려받기','download',{},'secondary')+btn('현재 이야기 유지','close-info',{},'secondary')+btn('새로 시작하기','confirm-restart'));}
-function boot(){S=readSave()||fresh();renderTitle();document.addEventListener('fullscreenchange',()=>{syncFullscreen();requestAnimationFrame(paintActors);if(infoPage==='menu')menu();});new ResizeObserver(()=>requestAnimationFrame(paintActors)).observe($('#actors'));
+function boot(){S=readSave()||fresh();renderTitle();rotateHint();addEventListener('resize',rotateHint);document.addEventListener('fullscreenchange',()=>{syncFullscreen();requestAnimationFrame(paintActors);if(infoPage==='menu')menu();});new ResizeObserver(()=>requestAnimationFrame(paintActors)).observe($('#actors'));
  document.addEventListener('input',event=>{if(event.target.id==='nickname')setupName=event.target.value;});
  document.addEventListener('click',event=>{const b=event.target.closest('button[data-action]');if(!b)return;const a=b.dataset.action;if(a.startsWith('task-')&&a!=='task-return'){if(typeof taskAction==='function')taskAction(a,b);return;}
  switch(a){
- case 'setup':if(S.started)restart();else renderSetup();break;
+ case 'rotate-landscape':enterLandscape();break;
+ case 'rotate-dismiss':rotateDismissed=true;try{sessionStorage.setItem('jaeyoung-rotate-dismissed','1');}catch(e){}rotateHint();break;
+ case 'setup':enterLandscape();if(S.started)restart();else renderSetup();break;
  case 'hero':setupHero=b.dataset.id;renderSetup();break;
  case 'name':setupName=b.dataset.name;renderSetup();break;
  case 'more-names':namePage=1-namePage;renderSetup();break;
  case 'begin':setupName=($('#nickname')?.value||'').trim().slice(0,12)||'하늘';$('#nickname')?.blur();S=fresh();S.hero=setupHero;S.name=setupName;S.started=true;renderStory();break;
- case 'continue':closeInfo();renderStory();break;
+ case 'continue':enterLandscape();closeInfo();renderStory();break;
  case 'title':renderTitle();break;
  case 'next':advance();break;
  case 'story-choice':chooseStory(Number(b.dataset.index));break;
