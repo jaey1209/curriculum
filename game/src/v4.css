@@ -757,19 +757,19 @@ button.secondary:disabled, button.is-selected:disabled {
  #sceneLabel { top: 6px; left: 12px; }
  #growthStrip { top: 44px; right: 10px; }
  #eventNotice { top: 36px; right: 10px; }
- #gameNav { top: var(--head-height); right: 0; bottom: 0; left: auto; width: var(--rail-width); height: auto; flex-direction: column; justify-content: flex-start; gap: 5px; padding: 6px 5px max(6px, env(safe-area-inset-bottom)) 5px; border-top: 0; border-left: 1px solid #c5ddef77; }
- #gameNav button { width: 100%; min-width: 0; max-width: none; min-height: 46px; flex: 0 0 auto; flex-direction: column; gap: 2px; padding: 4px 2px; font-size: .66rem; line-height: 1.15; border-radius: 8px; }
+ #gameNav { top: var(--head-height); right: 0; bottom: 0; left: auto; width: var(--rail-width); height: auto; flex-direction: column; justify-content: flex-start; gap: 5px; padding: 6px 5px max(6px, env(safe-area-inset-bottom)) 5px; border-top: 0; border-left: 1px solid #c5ddef55; background: #173e5f59; }
+ #gameNav button { width: 100%; min-width: 0; max-width: none; min-height: 46px; flex: 0 0 auto; flex-direction: column; gap: 2px; padding: 4px 2px; font-size: .66rem; line-height: 1.15; border-radius: 8px; background: #0f2c4766; border-color: #bcd6ea55; text-shadow: 0 1px 2px #0b2238; }
  #gameNav button svg { width: 18px; height: 18px; }
  #gameNav button svg + span { margin-left: 0; }
  #simNotice { height: auto; right: var(--rail-width); padding: 2px 8px 3px; font-size: 9.5px; line-height: 1.3; background: #102f49c4; pointer-events: none; }
  #game[data-view="title"] #simNotice, #game[data-view="setup"] #simNotice { right: 0; }
- #dialogueBox { grid-template-columns: 52px minmax(0, 1fr); width: min(100%, 700px); gap: 9px; padding: 8px 12px; max-height: 58%; border-radius: 10px; }
- .speaker-face { width: 52px; height: 60px; border-radius: 7px; }
+ #dialogueBox { grid-template-columns: 44px minmax(0, 1fr); width: min(100%, 700px); gap: 8px; padding: 6px 10px; max-height: 46%; border-radius: 9px; align-items: start; }
+ .speaker-face { width: 44px; height: 50px; border-radius: 6px; }
  .speaker-face > small { display: none; }
- .speaker-name { padding: 2px 7px; font-size: .84rem; margin-right: 6px; }
- .speaker-role { font-size: .72rem; }
- .dialogue-text { font-size: 1rem; line-height: 1.42; margin: 4px 0 5px; }
- #dialogueBox [data-action="next"] { min-height: 36px; min-width: 110px; padding: 4px 11px; font-size: .9rem; }
+ .speaker-name { padding: 1px 6px; font-size: .78rem; margin-right: 5px; }
+ .speaker-role { font-size: .68rem; }
+ .dialogue-text { font-size: .92rem; line-height: 1.38; margin: 3px 0 3px; }
+ #dialogueBox [data-action="next"] { min-height: 32px; min-width: 100px; padding: 3px 10px; font-size: .84rem; }
  #dialogueBox .dialogue-actions .helper-text { font-size: .82rem; }
  #storyChoices { gap: 5px; max-width: min(100%, 560px); max-height: 60%; }
  #storyChoices > button, #storyChoices .choice-card { min-height: 38px; padding: 7px 11px; font-size: max(15px, .94rem); line-height: 1.35; }
@@ -777,7 +777,7 @@ button.secondary:disabled, button.is-selected:disabled {
  /* Question on the left, answers on the right, each kept narrow enough to read in one glance. */
  #stage:has(#storyChoices:not([hidden])) #storyChoices { position: absolute; right: 12px; top: 24px; bottom: 20px; width: min(50%, 400px); max-height: none; }
  #stage:has(#storyChoices:not([hidden])) #dialogueBox { position: absolute; left: 12px; bottom: 20px; width: min(46%, 380px); max-height: calc(100% - 40px); grid-template-columns: 40px minmax(0,1fr); }
- #stage:has(#storyChoices:not([hidden])) .speaker-face { width: 40px; height: 48px; }
+ #stage:has(#storyChoices:not([hidden])) .speaker-face { width: 36px; height: 42px; }
  #stage:has(#storyChoices:not([hidden])) .speaker-role { display: none; }
  #stage:has(#storyChoices:not([hidden])) .stage-actor[data-position="center"] { left: 24%; }
  #stage:has(#storyChoices:not([hidden])) .dialogue-actions .helper-text { font-size: .8rem; }

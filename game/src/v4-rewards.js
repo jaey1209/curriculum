@@ -39,7 +39,7 @@ endChapter=function(){const c=CHAPTERS.find(x=>x.id===S.chapter);if(!c)return;if
 const baseNextChapter=nextChapter;
 nextChapter=function(){if(CHAPTERS.some(c=>c.id===S.chapter)&&!rewardState().gifts[S.chapter])return chapterReward(S.chapter);baseNextChapter();};
 const baseHeader=renderHeader;
-renderHeader=function(){baseHeader();$('#gameNav').insertAdjacentHTML('beforeend',btn(icon('sprout')+'<span>내 책상</span>','desk',{},''));};
+renderHeader=function(){baseHeader();$('#gameNav').insertAdjacentHTML('beforeend',btn(icon('gift')+'<span>내 책상</span>','desk',{},''));};
 const baseEnding=showEnding;
 showEnding=function(){baseEnding();$('#infoDialog .work-body').insertAdjacentHTML('afterbegin',deskHTML()+`<div class="keepsake-actions">${btn('학기말 기념사진 저장','keepsake')}${btn('동료들의 한마디','desk',{},'secondary')}</div>`);};
 async function keepsake(){
