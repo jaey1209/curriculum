@@ -171,6 +171,9 @@ table.grid td input:disabled,table.grid td select:disabled{background:#f1f2f4;co
 table.grid .bad{color:var(--crit);font-weight:bold}
 table.grid .good{color:var(--ok)}
 table.grid td.next-cell{outline:2px dashed var(--orange);outline-offset:-2px}
+table.grid th.next-hdr{outline:2px solid var(--orange);outline-offset:-2px;background:#fff3e6}
+table.grid th .gnum{position:absolute;top:-8px;left:-8px;width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:3}
+table.grid th .gnum.done{background:var(--ok)}
 table.grid .lnk{color:#2b63c6;text-decoration:underline;cursor:pointer}
 table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:14px;margin:0;vertical-align:middle}
 .empty{padding:40px;text-align:center;color:#888;border:1px solid #b9c0cc;background:#fff}
@@ -653,7 +656,7 @@ function msbExcTab(s){
       <td><input type="text" class="wide" ${ed&&!locked&&e.type==='기타'?'':'disabled'} value="${esc(e.reason||'')}" onchange="excSet('${s}','${c}','${st.id}','reason',this.value)"></td></tr>`;});}).join('');
   return condBar(fixedCond()+selSubj()+selRoom(true)+radio('f',[['all','전체'],['un','미이수']],f,'filter'),qbtn())
   +(q?tbar(rows?rows.split('<tr>').length-1:0,`<button class="btn" id="b-save" ${ed?'':'disabled'} onclick="excSave('${s}')">저장</button>${printBtn()}${excelBtn()}`)
-  +(rows?`<div class="grid-wrap"><table class="grid"><thead><tr><th rowspan="2"><input type="checkbox" disabled></th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 대상자</th><th colspan="3" class="grp">최소 성취수준 보장지도(추가학습) 대상과목</th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 사유</th></tr><tr>${th('반','class="l2"')}${th('번호','class="l2"')}${th('성명','class="l2 l"')}${th('학적변동','class="l2"')}${th('편제','class="l2"')}${th('과목','class="l2"')}${th('학점','class="l2"')}${th('과목<br>출석률','class="l2"')}${th('학업<br>성취률','class="l2"')}${th('예외','class="l2"')}${th('예외사유(기타)','class="l2 l"')}</tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 대상자가 없습니다. [대상자] 탭에서 먼저 <b>[대상자가져오기]</b>를 하세요.</div>'):needQuery());
+  +(rows?`<div class="grid-wrap"><table class="grid"><thead><tr><th rowspan="2"><input type="checkbox" disabled></th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 대상자</th><th colspan="3" class="grp">최소 성취수준 보장지도(추가학습) 대상과목</th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 사유</th></tr><tr>${th('반','class="l2"')}${th('번호','class="l2"')}${th('성명','class="l2 l"')}${th('학적변동','class="l2"')}${th('편제','class="l2"')}${th('과목','class="l2"')}${th('학점','class="l2"')}${th('과목<br>출석률','class="l2"')}${th('학업<br>성취률','class="l2"')}${th('예외','class="l2" id="th-exc"')}${th('예외사유(기타)','class="l2 l"')}</tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 대상자가 없습니다. [대상자] 탭에서 먼저 <b>[대상자가져오기]</b>를 하세요.</div>'):needQuery());
 }
 function excSet(s,c,sid,k,v){const m=msbOf(s,c);m.exc[sid]=m.exc[sid]||{};if(k==='type'){if(!v)delete m.exc[sid];else{m.exc[sid].type=v;if(v!=='기타')m.exc[sid].reason='';}}else m.exc[sid][k]=v;m.excSaved=false;save();render();}
 function excSave(s){const bad=[];roomsOf().forEach(c=>Object.entries(msbOf(s,c).exc).forEach(([sid,e])=>{if(e.type==='기타'&&!(e.reason||'').trim())bad.push(studentById(sid).name);}));if(bad.length){alertBox('알림',`'기타' 예외는 예외사유를 입력해야 합니다.\n${bad.join(', ')}`);return;}roomsOf().forEach(c=>msbOf(s,c).excSaved=true);addLog(me.name,`예외처리 저장 ${s}`);save();toast('저장되었습니다.');render();}
@@ -754,7 +757,7 @@ function nextAction(){
     if(ms.some(m=>!m.targets))return Object.assign(base,{step:3,title:'[3단계] 대상자 가져오기',tab:'target',why:`${subjLabel(sid)}의 학점이수 기준 미도달 학생을 가져옵니다. {지필/수행 학업성취율 현황}·{과목별출결현황}으로 근거 자료도 확인해 보세요.`,
       seq:[{t:'[대상자] 탭',tab:'target'},{t:`조회조건: 과목 <b>${subjLabel(sid)}</b> · 강의실 <b>전체</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='target'},{t:'[대상자가져오기]',b:'b-fetch'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
     if(ms.some(m=>!m.excSaved))return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택합니다. 없더라도 {저장}을 눌러 확인 처리합니다.`,
-      seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},{t:'예외 대상이 있으면 예외 선택 (기타는 사유 입력, 없으면 바로 저장)',cell:'exc-cell',done:Q('msb-manage')&&cond.tab==='exc'},{t:'[저장]',b:'b-save'}]});
+      seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},{t:'예외 대상 학생의 [예외] 선택 (기타는 사유 입력 · 해당 학생이 없으면 바로 [저장])',cell:'exc-cell',hdr:'th-exc',done:CLASSES.some(c=>Object.keys(msbOf(sid,c).exc).length)},{t:'[저장]',b:'b-save'}]});
     if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다. 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정됩니다.`,
       seq:[{t:'[이수관리] 탭',tab:'hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:`참여시수 입력 (미입력 ${CLASSES.reduce((n,c)=>n+msbRoomStats(sid,c).pending,0)}명 남음) · 필요시 비고`,cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'}]});
     if(ms.some(m=>!m.creditApplied))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 학점반영',tab:'close',why:`${subjLabel(sid)}의 이수/미이수 결과를 학점에 반영합니다.`,
@@ -835,7 +838,8 @@ function renderGuide(force){
   if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say('안녕하세요! 저는 <b>최성봇</b>이에요 🤖 최소 성취수준 보장지도 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
   if(here){items.forEach((x,i)=>{if(x.b&&x.b!=='b-modal-ok'){const el=document.getElementById(x.b);if(el){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=i+1;el.appendChild(n);if(i===curIdx)el.classList.add('next');}}
       if(x.f&&i===curIdx){const el=document.getElementById(x.f);if(el)el.classList.add('next-field');}
-      if(x.cell&&i===curIdx){document.querySelectorAll('.'+x.cell).forEach(td=>td.classList.add('next-cell'));}});}
+      if(x.cell&&i===curIdx){document.querySelectorAll('.'+x.cell).forEach(td=>td.classList.add('next-cell'));}
+      if(x.hdr){const h=document.getElementById(x.hdr);if(h){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=i+1;h.appendChild(n);if(i===curIdx)h.classList.add('next-hdr');}}});}
 }
 /* ═════════════════ 연수도우미 ═════════════════ */
 function steps(){return [
