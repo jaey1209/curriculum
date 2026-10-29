@@ -390,7 +390,9 @@ function seedData(){
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function load(){try{const j=localStorage.getItem(KEY);if(j){S=JSON.parse(j);return true;}}catch(e){}return false;}
-function addLog(who,what){S.log.unshift(`${nowStr()} [${who}] ${what}`);if(S.log.length>400)S.log.length=400;}
+function addLog(who,what){S.log.unshift({ts:new Date().toISOString(),sim:S.simDate,who,what});if(S.log.length>2000)S.log.length=2000;}
+const logDate=e=>typeof e==='string'?'(날짜 없음)':e.ts.slice(0,10);
+const logLine=e=>typeof e==='string'?esc(e):`${e.ts.slice(11,16)} <span style="color:#8b9099">(기준일 ${e.sim})</span> [${esc(e.who)}] ${esc(e.what)}`;
 function nowStr(){const d=new Date();return `${S.simDate} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
 
 /* ═════════════════ 공통 ═════════════════ */
@@ -468,7 +470,7 @@ const MENUS={
          {grp:'성적조회/통계',items:['성적일람표','학생별성적표']},{grp:'성적/학습분석자료조회',items:['학습분석']},{grp:'반편성고사/기타성적산출',items:['반편성고사']},{grp:'관찰기록관리',items:['관찰기록']}],
   life:[{grp:'창의적체험활동',items:['자율활동','동아리활동','진로활동']},{grp:'봉사활동',items:['봉사활동누가기록']}],
   rec:[{grp:'학교생활기록부',items:['학교생활기록부조회',{id:'rec-reflect',name:'학생부반영'},{id:'rec-view',name:'교과학습발달상황'},'학생부정정대장']},{grp:'학생부마감',items:['학생부마감관리']}],
-  guide:[{grp:'연수도우미',items:[{id:'gd-steps',name:'업무 흐름도(8단계)'},{id:'gd-rule',name:'학점이수 기준·최성보 변경 안내'},{id:'gd-setting',name:'설정·초기화·로그'}]}],
+  guide:[{grp:'연수도우미',items:[{id:'gd-steps',name:'업무 흐름도(8단계)'},{id:'gd-rule',name:'학점이수 기준·최성보 변경 안내'},{id:'gd-setting',name:'설정·초기화·로그'},{id:'gd-admin',name:'관리자(기록 관리)'}]}],
 };
 const MENU_PATH={},MENU_GRP={};Object.entries(MENUS).forEach(([top,groups])=>{const tn=TOP.find(t=>t.id===top).name;groups.forEach(g=>g.items.forEach(i=>{if(typeof i==='object'){MENU_PATH[i.id]=`${tn} › ${g.grp} › ${i.name}`;MENU_GRP[i.id]=g.grp;}}));});
 const topOf=menu=>Object.keys(MENUS).find(t=>MENUS[t].some(g=>g.items.some(i=>typeof i==='object'&&i.id===menu)));
@@ -869,7 +871,22 @@ SCREENS['gd-setting']=()=>pageHead('설정·초기화·로그')
   <p><button class="btn n" onclick="confirmBox('확인','모든 마감·예외처리·시수·결재 내용을 지우고 가상 자료를 다시 만듭니다. 되돌릴 수 없습니다.',()=>{seedData();addLog(me.name,'자료 초기화');save();queried={};toast('초기화했습니다.');go('guide','gd-steps');})">자료 초기화</button>
   <button class="btn" onclick="confirmBox('확인','1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.',()=>{skipPre();})">사전업무(1·2단계) 완료 처리하고 3단계부터</button>
   <button class="btn w" onclick="exportJson()">자료 내려받기(JSON)</button> <label class="btn w" style="display:inline-flex">자료 불러오기<input type="file" accept="application/json" style="display:none" onchange="importJson(this.files[0])"></label></p></div>
-  <div class="sec">처리 이력(로그)</div><div class="log">${S.log.map(l=>`<div>${esc(l)}</div>`).join('')||'<div>기록 없음</div>'}</div>`;
+  <div class="sec">처리 이력(로그)</div>${logGrouped()}`;
+function logGroups(){const g={};S.log.forEach(e=>{const d=logDate(e);(g[d]=g[d]||[]).push(e);});return Object.keys(g).sort().reverse().map(d=>({d,items:g[d]}));}
+function logGrouped(del){const gs=logGroups();if(!gs.length)return '<div class="log"><div>기록 없음</div></div>';return gs.map(g=>`<div class="sec" style="display:flex;align-items:center;gap:10px">${g.d} <span class="status">${g.items.length}건</span>${del?`<button class="btn w s" onclick="adminDelDate('${g.d}')">이 날짜 기록 삭제</button>`:''}</div><div class="log" style="margin-bottom:10px">${g.items.map(e=>`<div>${logLine(e)}</div>`).join('')}</div>`).join('');}
+const ADMIN_CODE='1234';
+SCREENS['gd-admin']=()=>{
+  if(!cond.adminOK)return pageHead('관리자(기록 관리)')+`<div class="card" style="max-width:520px"><p><b>관리자 코드</b>를 입력하세요. 연수 담당자만 사용하는 화면입니다.</p><p style="display:flex;gap:6px"><input type="password" id="adminCode" placeholder="관리자 코드" style="border:1px solid #b9c0cc;height:30px;padding:0 10px;flex:1" onkeydown="if(event.key==='Enter')adminLogin()"><button class="btn" onclick="adminLogin()">확인</button></p><p class="status">※ 기록은 이 PC의 브라우저에만 저장됩니다. 연수실 PC마다 이 화면에서 지워 주세요.</p></div>`;
+  const gs=logGroups();const total=S.log.length;
+  return pageHead('관리자(기록 관리)')+`<div class="note info">이 브라우저에 저장된 실습 기록 ${total}건 · 연수일 ${gs.length}일. 이전 연수 기록은 날짜별로 지우거나, 아래 [전체 실습 자료 초기화]로 처음 상태로 되돌리세요. <b>서버가 없어 다른 PC의 기록은 여기서 지워지지 않습니다.</b></div>
+  <div class="tbar"><span class="total">날짜별 기록</span><span class="sp"></span><button class="btn n" onclick="adminDelAll()">전체 로그 삭제</button><button class="btn n" onclick="adminReset()">전체 실습 자료 초기화(로그 포함)</button><button class="btn w" onclick="cond.adminOK=false;render()">관리자 나가기</button></div>
+  <div class="grid-wrap auto"><table class="grid"><thead><tr>${th('연수일')}${th('기록 수')}${th('첫 기록')}${th('마지막 기록')}<th>처리</th></tr></thead><tbody>${gs.map(g=>{const t=g.items.map(e=>typeof e==='string'?'':e.ts.slice(11,16)).filter(Boolean).sort();return `<tr><td>${g.d}</td><td>${g.items.length}</td><td>${t[0]||''}</td><td>${t[t.length-1]||''}</td><td><button class="btn s n" onclick="adminDelDate('${g.d}')">이 날짜 전체 삭제</button></td></tr>`;}).join('')||'<tr><td colspan="5" style="padding:16px;color:#888">기록이 없습니다.</td></tr>'}</tbody></table></div>
+  <div style="height:14px"></div>${logGrouped(true)}`;
+};
+function adminLogin(){if($('#adminCode').value===ADMIN_CODE){cond.adminOK=true;render();}else alertBox('알림','관리자 코드가 올바르지 않습니다.');}
+function adminDelDate(d){confirmBox('확인',`${d} 기록 ${S.log.filter(e=>logDate(e)===d).length}건을 모두 삭제하시겠습니까?`,()=>{S.log=S.log.filter(e=>logDate(e)!==d);save();toast('삭제했습니다.');render();});}
+function adminDelAll(){confirmBox('확인',`전체 로그 ${S.log.length}건을 모두 삭제하시겠습니까?`,()=>{S.log=[];save();toast('전체 로그를 삭제했습니다.');render();});}
+function adminReset(){confirmBox('확인','마감·예외처리·시수·결재 등 모든 실습 내용과 로그를 지우고 처음 상태로 되돌립니다.\n다음 연수를 위한 초기화입니다. 진행하시겠습니까?',()=>{seedData();S.log=[];save();queried={};chatLog=[];chatSig='';toast('초기화했습니다. 다음 연수를 시작할 수 있습니다.');render();});}
 function skipPre(){CLASSES.forEach(c=>DAYS.forEach(d=>S.dayClose[c][d]=true));SUBJECTS.forEach(s=>{CLASSES.forEach(c=>{PERIODS[s.id].forEach(x=>S.periodClose[s.id][c][x.d+'|'+x.p]=true);S.roomClose[s.id][c]={by:'시스템',at:nowStr()};});S.examClose[s.id]={written:true,perf:true};});const a={by:'시스템',at:nowStr()};S.attAll={done:a,req:a,approved:a};S.calcAll={done:a,req:a,approved:a};addLog(me.name,'사전업무(1·2단계) 완료 처리');save();toast('완료 처리했습니다.');cond.tab='target';go('score','msb-manage');}
 function exportJson(){const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(S));a.download=`neis-msb-${S.simDate}.json`;a.click();}
 function importJson(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{S=JSON.parse(r.result);save();toast('불러왔습니다.');go('guide','gd-steps');}catch(e){toast('파일을 읽을 수 없습니다.');}};r.readAsText(f);}
