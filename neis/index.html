@@ -214,8 +214,15 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .bot-av .eye{animation:blink 4s infinite}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 .bot-av .badge{position:absolute;top:-2px;right:-2px;min-width:20px;height:20px;border-radius:10px;background:var(--crit);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff}
-.bot-peek{position:absolute;right:84px;bottom:18px;background:#fff;border:2px solid #4f85d6;border-radius:14px;padding:6px 12px;font-size:12.5px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.18);color:#1f2d4d}
-.bot-peek::after{content:"";position:absolute;right:-9px;bottom:10px;border:7px solid transparent;border-left-color:#4f85d6}
+.bot-peek{position:absolute;right:86px;bottom:6px;width:max-content;max-width:330px;background:#fff;border:2px solid #4f85d6;border-radius:16px;padding:10px 14px;font-size:13px;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.2);color:#1f2d4d;white-space:normal}
+.bot-peek::after{content:"";position:absolute;right:-10px;bottom:14px;border:8px solid transparent;border-left-color:#4f85d6}
+.bot-peek .pk-t{font-size:11px;color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
+.bot-peek .pk-m{font-weight:bold;color:#1d4fb3}
+.bot-peek .pk-s{color:#555;font-size:12px;margin-top:2px}
+.bot-peek .pk-b{margin-top:7px;display:flex;gap:6px;flex-wrap:wrap}
+.bot-peek .pk-b button{border:0;background:#2f66c2;color:#fff;border-radius:999px;padding:4px 11px;font-size:12px;cursor:pointer;font-weight:bold}
+.bot-peek .pk-b button.w{background:#eef3fb;color:#1d4fb3}
+.bot-peek .n{display:inline-flex;width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:bold;align-items:center;justify-content:center;vertical-align:middle;margin-right:4px}
 #chat{width:400px;max-width:calc(100vw - 44px);background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;border:1px solid #d7e0ee}
 #chat.on{display:flex}
 #chat .ch{background:linear-gradient(135deg,#2f66c2,#5a95ea);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
@@ -795,11 +802,14 @@ function renderGuide(force){
   const p=$('#bot');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
   if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;}
   const na=nextAction();
-  if(!na){$('#botPeek').textContent='🎉 다 끝났어요!';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}quickBtns(null);return;}
+  if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="go(\'guide\',\'gd-setting\')">처음부터 다시</button></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}quickBtns(null);return;}
   const here=view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
   let curIdx=-1;const items=na.seq.map((x,i)=>{let done=here&&!!x.done;if(x.f&&here)done=true;if(x.tab&&here)done=true;if(!done&&curIdx<0)curIdx=i;return {...x,done};});
   if(!here)curIdx=-1;
-  $('#botPeek').textContent=here?`${curIdx+1}번 버튼을 눌러요!`:`${na.step}단계: ${na.title.replace(/^\[\d단계\] /,'').split(' — ')[0]}`;
+  const stepName=na.title.replace(/^\[\d단계\] /,'');const tabName2=na.tab?(na.menu==='msb-manage'?MSB_TABS:ATT_TABS).find(t=>t.id===na.tab).name:'';
+  const cur=items[curIdx];const peekMain=here&&cur?`<span class="n">${curIdx+1}</span>${cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${MENU_PATH[na.menu].split(' › ').slice(-1)[0]}</b>${na.tab?` › ${tabName2.replace('최소성취수준보장지도(추가학습)','')} 탭`:''} 화면으로 가세요`;
+  const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):`메뉴 ${MENU_PATH[na.menu]}`;
+  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div><div class="pk-b">${here?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 자세히</button></div>`;
   const sig=`${na.title}|${here}|${curIdx}|${view.menu}|${curTab(na)}`;
   if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say('안녕하세요! 저는 <b>최성봇</b>이에요 🤖 최소 성취수준 보장지도 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here));}
   quickBtns(na,here);
