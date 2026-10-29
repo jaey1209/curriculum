@@ -4,37 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>나이스 — 최소성취수준보장지도(추가학습) 연수</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
   --blue:#3d7be0; --blue-d:#2f66c2; --navy:#1e3461; --green:#22a86a; --green-d:#1b8f59; --gray:#9a9ea7;
   --ink:#333; --ink-2:#555; --ink-3:#8b9099; --line:#d5dae2; --line-2:#e7eaf0; --line-3:#c9cfd9;
   --cond:#eef1f6; --grid-h:#eef2f8; --lab:#c0273f; --sel:#e9f1fc; --paper:#fff; --menu-on:#2b63c6;
   --orange:#ff7a1a; --ok:#1a7f37; --warn:#b25400; --crit:#d0243a;
-  --sans:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --sans:"Pretendard Variable","Pretendard","Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font-family:var(--sans);font-size:12px;color:var(--ink);background:#fff;line-height:1.5}
-button,select,input,textarea{font-family:inherit;font-size:12px}
+body{margin:0;font-family:var(--sans);font-size:13px;color:var(--ink);background:#fff;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,select,input,textarea{font-family:inherit;font-size:13px}
 button{cursor:pointer}
 a{color:var(--blue)}
 
 /* ───── 로그인(연수용) ───── */
 #login{position:fixed;inset:0;background:linear-gradient(135deg,#1e3461,#2f66c2 60%,#5a95ea);display:flex;align-items:center;justify-content:center;z-index:50}
-.lg-card{background:#fff;border-radius:12px;width:min(980px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.35);display:grid;grid-template-columns:1.1fr 1fr;overflow:hidden}
-.lg-left{padding:40px 36px;background:#f7f9fc;border-right:1px solid var(--line-2)}
-.lg-left h1{margin:0 0 6px;font-size:24px;color:var(--navy)}
-.lg-left h1 small{display:block;font-size:12px;color:var(--ink-3);font-weight:normal;letter-spacing:.1em;margin-bottom:6px}
-.lg-left p{color:var(--ink-2);font-size:13px}
-.lg-note{margin-top:18px;padding:12px 14px;border:1px dashed var(--line);border-radius:8px;background:#fff;font-size:12px;color:var(--ink-2)}
-.lg-note b{color:var(--crit)}
-.lg-right{padding:34px 32px}
-.lg-right h2{margin:0 0 12px;font-size:15px}
-.user-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:9px 12px;margin-bottom:6px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13px}
-.user-btn:hover{border-color:var(--blue);background:#f4f7fd}
-.user-btn .av{width:34px;height:34px;border-radius:50%;background:#e9f0fc;color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;flex:none}
-.user-btn .nm{font-weight:bold}
-.user-btn .rl{font-size:12px;color:var(--ink-3)}
+.lg-card{background:#fff;border-radius:12px;width:min(520px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.lg-brand{display:flex;align-items:center;gap:14px;padding:26px 32px 18px;border-bottom:1px solid var(--line-2)}
+.lg-logo{font-weight:900;font-size:34px;color:#1d4fb3;letter-spacing:-.02em}
+.lg-t{font-size:15px;font-weight:bold;color:#222}
+.lg-t small{display:block;font-size:12px;font-weight:normal;color:var(--ink-3);margin-top:2px}
+.lg-body{padding:26px 32px 28px;text-align:center}
+.lg-desc{font-size:13px;color:var(--ink-2);margin:0 0 20px;line-height:1.7}
+.lg-btn{width:100%;height:48px;border:0;border-radius:6px;background:var(--blue);color:#fff;font-size:17px;font-weight:bold}
+.lg-btn:hover{background:var(--blue-d)}
+.lg-hint{font-size:11px;color:var(--ink-3);margin:14px 0 0}
 .status{font-size:12px;color:var(--ink-3)}
 
 /* ───── 나이스 상단 ───── */
@@ -58,7 +55,7 @@ a{color:var(--blue)}
 
 /* ───── 본문: 왼쪽 메뉴 ───── */
 .body{flex:1;display:flex;min-height:0}
-.tree{width:198px;background:#fff;border-right:1px solid var(--line);overflow:auto;flex:none;position:relative;font-size:12px}
+.tree{width:210px;background:#fff;border-right:1px solid var(--line);overflow:auto;flex:none;position:relative;font-size:13px}
 .tree .grp{display:flex;align-items:center;padding:8px 8px 8px 10px;font-weight:bold;color:#1f2d4d;border-bottom:1px solid var(--line-2);cursor:pointer;background:#fff}
 .tree .grp:hover{background:#f6f8fb}
 .tree .grp.open{color:var(--menu-on);background:#f4f7fd}
@@ -66,7 +63,7 @@ a{color:var(--blue)}
 .tree .grp.open .chev{transform:rotate(180deg)}
 .tree .items{display:none;padding:4px 0 6px;border-bottom:1px solid var(--line-2);background:#fff}
 .tree .grp.open+.items{display:block}
-.tree .it{display:block;width:100%;text-align:left;background:none;border:0;padding:4px 8px 4px 18px;color:#333;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+.tree .it{display:block;width:100%;text-align:left;background:none;border:0;padding:4px 8px 4px 18px;color:#333;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
 .tree .it:hover{color:var(--menu-on)}
 .tree .it.on{color:var(--menu-on);font-weight:bold}
 .tree .it.next{box-shadow:inset 3px 0 0 var(--orange)}
@@ -75,7 +72,7 @@ a{color:var(--blue)}
 
 /* ───── 화면 머리글 ───── */
 .ph{display:flex;align-items:center;gap:8px;margin:4px 0 10px}
-.ph h2{margin:0;font-size:16px;font-weight:bold;color:#222;display:flex;align-items:center;gap:6px}
+.ph h2{margin:0;font-size:17px;font-weight:bold;color:#222;display:flex;align-items:center;gap:6px}
 .ph h2 i{display:inline-block;width:4px;height:12px;background:#2b63c6;border-radius:1px}
 .ph .sp{flex:1}
 .ph .crumb{border:1px solid var(--line);border-radius:3px;padding:2px 8px;font-size:11px;color:#333;background:#fff;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -88,7 +85,7 @@ a{color:var(--blue)}
 
 /* ───── 진행 탭(wizard) ───── */
 .wiz{display:flex;align-items:center;gap:0;margin-bottom:8px}
-.wiz .wt{flex:1;border:1px solid var(--line-3);border-radius:4px;background:#fff;padding:9px 10px;font-size:12px;color:#444;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;overflow:hidden}
+.wiz .wt{flex:1;border:1px solid var(--line-3);border-radius:4px;background:#fff;padding:9px 10px;font-size:13px;color:#444;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;overflow:hidden}
 .wiz .wt.on{font-weight:bold;color:#111;border:1.5px solid #4f85d6;box-shadow:0 0 0 1px #d7e4f8 inset}
 .wiz .wt.next{outline:2px solid var(--orange);outline-offset:-2px}
 .wiz .arr{width:22px;text-align:center;color:#8a8f99;font-size:11px;flex:none}
@@ -98,12 +95,12 @@ a{color:var(--blue)}
 .cond{background:var(--cond);padding:8px 14px;display:flex;align-items:center;gap:14px 28px;flex-wrap:wrap;min-height:44px}
 .cond.off{display:none}
 .cond .cf{display:flex;align-items:center;gap:6px;position:relative}
-.cond .cl{color:var(--lab);font-weight:bold;font-size:12px;white-space:nowrap}
+.cond .cl{color:var(--lab);font-weight:bold;font-size:13px;white-space:nowrap}
 .cond .cl.req::before{content:"*"}
 .cond .ci{position:relative;display:inline-block}
 .cond .ci::before{content:"";position:absolute;left:1px;top:1px;border-style:solid;border-width:6px 6px 0 0;border-color:#f2873b transparent transparent transparent;z-index:1;pointer-events:none}
 .cond .ci.nomark::before{display:none}
-.cond select,.cond input[type=text],.cond input[type=date]{border:1px solid #b9c0cc;border-radius:3px;height:26px;padding:0 6px 0 10px;background:#fff;min-width:96px;font-size:12px;color:#333}
+.cond select,.cond input[type=text],.cond input[type=date]{border:1px solid #b9c0cc;border-radius:3px;height:28px;padding:0 6px 0 10px;background:#fff;min-width:96px;font-size:13px;color:#333}
 .cond select:disabled,.cond input:disabled{background:#fff;color:#444;opacity:1}
 .cond .fixed{display:flex;gap:28px;position:relative;padding-bottom:4px}
 .cond .fixed::after{content:"";position:absolute;left:0;right:0;bottom:-2px;border-bottom:2px dotted #f2a444}
@@ -117,7 +114,7 @@ a{color:var(--blue)}
 .cond-toggle span{background:#1e3461;color:#fff;font-size:9px;padding:1px 22px;border-radius:0 0 4px 4px;cursor:pointer}
 
 /* ───── 버튼 ───── */
-.btn{border:1px solid transparent;border-radius:3px;height:26px;padding:0 10px;font-size:12px;font-weight:bold;color:#fff;background:var(--blue);position:relative;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;vertical-align:middle}
+.btn{border:1px solid transparent;border-radius:3px;height:28px;padding:0 11px;font-size:13px;font-weight:bold;color:#fff;background:var(--blue);position:relative;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;vertical-align:middle}
 .btn:hover{background:var(--blue-d)}
 .btn.q svg{width:13px;height:13px}
 .btn.n{background:var(--navy)}.btn.n:hover{background:#162a50}
@@ -134,7 +131,7 @@ a{color:var(--blue)}
 .tbar .total{font-size:12px;color:#333;display:flex;align-items:center;gap:6px}
 .tbar .total i{font-style:normal;color:#777;font-size:13px}
 .tbar .sp{flex:1}
-.tbar .rem{font-size:11px;color:#555;margin-right:6px}
+.tbar .rem{font-size:12px;color:#555;margin-right:6px}
 .subbar{display:flex;align-items:center;gap:8px;background:#f5f7fa;padding:6px 10px;margin-bottom:8px;font-size:12px}
 .subbar input{border:1px solid #b9c0cc;border-radius:3px;height:26px;padding:0 8px;width:180px}
 
@@ -142,7 +139,7 @@ a{color:var(--blue)}
 .sec{font-weight:bold;font-size:13px;color:#222;margin:8px 0 6px}
 .sec::before{content:"☞ ";color:#444}
 .sumtbl{border-collapse:collapse;width:100%;border-top:1px solid #b9c0cc;margin-bottom:12px}
-.sumtbl td{border-bottom:1px solid var(--line-2);padding:7px 10px;font-size:12px}
+.sumtbl td{border-bottom:1px solid var(--line-2);padding:7px 10px;font-size:13px}
 .sumtbl td.k{background:#f3f4f7;color:#444;text-align:center;width:150px}
 .sumtbl td.v{color:#333}
 .tip{position:relative;cursor:help;text-decoration:underline;color:#333}
@@ -152,12 +149,12 @@ a{color:var(--blue)}
 .note.crit{background:#fdeaed;border-color:#f3b9c1;color:var(--crit)}
 .note.ok{background:#e6f6ec;border-color:#b6e2c6;color:var(--ok)}
 .note.info{background:#eef3fb;border-color:#c9d9f2;color:#2b4a7e}
-.rem-l{font-size:11px;color:#555;margin:2px 0 6px}
+.rem-l{font-size:12px;color:#555;margin:2px 0 6px}
 
 /* ───── 그리드 ───── */
 .grid-wrap{border:1px solid #b9c0cc;border-radius:2px;overflow:auto;max-height:calc(100vh - 330px);background:#fff}
 .grid-wrap.auto{max-height:none}
-table.grid{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;white-space:nowrap}
+table.grid{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;white-space:nowrap}
 table.grid th{background:var(--grid-h);color:#333;font-weight:normal;border-bottom:1px solid #cfd5df;border-right:1px solid #dfe3ea;padding:5px 8px;text-align:center;position:sticky;top:0;z-index:2;line-height:1.3}
 table.grid th.l2{top:29px}
 table.grid th.grp{background:#e7ecf5;font-weight:normal}
@@ -209,7 +206,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .toast.on{opacity:.95}
 
 /* ───── 안내 패널(연수용) ───── */
-#gpanel{position:fixed;right:18px;bottom:18px;width:400px;max-width:calc(100vw - 36px);background:#fff;border:2px solid var(--orange);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.25);z-index:40;display:none;font-size:12.5px}
+#gpanel{position:fixed;right:18px;bottom:18px;width:420px;max-width:calc(100vw - 36px);background:#fff;border:2px solid var(--orange);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.25);z-index:40;display:none;font-size:13px}
 #gpanel.on{display:block}
 #gpanel .gh{background:var(--orange);color:#fff;padding:8px 12px;border-radius:7px 7px 0 0;font-weight:bold;display:flex;align-items:center;gap:8px}
 #gpanel .gh .x{margin-left:auto;background:none;border:0;color:#fff;font-size:15px;cursor:pointer}
@@ -225,7 +222,6 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 #gpanel li.done{color:var(--ink-3);text-decoration:line-through}
 #gpanel li.cur{font-weight:bold}
 #gpanel .gf{padding:8px 12px;border-top:1px solid var(--line-2);display:flex;gap:6px;align-items:center}
-#gpanel .role-warn{background:#fdeaed;color:var(--crit);padding:6px 8px;border-radius:4px;margin-bottom:8px}
 #gpanel .all-done{color:var(--ok);font-weight:bold}
 
 /* 연수도우미 */
@@ -250,22 +246,11 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 
 <div id="login">
   <div class="lg-card">
-    <div class="lg-left">
-      <h1><small>NEIS TRAINING SIMULATOR</small>가상 나이스<br>최소 성취수준 보장지도 연수</h1>
-      <p>실제 나이스와 연결되지 않은 <b>연습용 가상 시스템</b>입니다. 2026학년도 2학기 학기말
-      <b>최소 성취수준 보장지도(추가학습)</b> 업무를 나이스 화면·메뉴·버튼 그대로, <b>정해진 순서대로</b> 눌러 가며 연습합니다.</p>
-      <div class="lg-note">
-        <b>연습 흐름(8단계)</b><br>
-        사전업무 ① 과목 출석률 마감(교과담임 → 업무담당자 전체마감·승인요청) ② 학기말 성적산출 마감(승인요청)<br>
-        보장지도 ③ 대상자 가져오기 ④ 예외처리 ⑤ 이수여부 처리 ⑥ 학점반영·마감 ⑦ 학생부 자료반영 ⑧ 마감관리·승인요청<br><br>
-        <b>순서를 모르겠으면</b> 화면 오른쪽 위 <b>[다음에 누를 버튼]</b>을 켜세요. 지금 해야 할 단계·메뉴·버튼 순서(①②③)를 알려 주고 눌러야 할 버튼을 주황색으로 표시합니다.<br>
-        <b>※</b> 학생·교사·점수는 모두 가상 자료입니다. 입력은 이 브라우저에만 저장되며 [연수도우미]에서 초기화할 수 있습니다.
-      </div>
-    </div>
-    <div class="lg-right">
-      <h2>접속 사용자 선택 <span class="status">(인증서 로그인 대신)</span></h2>
-      <div id="userList"></div>
-      <p class="status" style="margin-top:10px">사용자를 바꿔 로그인해도 같은 자료를 이어서 봅니다. 교과담임 → 업무담당자 → 결재권자 순으로 역할을 바꿔 가며 진행하세요.</p>
+    <div class="lg-brand"><div class="lg-logo">NEIS</div><div class="lg-t">교육행정정보시스템 <small>교무업무 · 연수용 가상 시스템</small></div></div>
+    <div class="lg-body">
+      <p class="lg-desc">최소 성취수준 보장지도(추가학습) 업무 담당자 연수용 가상 나이스입니다.<br>실제 나이스와 연결되지 않으며, 학생·교사·점수는 모두 가상 자료입니다.</p>
+      <button class="lg-btn" id="b-login" onclick="login()">로그인</button>
+      <p class="lg-hint">※ 인증서 없이 [로그인]을 누르면 연습을 시작합니다. 입력 내용은 이 브라우저에만 저장됩니다.</p>
     </div>
   </div>
 </div>
@@ -301,13 +286,9 @@ const SUBJECTS=[
   {id:'kor',name:'공통국어2',credit:4,teacher:'t_kim',area:'국어'},
   {id:'eng',name:'공통영어2',credit:4,teacher:'t_park',area:'영어'},
 ];
-const USERS=[
-  {id:'t_lee',  name:'이준호', role:'teacher', title:'교과담임 · 공통수학2 / 1학년 2반 담임', cls:'1-2', subj:'mat'},
-  {id:'t_kim',  name:'김민정', role:'teacher', title:'교과담임 · 공통국어2 / 1학년 1반 담임', cls:'1-1', subj:'kor'},
-  {id:'t_park', name:'박서연', role:'teacher', title:'교과담임 · 공통영어2 / 1학년 3반 담임', cls:'1-3', subj:'eng'},
-  {id:'t_adm',  name:'오성적', role:'admin',   title:'교무부 · 성적·출결 업무담당자'},
-  {id:'t_vp',   name:'김환',   role:'approver',title:'교감 · 결재권자'},
-];
+/* 가상 교사 명단(교과담임·학급담임 표시용). 접속자는 업무담당자 1명으로 모든 화면을 처리합니다. */
+const TEACHERS={t_lee:{name:'이준호',cls:'1-2'},t_kim:{name:'김민정',cls:'1-1'},t_park:{name:'박서연',cls:'1-3'}};
+const ME={name:'업무담당자',title:'교무부 · 성적·출결 업무담당자'};
 const EXC_TYPES=['특수교육대상자','학교외 장소 수강','기타'];
 const FAM='김이박최정강조윤장임한오서신권황안송류전홍고문양손배백허유남심노하곽성차주우구민나진지엄채원천방공현';
 const G1='민서지수현예하준도우시연윤은채서주승지하태진아율라소윤영은세다';
@@ -373,13 +354,14 @@ function confirmBox(title,body,onOk,okText){modal(title,body,[{t:okText||'확인
 function alertBox(title,body){modal(title,body,[{t:'확인',p:true}],{confirm:1});}
 const subj=id=>SUBJECTS.find(s=>s.id===id);
 const subjLabel=id=>`${subj(id).name}(${subj(id).credit})`;
-const userName=id=>(USERS.find(u=>u.id===id)||{}).name||id;
+const userName=id=>(TEACHERS[id]||{}).name||id;
+const homeroomOf=c=>Object.keys(TEACHERS).find(k=>TEACHERS[k].cls===c);
 const students=cls=>S.students[cls]||[];
 const allStudents=()=>Object.values(S.students).flat();
 const studentById=id=>allStudents().find(s=>s.id===id);
 const clsName=k=>{const [g,c]=k.split('-');return `${g}학년 ${c}반`;};
 const roomLabel=(s,c)=>`${subj(s).name} ${clsName(c)}`;
-const can={teacherOf:s=>me.role==='admin'||(me.role==='teacher'&&me.subj===s),homeroomOf:c=>me.role==='admin'||(me.role==='teacher'&&me.cls===c),admin:()=>me.role==='admin',approver:()=>me.role==='approver'};
+const can={teacherOf:()=>true,homeroomOf:()=>true,admin:()=>true,approver:()=>true};
 const total=s=>PERIODS[s].length;
 const attendOf=(s,sid)=>total(s)-(S.absent[s][sid]||0);
 const needAttend=s=>Math.ceil(total(s)*2/3);
@@ -403,15 +385,15 @@ const ICON={search:'<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-wi
   lock:'<svg viewBox="0 0 16 16" fill="none" stroke="#333" stroke-width="1.2"><path d="M3 2h7l3 3v9H3z"/><path d="M10 2v3h3"/><rect x="6" y="8.5" width="4.5" height="3.5" rx=".5"/><path d="M7 8.5V7.5a1.3 1.3 0 0 1 2.6 0v1"/></svg>'};
 
 /* ═════════════════ 로그인·메뉴 ═════════════════ */
-function renderLogin(){$('#userList').innerHTML=USERS.map(u=>`<button class="user-btn" onclick="login('${u.id}')"><span class="av">${u.name[0]}</span><span><div class="nm">${u.name}</div><div class="rl">${u.title}</div></span></button>`).join('');}
-function login(id){
-  me=USERS.find(u=>u.id===id);if(!load())seedData();
-  if(me.subj)cond.subj=me.subj;if(me.cls)cond.cls=me.cls;cond.room='all';queried={};
+function renderLogin(){}
+function login(){
+  me=ME;if(!load())seedData();
+  cond.subj='mat';cond.cls='1-1';cond.room='all';queried={};
   $('#login').style.display='none';$('#app').classList.add('on');
   $('#gSchool').textContent=`${SCHOOL} · ${YEAR}학년도 ${SEM}학기`;
   $('#gUser').innerHTML=`<b>${me.name}</b> ${me.title}`;
   addLog(me.name,'로그인');save();
-  go(me.role==='approver'?'appr':'guide',me.role==='approver'?'appr-box':'gd-steps');
+  go('guide','gd-steps');
 }
 function logout(){me=null;$('#app').classList.remove('on');$('#login').style.display='flex';$('#gpanel').classList.remove('on');}
 
@@ -509,7 +491,7 @@ function roomCloseTry(c){const s=cond.subj;const iss=roomIssues(s,c);if(iss.leng
   confirmBox('확인',`${roomLabel(s,c)} 강의실의 ${SEM}학기 과목출결을 마감하시겠습니까?`,()=>{S.roomClose[s][c]={by:me.name,at:nowStr()};addLog(me.name,`학기별과목마감 ${s} ${c}`);save();toast('마감되었습니다.');render();});}
 function roomUnclose(c){confirmBox('확인',`${roomLabel(cond.subj,c)} 학기별과목마감을 취소하시겠습니까?`,()=>{delete S.roomClose[cond.subj][c];addLog(me.name,`학기별과목마감 취소 ${cond.subj} ${c}`);save();render();});}
 function approvalText(a){return a.approved?`결재완료 (${a.approved.by} ${a.approved.at})`:a.req?`승인요청 (결재 대기)`:a.done?`마감 (승인요청 전)`:`마감안됨`;}
-function requestApproval(obj,type,title){obj.req={by:me.name,at:nowStr()};S.approvals.push({id:'A'+Date.now(),type,title,by:me.name,at:nowStr(),status:'대기'});addLog(me.name,`승인요청: ${title}`);save();toast('승인요청되었습니다. 결재권자가 [업무승인 › 승인요청결재]에서 결재합니다.');render();}
+function requestApproval(obj,type,title){obj.req={by:me.name,at:nowStr()};S.approvals.push({id:'A'+Date.now(),type,title,by:me.name,at:nowStr(),status:'대기'});addLog(me.name,`승인요청: ${title}`);save();toast('승인요청되었습니다. [업무승인 › 승인요청결재]에서 결재 처리(연수용)합니다.');render();}
 function attAllTab(){
   const rows=SUBJECTS.flatMap(s=>CLASSES.map(c=>`<tr><td><input type="checkbox" checked disabled></td><td>일반계</td><td>일반학과</td><td>${subjLabel(s.id)}</td><td>${c.split('-')[1]}</td><td>${userName(s.teacher)}</td><td>${total(s.id)}</td><td>${roomClosed(s.id,c)?'마감':'<span class="bad">미마감</span>'}</td></tr>`)).join('');
   const ok=allRoomsClosed();const A=S.attAll;
@@ -688,36 +670,36 @@ SCREENS['rec-view']=()=>{const c=cond.cls;const q=queried[view.menu];return page
 SCREENS['appr-box']=()=>{
   const list=S.approvals.slice().reverse();
   const rows=list.map(a=>`<tr><td><input type="checkbox" disabled></td><td>${a.at}</td><td class="l">${a.title}</td><td>${a.by}</td><td>${a.status==='대기'?'결재대기':a.status}</td><td>${a.decidedAt||''}</td><td>${a.status==='대기'?`<button class="btn s" id="b-approve" ${can.approver()?'':'disabled'} onclick="decide('${a.id}','승인')">승인</button> <button class="btn s w" ${can.approver()?'':'disabled'} onclick="decide('${a.id}','반려')">반려</button>`:''}</td></tr>`).join('');
-  return pageHead('승인요청결재')+condBar(fixedCond(1)+radio('ak',[['w','결재대기'],['d','결재완료']],'w','ak'),qbtn())+(queried[view.menu]?tbar(list.length,printBtn())+(rows?`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" disabled></th>${th('요청일시')}${th('제목','class="l"')}${th('요청자')}${th('상태')}${th('결재일시')}<th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 자료가 없습니다.</div>'):needQuery());
+  return pageHead('승인요청결재')+condBar(fixedCond(1)+radio('ak',[['w','결재대기'],['d','결재완료']],'w','ak'),qbtn())+(queried[view.menu]?`<div class="rem-l">※ 실제 나이스에서는 결재권자가 업무승인과정(결재선)에 따라 결재합니다. 연수에서는 이 화면에서 {승인}을 눌러 결재 완료 상태를 만듭니다.</div>`+tbar(list.length,printBtn())+(rows?`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" disabled></th>${th('요청일시')}${th('제목','class="l"')}${th('요청자')}${th('상태')}${th('결재일시')}<th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 자료가 없습니다.</div>'):needQuery());
 };
 function decide(id,st){const a=S.approvals.find(x=>x.id===id);const obj={attAll:S.attAll,calcAll:S.calcAll,msb:S.msbMgmt}[a.type];
-  confirmBox('확인',`"${a.title}" 건을 ${st}하시겠습니까?`,()=>{a.status=st;a.decidedAt=nowStr();if(st==='승인')obj.approved={by:me.name,at:nowStr()};else{obj.req=null;}addLog(me.name,`결재 ${st}: ${a.title}`);save();toast(`${st} 처리되었습니다.`);render();});}
+  confirmBox('확인',`"${a.title}" 건을 ${st}하시겠습니까?`,()=>{a.status=st;a.decidedAt=nowStr();if(st==='승인')obj.approved={by:'결재권자',at:nowStr()};else{obj.req=null;}addLog(me.name,`결재 ${st}: ${a.title}`);save();toast(`${st} 처리되었습니다.`);render();});}
 
 /* ═════════════════ 다음에 누를 버튼(순서 안내) ═════════════════ */
 function nextAction(){
   const Q=m=>!!queried[m];
   for(const s of SUBJECTS)for(const c of CLASSES){
     if(roomClosed(s.id,c))continue;const t=total(s.id);
-    if(periodCloseCnt(s.id,c)!==t)return {step:1,title:'[1단계] 과목 출석률 마감 — 교시 출결마감 보완',role:`교과담임(${userName(s.teacher)})`,ok:me.subj===s.id||can.admin(),menu:'att-subj',tab:'period',set:{subj:s.id,room:c,atab:'period'},
+    if(periodCloseCnt(s.id,c)!==t)return {step:1,title:'[1단계] 과목 출석률 마감 — 교시 출결마감 보완',role:`교과담임(${userName(s.teacher)})`,ok:true,menu:'att-subj',tab:'period',set:{subj:s.id,room:c,atab:'period'},
       why:`${roomLabel(s.id,c)} 강의실은 과목교시마감수가 시간표총수업수와 달라 학기별과목마감이 안 됩니다. 미마감 교시를 먼저 출결마감합니다.`,
       seq:[{t:'[과목별출결관리] 탭',tab:'period'},{t:`조회조건: 과목 <b>${subjLabel(s.id)}</b> · 강의실 <b>${c.split('-')[1]}</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:'[미마감 일괄마감]',b:'b-bulk'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
-    if(PERIODS[s.id].some(x=>!S.dayClose[c][x.d]))return {step:1,title:'[1단계] 과목 출석률 마감 — 학급 일출결마감 보완',role:`${clsName(c)} 학급담임(${userName(USERS.find(u=>u.cls===c).id)})`,ok:me.cls===c||can.admin(),menu:'att-day',set:{cls:c},
+    if(PERIODS[s.id].some(x=>!S.dayClose[c][x.d]))return {step:1,title:'[1단계] 과목 출석률 마감 — 학급 일출결마감 보완',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'att-day',set:{cls:c},
       why:`${clsName(c)}에 일출결이 마감되지 않은 날이 있어 ${subjLabel(s.id)}의 반별일출결마감수가 총수업수와 다릅니다.`,
       seq:[{t:`조회조건: 반 <b>${c.split('-')[1]}</b>`,f:'f-cls'},{t:'[조회]',b:'b-query',done:Q('att-day')},{t:'[미마감 일괄마감]',b:'b-bulk'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
-    return {step:1,title:'[1단계] 과목 출석률 마감 — 학기별과목마감',role:`교과담임(${userName(s.teacher)})`,ok:me.subj===s.id||can.admin(),menu:'att-subj',tab:'room',set:{subj:s.id,atab:'room'},
+    return {step:1,title:'[1단계] 과목 출석률 마감 — 학기별과목마감',role:`교과담임(${userName(s.teacher)})`,ok:true,menu:'att-subj',tab:'room',set:{subj:s.id,atab:'room'},
       why:`${roomLabel(s.id,c)} 강의실을 학기별과목마감합니다.`,
       seq:[{t:'[학기별과목출결마감] 탭',tab:'room'},{t:`조회조건: 과목 <b>${subjLabel(s.id)}</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:`${c.split('-')[1]}반 행의 [학기별과목마감]`,b:`b-room-${c}`},{t:'확인창 [확인]',b:'b-modal-ok'}]};
   }
-  if(!S.attAll.done)return {step:1,title:'[1단계] 과목 출석률 마감 — 과목전체마감',role:'업무담당자(오성적)',ok:can.admin(),menu:'att-subj',tab:'all',set:{atab:'all'},why:'모든 강의실이 마감되었습니다. 업무담당자가 전체마감하고 승인요청합니다.',
+  if(!S.attAll.done)return {step:1,title:'[1단계] 과목 출석률 마감 — 과목전체마감',role:'업무담당자',ok:true,menu:'att-subj',tab:'all',set:{atab:'all'},why:'모든 강의실이 마감되었습니다. 업무담당자가 전체마감하고 승인요청합니다.',
     seq:[{t:'[과목전체마감] 탭',tab:'all'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:'[전체마감]',b:'b-attall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-attreq'}]};
-  if(!S.attAll.req)return {step:1,title:'[1단계] 과목 출석률 마감 — 승인요청',role:'업무담당자(오성적)',ok:can.admin(),menu:'att-subj',tab:'all',set:{atab:'all'},why:'전체마감이 끝났습니다. 승인요청(결재 상신)합니다.',seq:[{t:'[과목전체마감] 탭',tab:'all'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:'[승인요청]',b:'b-attreq'}]};
+  if(!S.attAll.req)return {step:1,title:'[1단계] 과목 출석률 마감 — 승인요청',role:'업무담당자',ok:true,menu:'att-subj',tab:'all',set:{atab:'all'},why:'전체마감이 끝났습니다. 승인요청(결재 상신)합니다.',seq:[{t:'[과목전체마감] 탭',tab:'all'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:'[승인요청]',b:'b-attreq'}]};
   if(!S.attAll.approved)return apprAction(1,'과목출결 전체마감');
   for(const s of SUBJECTS){const e=S.examClose[s.id];if(!e.written)return examAction(s,'written');if(!e.perf)return examAction(s,'perf');}
-  if(!S.calcAll.done)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 전체마감',role:'업무담당자(오성적)',ok:can.admin(),menu:'calc-close',why:'모든 과목의 정기시험·수행평가가 마감되었습니다. 성적산출전체마감 후 승인요청합니다.',
+  if(!S.calcAll.done)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 전체마감',role:'업무담당자',ok:true,menu:'calc-close',why:'모든 과목의 정기시험·수행평가가 마감되었습니다. 성적산출전체마감 후 승인요청합니다.',
     seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[성적산출전체마감]',b:'b-calcall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-calcreq'}]};
-  if(!S.calcAll.req)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 승인요청',role:'업무담당자(오성적)',ok:can.admin(),menu:'calc-close',why:'전체마감이 끝났습니다. 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[승인요청]',b:'b-calcreq'}]};
+  if(!S.calcAll.req)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 승인요청',role:'업무담당자',ok:true,menu:'calc-close',why:'전체마감이 끝났습니다. 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[승인요청]',b:'b-calcreq'}]};
   if(!S.calcAll.approved)return apprAction(2,'성적산출 전체마감');
-  for(const s of SUBJECTS){const sid=s.id;const role=`교과담임(${userName(s.teacher)})`;const ok=me.subj===sid||can.admin();const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
+  for(const s of SUBJECTS){const sid=s.id;const role=`교과담임(${userName(s.teacher)})`;const ok=true;const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
     if(ms.some(m=>!m.targets))return Object.assign(base,{step:3,title:'[3단계] 대상자 가져오기',tab:'target',why:`${subjLabel(sid)}의 학점이수 기준 미도달 학생을 가져옵니다. {지필/수행 학업성취율 현황}·{과목별출결현황}으로 근거 자료도 확인해 보세요.`,
       seq:[{t:'[대상자] 탭',tab:'target'},{t:`조회조건: 과목 <b>${subjLabel(sid)}</b> · 강의실 <b>전체</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='target'},{t:'[대상자가져오기]',b:'b-fetch'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
     if(ms.some(m=>!m.excSaved))return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택합니다. 없더라도 {저장}을 눌러 확인 처리합니다.`,
@@ -729,18 +711,18 @@ function nextAction(){
     if(ms.some(m=>!m.closed))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 마감',tab:'close',why:`${subjLabel(sid)} 학점반영이 끝났습니다. 마감합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[마감]',b:'b-close'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
   }
-  for(const c of CLASSES)if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(USERS.find(u=>u.cls===c).id)})`,ok:me.cls===c||can.admin(),menu:'rec-reflect',set:{cls:c},why:`${clsName(c)} 교과학습발달상황에 이수/미이수를 반영합니다.`,
+  for(const c of CLASSES)if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'rec-reflect',set:{cls:c},why:`${clsName(c)} 교과학습발달상황에 이수/미이수를 반영합니다.`,
     seq:[{t:`조회조건: 반 <b>${c.split('-')[1]}</b>`,f:'f-cls'},{t:'[조회]',b:'b-query',done:Q('rec-reflect')},{t:'[학생부반영]',b:'b-reflect'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
   const wd=Object.entries(S.withdrawn).find(([sid,w])=>!w.reflected);
-  if(wd)return {step:7,title:'[7단계] 학업중단 학생 최소성취수준보장지도 성적 학생부 반영',role:'업무담당자(오성적)',ok:can.admin(),menu:'hak-wd',set:{wdf:'un'},why:`${studentById(wd[0]).name} 학생(${wd[1].type})은 보장지도 업무가 끝난 뒤 [학적-학업중단관리-휴학/자퇴/퇴학/제적관리]에서 결과를 학생부에 반영합니다.`,
+  if(wd)return {step:7,title:'[7단계] 학업중단 학생 최소성취수준보장지도 성적 학생부 반영',role:'업무담당자',ok:true,menu:'hak-wd',set:{wdf:'un'},why:`${studentById(wd[0]).name} 학생(${wd[1].type})은 보장지도 업무가 끝난 뒤 [학적-학업중단관리-휴학/자퇴/퇴학/제적관리]에서 결과를 학생부에 반영합니다.`,
     seq:[{t:'[조회]',b:'b-query',done:Q('hak-wd')},{t:'학생 선택(○)',done:cond.wdSel===wd[0]},{t:'[최소성취수준보장지도 성적 학생부 반영]',b:'b-wdreflect'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
-  if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자(오성적)',ok:can.admin(),menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부' 확인",done:Q('msb-mgmt')},{t:'[마감정보저장]',b:'b-mgmtsave'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-mgmtreq'}]};
-  if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자(오성적)',ok:can.admin(),menu:'msb-mgmt',why:'마감정보가 저장되었습니다. 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[승인요청]',b:'b-mgmtreq'}]};
+  if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부' 확인",done:Q('msb-mgmt')},{t:'[마감정보저장]',b:'b-mgmtsave'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-mgmtreq'}]};
+  if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'마감정보가 저장되었습니다. 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[승인요청]',b:'b-mgmtreq'}]};
   if(!S.msbMgmt.approved)return apprAction(8,'최소성취수준보장지도(추가학습) 마감');
   return null;
 }
-function apprAction(step,what){return {step,title:`[${step}단계] ${what} — 결재`,role:'결재권자(교감 김환)',ok:can.approver(),menu:'appr-box',why:`업무담당자가 승인요청한 "${what}" 건을 결재권자가 결재해야 다음 단계로 넘어갑니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried['appr-box']},{t:'해당 건의 [승인]',b:'b-approve'},{t:'확인창 [확인]',b:'b-modal-ok'}]};}
-function examAction(s,kind){const menu=kind==='written'?'ex-written':'ex-perf';return {step:2,title:`[2단계] 학기말 성적 산출 마감 — ${kind==='written'?'정기시험':'수행평가'} 마감 보완`,role:`교과담임(${userName(s.teacher)})`,ok:me.subj===s.id||can.admin(),menu,why:`${subjLabel(s.id)}의 ${kind==='written'?'정기시험':'수행평가'}이 마감되지 않아 성적산출전체마감을 할 수 없습니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried[menu]},{t:`${subjLabel(s.id)} 행의 [마감]`,b:`b-exam-${s.id}`}]};}
+function apprAction(step,what){return {step,title:`[${step}단계] ${what} — 결재`,role:'결재권자',ok:true,menu:'appr-box',why:`업무담당자가 승인요청한 "${what}" 건을 결재권자가 결재해야 다음 단계로 넘어갑니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried['appr-box']},{t:'해당 건의 [승인]',b:'b-approve'},{t:'확인창 [확인]',b:'b-modal-ok'}]};}
+function examAction(s,kind){const menu=kind==='written'?'ex-written':'ex-perf';return {step:2,title:`[2단계] 학기말 성적 산출 마감 — ${kind==='written'?'정기시험':'수행평가'} 마감 보완`,role:`교과담임(${userName(s.teacher)})`,ok:true,menu,why:`${subjLabel(s.id)}의 ${kind==='written'?'정기시험':'수행평가'}이 마감되지 않아 성적산출전체마감을 할 수 없습니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried[menu]},{t:`${subjLabel(s.id)} 행의 [마감]`,b:`b-exam-${s.id}`}]};}
 function toggleGuide(v){guideOn=v===undefined?!guideOn:v;$('#gToggle').classList.toggle('off',!guideOn);go(view.top,view.menu);}
 function guideGo(){const na=nextAction();if(!na)return;Object.assign(cond,na.set||{});if(na.tab&&na.menu==='msb-manage')cond.tab=na.tab;unq();go(topOf(na.menu),na.menu);}
 const curTab=na=>na.menu==='msb-manage'?cond.tab:na.menu==='att-subj'?(cond.atab||'period'):null;
@@ -752,8 +734,7 @@ function renderGuide(){
   let curIdx=-1;const items=na.seq.map((x,i)=>{let done=here&&!!x.done;if(x.f&&here)done=true;if(x.tab&&here)done=true;if(!done&&curIdx<0)curIdx=i;return {...x,done};});
   if(!here)curIdx=-1;
   const tabName=na.tab?(na.menu==='msb-manage'?MSB_TABS:ATT_TABS).find(t=>t.id===na.tab).name:'';
-  body.innerHTML=`<div class="step">${na.title}</div><div class="meta">필요 권한: <b>${na.role}</b><br>메뉴: <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${tabName} 탭</code>`:''}<br><span style="color:var(--ink-3)">${na.why}</span></div>
-    ${!na.ok?`<div class="role-warn">현재 사용자(${me.name})에게는 이 단계의 권한이 없습니다. [로그아웃] 후 <b>${na.role}</b>으로 로그인하세요.</div>`:''}
+  body.innerHTML=`<div class="step">${na.title}</div><div class="meta">실제 담당: <b>${na.role}</b> <span style="color:var(--ink-3)">(연수에서는 업무담당자가 모두 처리)</span><br>메뉴: <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${tabName} 탭</code>`:''}<br><span style="color:var(--ink-3)">${na.why}</span></div>
     ${here?'':`<div class="meta" style="color:var(--orange)">▶ 아래 [화면으로 이동]을 누르거나 왼쪽 메뉴에서 주황 표시 메뉴를 여세요.</div>`}
     <ol>${items.map((x,i)=>`<li class="${x.done?'done':''} ${i===curIdx?'cur':''}"><span class="n">${i+1}</span><span>${x.t}</span></li>`).join('')}</ol>`;
   foot.innerHTML=`<span class="status">단계 ${na.step}/8</span><span style="flex:1"></span>${here?'':`<button class="btn" onclick="guideGo()">화면으로 이동</button>`}<button class="btn w s" onclick="go('guide','gd-steps')">전체 흐름도</button>`;
@@ -764,7 +745,7 @@ function renderGuide(){
 
 /* ═════════════════ 연수도우미 ═════════════════ */
 function steps(){return [
-  {pre:1,t:'[1단계] 과목 출석률 마감',d:'① 교과담임: <code>학적 › 출결관리 › 과목별출결관리 › 학기별과목출결마감(창의적체험활동제외)</code>에서 강의실별 {학기별과목마감} (과목교시마감수 = 반별일출결마감수 = 시간표총수업수일 때만 가능) ② 업무담당자: <code>과목전체마감</code>에서 {전체마감} → {승인요청} → 결재권자 결재.',ok:()=>attAllApproved(),go:['hak','att-subj']},
+  {pre:1,t:'[1단계] 과목 출석률 마감',d:'① 교과담임: <code>학적 › 출결관리 › 과목별출결관리 › 학기별과목출결마감(창의적체험활동제외)</code>에서 강의실별 {학기별과목마감} (과목교시마감수 = 반별일출결마감수 = 시간표총수업수일 때만 가능) ② 업무담당자: <code>과목전체마감</code>에서 {전체마감} → {승인요청} → <code>업무승인 › 승인요청결재</code>에서 결재.',ok:()=>attAllApproved(),go:['hak','att-subj']},
   {pre:1,t:'[2단계] 학기말 성적 산출 마감',d:'<code>성적 › 성적처리 › 성적산출마감관리</code>에서 {성적산출전체마감} → {승인요청} → 결재. (1단계와 순서 무관)',ok:()=>calcAllApproved(),go:['score','calc-close']},
   {t:'[3단계] 대상자 가져오기',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)이수관리 › 대상자</code>에서 {조회} → {대상자가져오기} → {확인}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).targets)),go:['score','msb-manage']},
   {t:'[4단계] 예외처리 대상자 등록',d:'<code>› 예외처리</code> 탭에서 예외사유(특수교육대상자·학교외 장소 수강·기타) 선택 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).excSaved)),go:['score','msb-manage']},
@@ -774,7 +755,7 @@ function steps(){return [
   {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청} → 결재.',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
 ];}
 SCREENS['gd-steps']=()=>{const st=steps();const done=st.filter(s=>s.ok()).length;const na=nextAction();
-  return pageHead('최소 성취수준 보장지도 관리 업무 흐름도')+`<div class="note info">${done} / ${st.length} 단계 완료 · 현재 사용자 ${me.name}(${me.title}). <b>사전업무</b>(보라색 1·2단계, 순서 무관) → <b>보장지도 관리</b>(3~8단계). 각 단계의 조건이 안 맞으면 실제 나이스처럼 버튼이 비활성화되거나 알림이 뜹니다. <b>버튼을 누르는 순서가 중요</b>하므로, 모르겠으면 오른쪽 아래 <b>[다음에 누를 버튼]</b> 안내를 따라 ①②③ 순서대로 누르세요.</div>
+  return pageHead('최소 성취수준 보장지도 관리 업무 흐름도')+`<div class="note info">${done} / ${st.length} 단계 완료 · <b>사전업무</b>(보라색 1·2단계, 순서 무관) → <b>보장지도 관리</b>(3~8단계). 각 단계의 조건이 안 맞으면 실제 나이스처럼 버튼이 비활성화되거나 알림이 뜹니다. <b>버튼을 누르는 순서가 중요</b>하므로, 모르겠으면 오른쪽 아래 <b>[다음에 누를 버튼]</b> 안내를 따라 ①②③ 순서대로 누르세요.</div>
   <ol class="steps">${st.map((s,i)=>`<li class="${s.ok()?'done':''} ${s.pre?'pre':''} ${na&&na.step===i+1?'cur':''}"><span class="no">${s.ok()?'✓':i+1}</span><div><div class="t">${s.t}</div><div class="d">${s.d}</div></div><button class="btn w s go" onclick="go('${s.go[0]}','${s.go[1]}')">이동</button></li>`).join('')}</ol>`;};
 SCREENS['gd-rule']=()=>pageHead('학점이수 기준 및 최소 성취수준 보장지도 변경 안내')
   +`<div class="rem-l">※ 2025학년도 2학기부터 적용 (고교학점제 적용 고등학교)</div><div class="grid-wrap auto"><table class="grid"><thead><tr><th>구분</th><th class="l">항목</th><th class="l">당초</th><th class="l">변경</th></tr></thead><tbody>
