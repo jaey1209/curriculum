@@ -450,7 +450,7 @@ function login(){
 function logout(){me=null;$('#app').classList.remove('on');$('#login').style.display='flex';$('#bot').classList.remove('on');}
 
 /* 실제 나이스 메뉴 구성(연수 범위 밖 메뉴는 눌러도 안내만) */
-const TOP=[{id:'hak',name:'학적'},{id:'cur',name:'교육과정'},{id:'score',name:'성적'},{id:'life',name:'학생생활'},{id:'rec',name:'학생부'},{id:'appr',name:'업무승인'},{id:'guide',name:'연수도우미',guide:true}];
+const TOP=[{id:'hak',name:'학적'},{id:'cur',name:'교육과정'},{id:'score',name:'성적'},{id:'life',name:'학생생활'},{id:'rec',name:'학생부'},{id:'guide',name:'연수도우미',guide:true}];
 const MENUS={
   hak:[{grp:'기본학적관리',items:['학생기본정보','학적변동','학생사진관리']},{grp:'전입관리',items:['전입학생관리']},{grp:'전출관리',items:['전출학생관리']},
        {grp:'학업중단관리',items:[{id:'hak-wd',name:'휴학/자퇴/퇴학/제적관리'},'학업중단숙려제관리']},{grp:'진급대상자 반편성관리',items:['반편성관리']},
@@ -465,7 +465,6 @@ const MENUS={
          {grp:'성적조회/통계',items:['성적일람표','학생별성적표']},{grp:'성적/학습분석자료조회',items:['학습분석']},{grp:'반편성고사/기타성적산출',items:['반편성고사']},{grp:'관찰기록관리',items:['관찰기록']}],
   life:[{grp:'창의적체험활동',items:['자율활동','동아리활동','진로활동']},{grp:'봉사활동',items:['봉사활동누가기록']}],
   rec:[{grp:'학교생활기록부',items:['학교생활기록부조회',{id:'rec-reflect',name:'학생부반영'},{id:'rec-view',name:'교과학습발달상황'},'학생부정정대장']},{grp:'학생부마감',items:['학생부마감관리']}],
-  appr:[{grp:'업무승인',items:[{id:'appr-box',name:'승인요청결재'},'결재선관리']}],
   guide:[{grp:'연수도우미',items:[{id:'gd-steps',name:'업무 흐름도(8단계)'},{id:'gd-rule',name:'학점이수 기준·최성보 변경 안내'},{id:'gd-setting',name:'설정·초기화·로그'}]}],
 };
 const MENU_PATH={},MENU_GRP={};Object.entries(MENUS).forEach(([top,groups])=>{const tn=TOP.find(t=>t.id===top).name;groups.forEach(g=>g.items.forEach(i=>{if(typeof i==='object'){MENU_PATH[i.id]=`${tn} › ${g.grp} › ${i.name}`;MENU_GRP[i.id]=g.grp;}}));});
@@ -473,8 +472,8 @@ const topOf=menu=>Object.keys(MENUS).find(t=>MENUS[t].some(g=>g.items.some(i=>ty
 function go(top,menu){
   view.top=top;if(menu)view.menu=menu;else{const first=MENUS[top].flatMap(g=>g.items).find(i=>typeof i==='object');view.menu=first?first.id:null;}
   if(view.menu&&topOf(view.menu)===top)openGrp[top]=MENU_GRP[view.menu];
-  const pend=S.approvals.filter(a=>a.status==='대기').length;const na=guideOn?nextAction():null;
-  $('#lnb').innerHTML=TOP.map(t=>`<button class="${t.guide?'guide ':''}${view.top===t.id?'on':''}" onclick="go('${t.id}')">${t.name}${t.id==='appr'&&pend?`<span class="badge">${pend}</span>`:''}</button>`).join('');
+  const na=guideOn?nextAction():null;
+  $('#lnb').innerHTML=TOP.map(t=>`<button class="${t.guide?'guide ':''}${view.top===t.id?'on':''}" onclick="go('${t.id}')">${t.name}</button>`).join('');
   $('#tree').innerHTML=MENUS[top].map(g=>`<div class="grp ${openGrp[top]===g.grp?'open':''}" onclick="toggleGrp('${top}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${g.items.map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" onclick="go('${top}','${i.id}')">${i.name}</button>`:`<button class="it" onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`).join('')+'<div class="fold">◀</div>';
   $('#gDate').textContent=`기준일 ${S.simDate}`;
   render();
@@ -543,13 +542,22 @@ function roomCloseTry(c){const s=cond.subj;const iss=roomIssues(s,c);if(iss.leng
   confirmBox('확인',`${roomLabel(s,c)} 강의실의 ${SEM}학기 과목출결을 마감하시겠습니까?`,()=>{S.roomClose[s][c]={by:me.name,at:nowStr()};addLog(me.name,`학기별과목마감 ${s} ${c}`);save();toast('마감되었습니다.');render();});}
 function roomUnclose(c){confirmBox('확인',`${roomLabel(cond.subj,c)} 학기별과목마감을 취소하시겠습니까?`,()=>{delete S.roomClose[cond.subj][c];addLog(me.name,`학기별과목마감 취소 ${cond.subj} ${c}`);save();render();});}
 function approvalText(a){return a.approved?`결재완료 (${a.approved.by} ${a.approved.at})`:a.req?`승인요청 (결재 대기)`:a.done?`마감 (승인요청 전)`:`마감안됨`;}
-function requestApproval(obj,type,title){obj.req={by:me.name,at:nowStr()};S.approvals.push({id:'A'+Date.now(),type,title,by:me.name,at:nowStr(),status:'대기'});addLog(me.name,`승인요청: ${title}`);save();toast('승인요청되었습니다. [업무승인 › 승인요청결재]에서 결재 처리(연수용)합니다.');render();}
+function requestApproval(obj,type,title){
+  const body=popHead('승인요청')+`<div class="rem-l">※ 결재선을 확인하고 의견을 입력한 뒤 {승인요청}을 누르면 결재권자에게 결재가 요청됩니다.</div>
+  <table class="ftbl"><tr><td class="k">*요청제목</td><td class="v" colspan="3"><input value="${esc(title)}" disabled></td></tr>
+  <tr><td class="k n">요청자</td><td class="v"><input value="${me.name}" disabled></td><td class="k n">요청일시</td><td class="v"><input value="${nowStr()}" disabled></td></tr>
+  <tr><td class="k">*결재선</td><td class="v" colspan="3"><table class="grid" style="margin:4px 0"><thead><tr><th>순번</th><th>구분</th><th>결재권자</th><th>상태</th></tr></thead><tbody><tr><td>1</td><td>검토</td><td>부장(교무부)</td><td>대기</td></tr><tr><td>2</td><td>승인</td><td>결재권자</td><td>대기</td></tr></tbody></table></td></tr>
+  <tr><td class="k n">의견</td><td class="v" colspan="3"><textarea id="apprMemo" style="width:100%;height:60px;border:1px solid #b9c0cc;padding:6px" placeholder="예) ${YEAR}학년도 ${SEM}학기 마감 승인 요청드립니다."></textarea></td></tr></table>`;
+  modal('승인요청',body,[{t:'승인요청',p:true,id:'b-modal-ok',f:()=>{obj.req={by:me.name,at:nowStr()};S.approvals.push({id:'A'+Date.now(),type,title,by:me.name,at:nowStr(),status:'대기'});addLog(me.name,`승인요청: ${title}`);save();toast('승인요청되었습니다. 결재권자의 결재를 기다립니다.');render();}},{t:'닫기'}],{html:1});$('#pop').style.minWidth='min(720px,94vw)';}
+function simApprove(obj,type){const a=S.approvals.slice().reverse().find(x=>x.type===type&&x.status==='대기');
+  confirmBox('결재완료 처리(연수용)','실제 나이스에서는 결재권자가 업무승인 화면에서 결재합니다.\n연수에서는 결재가 완료된 것으로 처리합니다. 진행하시겠습니까?',()=>{obj.approved={by:'결재권자',at:nowStr()};if(a){a.status='승인';a.decidedAt=nowStr();}addLog('결재권자',`결재 승인: ${a?a.title:type}`);save();toast('결재가 완료되었습니다.');render();});}
+const approveBtn=(obj,type)=>obj.req&&!obj.approved?`<button class="btn w" id="b-approve" onclick="simApprove(${obj===S.attAll?'S.attAll':obj===S.calcAll?'S.calcAll':'S.msbMgmt'},'${type}')">결재완료 처리(연수용)</button>`:'';
 function attAllTab(){
   const rows=SUBJECTS.flatMap(s=>CLASSES.map(c=>`<tr><td><input type="checkbox" checked disabled></td><td>일반계</td><td>일반학과</td><td>${subjLabel(s.id)}</td><td>${c.split('-')[1]}</td><td>${userName(s.teacher)}</td><td>${total(s.id)}</td><td>${roomClosed(s.id,c)?'마감':'<span class="bad">미마감</span>'}</td></tr>`)).join('');
   const ok=allRoomsClosed();const A=S.attAll;
   return condBar(fixedCond(),qbtn())+(queried[view.menu]?
-  `<div class="rem-l">※ 모든 강의실의 학기별과목마감이 완료되어야 {전체마감}할 수 있으며, {전체마감} 후 {승인요청}으로 업무승인과정을 거쳐 결재권자의 결재를 완료합니다.</div>`
-  +tbar(SUBJECTS.length*CLASSES.length,`${A.done?`<button class="btn w" ${can.admin()&&!A.req?'':'disabled'} onclick="confirmBox('확인','과목전체마감을 취소하시겠습니까?',()=>{S.attAll={done:null,req:null,approved:null};addLog(me.name,'과목전체마감 취소');save();render();})">전체마감취소</button>`:`<button class="btn" id="b-attall" ${can.admin()&&ok?'':'disabled'} onclick="confirmBox('확인','${YEAR}학년도 ${SEM}학기 과목출결을 전체마감하시겠습니까?',()=>{S.attAll.done={by:me.name,at:nowStr()};addLog(me.name,'과목전체마감');save();toast('전체마감되었습니다. 이어서 {승인요청}하세요.');render();})">전체마감</button>`}<button class="btn" id="b-attreq" ${can.admin()&&A.done&&!A.req?'':'disabled'} onclick="requestApproval(S.attAll,'attAll','${YEAR}학년도 ${SEM}학기 과목출결 전체마감')">승인요청</button>`,`※ 전체마감상태 : ${approvalText(A)}`)
+  `<div class="rem-l">※ 모든 강의실의 학기별과목마감이 완료되어야 {전체마감}할 수 있으며, {전체마감} 후 {승인요청}을 누르면 승인요청 창이 뜨며, 결재권자의 결재가 완료되어야 합니다.</div>`
+  +tbar(SUBJECTS.length*CLASSES.length,`${A.done?`<button class="btn w" ${can.admin()&&!A.req?'':'disabled'} onclick="confirmBox('확인','과목전체마감을 취소하시겠습니까?',()=>{S.attAll={done:null,req:null,approved:null};addLog(me.name,'과목전체마감 취소');save();render();})">전체마감취소</button>`:`<button class="btn" id="b-attall" ${can.admin()&&ok?'':'disabled'} onclick="confirmBox('확인','${YEAR}학년도 ${SEM}학기 과목출결을 전체마감하시겠습니까?',()=>{S.attAll.done={by:me.name,at:nowStr()};addLog(me.name,'과목전체마감');save();toast('전체마감되었습니다. 이어서 {승인요청}하세요.');render();})">전체마감</button>`}<button class="btn" id="b-attreq" ${can.admin()&&A.done&&!A.req?'':'disabled'} onclick="requestApproval(S.attAll,'attAll','${YEAR}학년도 ${SEM}학기 과목출결 전체마감')">승인요청</button>${approveBtn(A,'attAll')}`,`※ 전체마감상태 : ${approvalText(A)}`)
   +`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" checked disabled></th>${th('계열')}${th('학과')}${th('과목명(학점)')}${th('강의실/편성반')}${th('담당교사')}${th('시간표총수업수')}${th('강의실별 마감여부')}</tr></thead><tbody>${rows}</tbody></table></div>`:needQuery());
 }
 
@@ -584,8 +592,8 @@ SCREENS['calc-close']=()=>{
   const rows=SUBJECTS.flatMap(s=>CLASSES.map(c=>{const e=S.examClose[s.id];return `<tr><td><input type="checkbox" checked disabled></td><td>일반계</td><td>일반학과</td><td>${subjLabel(s.id)}</td><td>${c.split('-')[1]}</td><td>${userName(s.teacher)}</td><td>${e.written?'마감':'<span class="bad">미마감</span>'}</td><td>${e.perf?'마감':'<span class="bad">미마감</span>'}</td><td>${e.written&&e.perf?'가능':'<span class="bad">불가</span>'}</td></tr>`;})).join('');
   const ok=SUBJECTS.every(s=>S.examClose[s.id].written&&S.examClose[s.id].perf);const A=S.calcAll;
   return pageHead('성적산출마감관리')+condBar(fixedCond(),qbtn())+(queried[view.menu]?
-  `<div class="rem-l">※ 정기시험·수행평가가 모두 마감된 경우 {성적산출전체마감}할 수 있으며, {승인요청}으로 업무승인과정을 거쳐 결재권자의 결재를 완료합니다.</div>`
-  +tbar(SUBJECTS.length*CLASSES.length,`${A.done?`<button class="btn w" ${can.admin()&&!A.req?'':'disabled'} onclick="confirmBox('확인','성적산출전체마감을 취소하시겠습니까?',()=>{S.calcAll={done:null,req:null,approved:null};addLog(me.name,'성적산출전체마감 취소');save();render();})">전체마감취소</button>`:`<button class="btn" id="b-calcall" ${can.admin()&&ok?'':'disabled'} onclick="confirmBox('확인','${YEAR}학년도 ${SEM}학기 학기말 성적산출을 전체마감하시겠습니까?',()=>{S.calcAll.done={by:me.name,at:nowStr()};addLog(me.name,'성적산출전체마감');save();toast('전체마감되었습니다. 이어서 {승인요청}하세요.');render();})">성적산출전체마감</button>`}<button class="btn" id="b-calcreq" ${can.admin()&&A.done&&!A.req?'':'disabled'} onclick="requestApproval(S.calcAll,'calcAll','${YEAR}학년도 ${SEM}학기 성적산출 전체마감')">승인요청</button>`,`※ 전체마감상태 : ${approvalText(A)}`)
+  `<div class="rem-l">※ 정기시험·수행평가가 모두 마감된 경우 {성적산출전체마감}할 수 있으며, {승인요청}을 누르면 승인요청 창이 뜨며, 결재권자의 결재가 완료되어야 합니다.</div>`
+  +tbar(SUBJECTS.length*CLASSES.length,`${A.done?`<button class="btn w" ${can.admin()&&!A.req?'':'disabled'} onclick="confirmBox('확인','성적산출전체마감을 취소하시겠습니까?',()=>{S.calcAll={done:null,req:null,approved:null};addLog(me.name,'성적산출전체마감 취소');save();render();})">전체마감취소</button>`:`<button class="btn" id="b-calcall" ${can.admin()&&ok?'':'disabled'} onclick="confirmBox('확인','${YEAR}학년도 ${SEM}학기 학기말 성적산출을 전체마감하시겠습니까?',()=>{S.calcAll.done={by:me.name,at:nowStr()};addLog(me.name,'성적산출전체마감');save();toast('전체마감되었습니다. 이어서 {승인요청}하세요.');render();})">성적산출전체마감</button>`}<button class="btn" id="b-calcreq" ${can.admin()&&A.done&&!A.req?'':'disabled'} onclick="requestApproval(S.calcAll,'calcAll','${YEAR}학년도 ${SEM}학기 성적산출 전체마감')">승인요청</button>${approveBtn(A,'calcAll')}`,`※ 전체마감상태 : ${approvalText(A)}`)
   +`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" checked disabled></th>${th('계열')}${th('학과')}${th('과목명(학점)')}${th('강의실/편성반')}${th('담당교사')}${th('정기시험 마감')}${th('수행평가 마감')}${th('학기말 성적산출')}</tr></thead><tbody>${rows}</tbody></table></div>`:needQuery());
 };
 
@@ -701,7 +709,7 @@ SCREENS['msb-mgmt']=()=>{
   const allClosed=SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed));
   return pageHead('최소성취수준보장지도(추가학습)마감관리')+condBar(fixedCond(),qbtn())
   +(q?`<div class="rem-l">※ 수강생이 없는 강의실의 경우 학점반영없이 마감 처리 가능합니다.</div>`
-  +tbar(SUBJECTS.length*CLASSES.length,`<button class="btn" id="b-mgmtsave" ${can.admin()&&allClosed&&!M.saved?'':'disabled'} onclick="confirmBox('확인','1학년 최소성취수준보장지도(추가학습) 마감정보를 저장하시겠습니까?',()=>{S.msbMgmt.saved={by:me.name,at:nowStr()};S.msbMgmt.done=S.msbMgmt.saved;addLog(me.name,'최성보 마감정보저장');save();toast('저장되었습니다. 이어서 {승인요청}하세요.');render();})">마감정보저장</button><button class="btn" id="b-mgmtreq" ${can.admin()&&M.saved&&!M.req?'':'disabled'} onclick="requestApproval(S.msbMgmt,'msb','${YEAR}학년도 ${SEM}학기 1학년 최소성취수준보장지도(추가학습) 마감')">승인요청</button>`,`※ 전체마감상태 : ${approvalText(M)}`)
+  +tbar(SUBJECTS.length*CLASSES.length,`<button class="btn" id="b-mgmtsave" ${can.admin()&&allClosed&&!M.saved?'':'disabled'} onclick="confirmBox('확인','1학년 최소성취수준보장지도(추가학습) 마감정보를 저장하시겠습니까?',()=>{S.msbMgmt.saved={by:me.name,at:nowStr()};S.msbMgmt.done=S.msbMgmt.saved;addLog(me.name,'최성보 마감정보저장');save();toast('저장되었습니다. 이어서 {승인요청}하세요.');render();})">마감정보저장</button><button class="btn" id="b-mgmtreq" ${can.admin()&&M.saved&&!M.req?'':'disabled'} onclick="requestApproval(S.msbMgmt,'msb','${YEAR}학년도 ${SEM}학기 1학년 최소성취수준보장지도(추가학습) 마감')">승인요청</button>${approveBtn(M,'msb')}`,`※ 전체마감상태 : ${approvalText(M)}`)
   +(allClosed?'':'<div class="note">강의실별 마감여부가 X인 강의실이 있습니다. 해당 교과담임이 [최소성취수준보장지도(추가학습)이수관리 › 마감]에서 {학점반영} → {마감}해야 합니다.</div>')
   +`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" checked disabled></th>${th('계열')}${th('학과')}${th('과목명(학점)')}${th('강의실/편성반')}${th('담당교사')}${th('보장지도대상인원')}${th('예외처리인원')}${th('이수처리인원')}${th('미이수 처리인원')}${th('학점반영 인원')}${th('강의실별<br>마감여부')}</tr></thead><tbody>${rows}</tbody></table></div>`:needQuery());
 };
@@ -717,15 +725,6 @@ SCREENS['rec-reflect']=()=>{
   +`<div class="grid-wrap"><table class="grid">${recHead}<tbody>${recRows(c)}</tbody></table></div>`:needQuery());
 };
 SCREENS['rec-view']=()=>{const c=cond.cls;const q=queried[view.menu];return pageHead('교과학습발달상황')+condBar(fixedCond()+selCls(),qbtn())+(q?tbar(students(c).length,printBtn(),S.recReflect[c]?'※ 학생부반영 완료 자료':'※ 학생부반영 전 자료')+`<div class="grid-wrap"><table class="grid">${recHead}<tbody>${recRows(c)}</tbody></table></div>`:needQuery());};
-
-/* ═════════════════ 업무승인 ═════════════════ */
-SCREENS['appr-box']=()=>{
-  const ak=cond.ak||'w';const list=S.approvals.slice().reverse().filter(a=>ak==='w'?a.status==='대기':a.status!=='대기');
-  const rows=list.map(a=>`<tr><td><input type="checkbox" disabled></td><td>${a.at}</td><td class="l">${a.title}</td><td>${a.by}</td><td>${a.status==='대기'?'결재대기':a.status}</td><td>${a.decidedAt||''}</td><td>${a.status==='대기'?`<button class="btn s" id="b-approve" ${can.approver()?'':'disabled'} onclick="decide('${a.id}','승인')">승인</button> <button class="btn s w" ${can.approver()?'':'disabled'} onclick="decide('${a.id}','반려')">반려</button>`:''}</td></tr>`).join('');
-  return pageHead('승인요청결재')+condBar(fixedCond(1)+radio('ak',[['w','결재대기'],['d','결재완료']],cond.ak||'w','ak'),qbtn())+(queried[view.menu]?`<div class="rem-l">※ 실제 나이스에서는 결재권자가 업무승인과정(결재선)에 따라 결재합니다. 연수에서는 이 화면에서 {승인}을 눌러 결재 완료 상태를 만듭니다.</div>`+tbar(list.length,printBtn())+(rows?`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" disabled></th>${th('요청일시')}${th('제목','class="l"')}${th('요청자')}${th('상태')}${th('결재일시')}<th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 자료가 없습니다.</div>'):needQuery());
-};
-function decide(id,st){const a=S.approvals.find(x=>x.id===id);const obj={attAll:S.attAll,calcAll:S.calcAll,msb:S.msbMgmt}[a.type];
-  confirmBox('확인',`"${a.title}" 건을 ${st}하시겠습니까?`,()=>{a.status=st;a.decidedAt=nowStr();if(st==='승인')obj.approved={by:'결재권자',at:nowStr()};else{obj.req=null;}addLog(me.name,`결재 ${st}: ${a.title}`);save();toast(`${st} 처리되었습니다.`);render();});}
 
 /* ═════════════════ 다음에 누를 버튼(순서 안내) ═════════════════ */
 function nextAction(){
@@ -743,14 +742,14 @@ function nextAction(){
       seq:[{t:'[학기별과목출결마감] 탭',tab:'room'},{t:`조회조건: 과목 <b>${subjLabel(s.id)}</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:`${c.split('-')[1]}반 행의 [학기별과목마감]`,b:`b-room-${c}`},{t:'확인창 [확인]',b:'b-modal-ok'}]};
   }
   if(!S.attAll.done)return {step:1,title:'[1단계] 과목 출석률 마감 — 과목전체마감',role:'업무담당자',ok:true,menu:'att-subj',tab:'all',set:{atab:'all'},why:'모든 강의실이 마감되었습니다. 업무담당자가 전체마감하고 승인요청합니다.',
-    seq:[{t:'[과목전체마감] 탭',tab:'all'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:'[전체마감]',b:'b-attall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-attreq'}]};
-  if(!S.attAll.req)return {step:1,title:'[1단계] 과목 출석률 마감 — 승인요청',role:'업무담당자',ok:true,menu:'att-subj',tab:'all',set:{atab:'all'},why:'전체마감이 끝났습니다. 승인요청(결재 상신)합니다.',seq:[{t:'[과목전체마감] 탭',tab:'all'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:'[승인요청]',b:'b-attreq'}]};
-  if(!S.attAll.approved)return apprAction(1,'과목출결 전체마감');
+    seq:[{t:'[과목전체마감] 탭',tab:'all'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:'[전체마감]',b:'b-attall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-attreq'},{t:'승인요청 창에서 [승인요청]',b:'b-modal-ok'}]};
+  if(!S.attAll.req)return {step:1,title:'[1단계] 과목 출석률 마감 — 승인요청',role:'업무담당자',ok:true,menu:'att-subj',tab:'all',set:{atab:'all'},why:'전체마감이 끝났습니다. 승인요청(결재 상신)합니다.',seq:[{t:'[과목전체마감] 탭',tab:'all'},{t:'[조회]',b:'b-query',done:Q('att-subj')},{t:'[승인요청]',b:'b-attreq'},{t:'승인요청 창에서 [승인요청]',b:'b-modal-ok'}]};
+  if(!S.attAll.approved)return apprAction(1,'과목출결 전체마감','att-subj','all');
   for(const s of SUBJECTS){const e=S.examClose[s.id];if(!e.written)return examAction(s,'written');if(!e.perf)return examAction(s,'perf');}
   if(!S.calcAll.done)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 전체마감',role:'업무담당자',ok:true,menu:'calc-close',why:'모든 과목의 정기시험·수행평가가 마감되었습니다. 성적산출전체마감 후 승인요청합니다.',
-    seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[성적산출전체마감]',b:'b-calcall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-calcreq'}]};
-  if(!S.calcAll.req)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 승인요청',role:'업무담당자',ok:true,menu:'calc-close',why:'전체마감이 끝났습니다. 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[승인요청]',b:'b-calcreq'}]};
-  if(!S.calcAll.approved)return apprAction(2,'성적산출 전체마감');
+    seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[성적산출전체마감]',b:'b-calcall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-calcreq'},{t:'승인요청 창에서 [승인요청]',b:'b-modal-ok'}]};
+  if(!S.calcAll.req)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 승인요청',role:'업무담당자',ok:true,menu:'calc-close',why:'전체마감이 끝났습니다. 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[승인요청]',b:'b-calcreq'},{t:'승인요청 창에서 [승인요청]',b:'b-modal-ok'}]};
+  if(!S.calcAll.approved)return apprAction(2,'성적산출 전체마감','calc-close');
   for(const s of SUBJECTS){const sid=s.id;const role=`교과담임(${userName(s.teacher)})`;const ok=true;const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
     if(ms.some(m=>!m.targets))return Object.assign(base,{step:3,title:'[3단계] 대상자 가져오기',tab:'target',why:`${subjLabel(sid)}의 학점이수 기준 미도달 학생을 가져옵니다. {지필/수행 학업성취율 현황}·{과목별출결현황}으로 근거 자료도 확인해 보세요.`,
       seq:[{t:'[대상자] 탭',tab:'target'},{t:`조회조건: 과목 <b>${subjLabel(sid)}</b> · 강의실 <b>전체</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='target'},{t:'[대상자가져오기]',b:'b-fetch'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
@@ -768,18 +767,18 @@ function nextAction(){
   const wd=Object.entries(S.withdrawn).find(([sid,w])=>!w.reflected);
   if(wd)return {step:7,title:'[7단계] 학업중단 학생 최소성취수준보장지도 성적 학생부 반영',role:'업무담당자',ok:true,menu:'hak-wd',set:{wdf:'un'},why:`${studentById(wd[0]).name} 학생(${wd[1].type})은 보장지도 업무가 끝난 뒤 [학적-학업중단관리-휴학/자퇴/퇴학/제적관리]에서 결과를 학생부에 반영합니다.`,
     seq:[{t:'[조회]',b:'b-query',done:Q('hak-wd')},{t:'학생 선택(○)',done:cond.wdSel===wd[0]},{t:'[최소성취수준보장지도 성적 학생부 반영]',b:'b-wdreflect'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
-  if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부' 확인",done:Q('msb-mgmt')},{t:'[마감정보저장]',b:'b-mgmtsave'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-mgmtreq'}]};
-  if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'마감정보가 저장되었습니다. 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[승인요청]',b:'b-mgmtreq'}]};
-  if(!S.msbMgmt.approved)return apprAction(8,'최소성취수준보장지도(추가학습) 마감');
+  if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부' 확인",done:Q('msb-mgmt')},{t:'[마감정보저장]',b:'b-mgmtsave'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-mgmtreq'},{t:'승인요청 창에서 [승인요청]',b:'b-modal-ok'}]};
+  if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'마감정보가 저장되었습니다. 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[승인요청]',b:'b-mgmtreq'},{t:'승인요청 창에서 [승인요청]',b:'b-modal-ok'}]};
+  if(!S.msbMgmt.approved)return apprAction(8,'최소성취수준보장지도(추가학습) 마감','msb-mgmt');
   return null;
 }
-function apprAction(step,what){return {step,title:`[${step}단계] ${what} — 결재`,role:'결재권자',ok:true,menu:'appr-box',why:`업무담당자가 승인요청한 "${what}" 건을 결재권자가 결재해야 다음 단계로 넘어갑니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried['appr-box']},{t:'해당 건의 [승인]',b:'b-approve'},{t:'확인창 [확인]',b:'b-modal-ok'}]};}
+function apprAction(step,what,menu,tab){return {step,title:`[${step}단계] ${what} — 결재 대기`,role:'결재권자',ok:true,menu,tab,set:tab?{atab:tab}:{},why:`"${what}" 승인요청이 결재권자에게 올라갔어요. 실제로는 결재권자가 결재할 때까지 기다리지만, 연수에서는 [결재완료 처리(연수용)]를 눌러 결재가 끝난 상태로 만들어요.`,seq:[...(tab?[{t:'[과목전체마감] 탭',tab}]:[]),{t:'[조회]',b:'b-query',done:!!queried[menu]},{t:'[결재완료 처리(연수용)]',b:'b-approve'},{t:'확인창 [확인]',b:'b-modal-ok'}]};}
 function examAction(s,kind){const menu=kind==='written'?'ex-written':'ex-perf';return {step:2,title:`[2단계] 학기말 성적 산출 마감 — ${kind==='written'?'정기시험':'수행평가'} 마감 보완`,role:`교과담임(${userName(s.teacher)})`,ok:true,menu,why:`${subjLabel(s.id)}의 ${kind==='written'?'정기시험':'수행평가'}이 마감되지 않아 성적산출전체마감을 할 수 없습니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried[menu]},{t:`${subjLabel(s.id)} 행의 [마감]`,b:`b-exam-${s.id}`}]};}
 function toggleGuide(v){guideOn=v===undefined?!guideOn:v;$('#gToggle').classList.toggle('off',!guideOn);if(guideOn)chatOpen(true);go(view.top,view.menu);}
 function guideGo(){const na=nextAction();if(!na)return;Object.assign(cond,na.set||{});if(na.tab&&na.menu==='msb-manage')cond.tab=na.tab;unq();go(topOf(na.menu),na.menu);}
 const curTab=na=>na.menu==='msb-manage'?cond.tab:na.menu==='att-subj'?(cond.atab||'period'):null;
 /* ── 최성봇 ── */
-const BOT_SVG=(mood)=>`<svg viewBox="0 0 80 80" width="100%" height="100%"><g><line x1="40" y1="6" x2="40" y2="14" stroke="#2f66c2" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="6" r="4" fill="#ff7a1a"/><rect x="12" y="14" width="56" height="44" rx="16" fill="#fff" stroke="#2f66c2" stroke-width="3"/><rect x="18" y="22" width="44" height="28" rx="10" fill="#2f66c2"/><g class="eye"><circle cx="31" cy="35" r="5.5" fill="#fff"/><circle cx="31.8" cy="35.8" r="2.7" fill="#1e3461"/><circle cx="30.3" cy="34" r="1.1" fill="#fff"/></g><g class="eye"><circle cx="49" cy="35" r="5.5" fill="#fff"/><circle cx="49.8" cy="35.8" r="2.7" fill="#1e3461"/><circle cx="48.3" cy="34" r="1.1" fill="#fff"/></g>${mood==='happy'?'<path d="M32 43 q8 7 16 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'<path d="M33 44 q7 4 14 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}<circle cx="22" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><circle cx="58" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><rect x="26" y="58" width="28" height="14" rx="6" fill="#dfe8f8" stroke="#2f66c2" stroke-width="3"/><rect x="4" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/><rect x="68" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/></g></svg>`;
+const BOT_SVG=(mood)=>`<svg viewBox="0 0 80 80" width="100%" height="100%"><g><line x1="40" y1="6" x2="40" y2="14" stroke="#2f66c2" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="6" r="4" fill="#ff7a1a"/><rect x="12" y="14" width="56" height="44" rx="16" fill="#fff" stroke="#2f66c2" stroke-width="3"/><rect x="18" y="22" width="44" height="28" rx="10" fill="#2f66c2"/><g class="eye"><ellipse cx="31" cy="35" rx="4.5" ry="5.5" fill="#fff"/></g><g class="eye"><ellipse cx="49" cy="35" rx="4.5" ry="5.5" fill="#fff"/></g>${mood==='happy'?'<path d="M32 43 q8 7 16 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'<path d="M33 44 q7 4 14 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}<circle cx="22" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><circle cx="58" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><rect x="26" y="58" width="28" height="14" rx="6" fill="#dfe8f8" stroke="#2f66c2" stroke-width="3"/><rect x="4" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/><rect x="68" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/></g></svg>`;
 let chatLog=[],chatSig='',chatIsOpen=false,botSteps=null;
 /* 최성봇 드래그 이동(위치 기억) */
 (function(){const bot=document.getElementById('bot');let st=null;
@@ -814,7 +813,7 @@ function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(
   if(/예외/.test(t))return say2('<b>예외처리</b>는 특수교육대상자·학교외 장소 수강·기타 사유로 보장지도 없이 학점을 주는 거예요. 기타를 고르면 사유를 꼭 써야 저장돼요.');
   if(/시수|참여/.test(t))return say2('<b>참여시수</b>를 입력하면 이수기준 시수 이상이면 자동으로 이수, 미만이면 미이수로 판정돼요. 4학점이면 필요시수 12, 이수기준 8시수예요.');
   if(/마감/.test(t)&&!/왜/.test(t))return say2('마감은 <b>[학점반영] → [마감]</b> 순서예요. 마감하면 예외처리·시수를 고칠 수 없고, 강의실이 전부 마감되어야 업무담당자가 [마감정보저장] → [승인요청]할 수 있어요.');
-  if(/승인|결재/.test(t))return say2('<b>승인요청</b>은 결재 상신이에요. 실제 나이스에서는 결재권자가 결재하지만, 연수에서는 <code>업무승인 › 승인요청결재</code>에서 직접 [승인]을 눌러 결재 완료 상태를 만들어요.');
+  if(/승인|결재/.test(t))return say2('<b>승인요청</b>을 누르면 결재선과 의견을 적는 승인요청 창이 떠요. 거기서 [승인요청]을 누르면 결재권자에게 올라가고요. 실제로는 결재권자가 결재할 때까지 기다리지만, 연수에서는 같은 화면의 [결재완료 처리(연수용)] 버튼으로 결재가 끝난 상태를 만들 수 있어요 😊');
   if(!na)return say2('🎉 8단계가 모두 끝났어요! 수고하셨어요. 다시 연습하려면 "초기화"라고 말해 주세요.');
   if(/왜|안 돼|안돼|비활성|회색|못 눌|안 눌/.test(t))return say2(`지금 단계가 막힌 이유는 이거예요 🔍<br>${na.why}<br><br>${here?'번호가 붙은 버튼을 순서대로 눌러 보세요.':'<button class="btn s" onclick="guideGo()">🚀 그 화면으로 데려다줘</button>'}`);
   if(/다음|뭐|해야|할 일|순서|어디|어떻게/.test(t)){chatSig='';return setTimeout(()=>renderGuide(true),350);}
@@ -840,14 +839,14 @@ function renderGuide(force){
 }
 /* ═════════════════ 연수도우미 ═════════════════ */
 function steps(){return [
-  {pre:1,t:'[1단계] 과목 출석률 마감',d:'① 교과담임: <code>학적 › 출결관리 › 과목별출결관리 › 학기별과목출결마감(창의적체험활동제외)</code>에서 강의실별 {학기별과목마감} (과목교시마감수 = 반별일출결마감수 = 시간표총수업수일 때만 가능) ② 업무담당자: <code>과목전체마감</code>에서 {전체마감} → {승인요청} → <code>업무승인 › 승인요청결재</code>에서 결재.',ok:()=>attAllApproved(),go:['hak','att-subj']},
-  {pre:1,t:'[2단계] 학기말 성적 산출 마감',d:'<code>성적 › 성적처리 › 성적산출마감관리</code>에서 {성적산출전체마감} → {승인요청} → 결재. (1단계와 순서 무관)',ok:()=>calcAllApproved(),go:['score','calc-close']},
+  {pre:1,t:'[1단계] 과목 출석률 마감',d:'① 교과담임: <code>학적 › 출결관리 › 과목별출결관리 › 학기별과목출결마감(창의적체험활동제외)</code>에서 강의실별 {학기별과목마감} (과목교시마감수 = 반별일출결마감수 = 시간표총수업수일 때만 가능) ② 업무담당자: <code>과목전체마감</code>에서 {전체마감} → {승인요청}(승인요청 창) → 결재권자 결재(연수에서는 [결재완료 처리]).',ok:()=>attAllApproved(),go:['hak','att-subj']},
+  {pre:1,t:'[2단계] 학기말 성적 산출 마감',d:'<code>성적 › 성적처리 › 성적산출마감관리</code>에서 {성적산출전체마감} → {승인요청}(승인요청 창) → 결재권자 결재(연수에서는 [결재완료 처리]). (1단계와 순서 무관)',ok:()=>calcAllApproved(),go:['score','calc-close']},
   {t:'[3단계] 대상자 가져오기',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)이수관리 › 대상자</code>에서 {조회} → {대상자가져오기} → {확인}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).targets)),go:['score','msb-manage']},
   {t:'[4단계] 예외처리 대상자 등록',d:'<code>› 예외처리</code> 탭에서 예외사유(특수교육대상자·학교외 장소 수강·기타) 선택 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).excSaved)),go:['score','msb-manage']},
   {t:'[5단계] 대상자 이수여부 처리',d:'<code>› 이수관리</code> 탭에서 참여시수 입력 → 이수여부 자동 판정 → 비고 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).hoursSaved&&!msbRoomStats(s.id,c).pending)),go:['score','msb-manage']},
   {t:'[6단계] 최성보 마감 관리',d:'<code>› 마감</code> 탭에서 {학점반영} → {마감}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed)),go:['score','msb-manage']},
   {t:'[7단계] 학교생활기록부 자료반영',d:'<code>학생부 › 학교생활기록부 › 학생부반영</code>에서 학급담임이 {학생부반영}. 자퇴 학생은 <code>학적 › 학업중단관리 › 휴학/자퇴/퇴학/제적관리</code>에서 {최소성취수준보장지도 성적 학생부 반영}.',ok:()=>CLASSES.every(c=>S.recReflect[c])&&Object.values(S.withdrawn).every(w=>w.reflected),go:['rec','rec-reflect']},
-  {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청} → 결재.',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
+  {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청}(승인요청 창) → 결재권자 결재(연수에서는 [결재완료 처리]).',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
 ];}
 SCREENS['gd-steps']=()=>{const st=steps();const done=st.filter(s=>s.ok()).length;const na=nextAction();
   return pageHead('최소 성취수준 보장지도 관리 업무 흐름도')+`<div class="note info">${done} / ${st.length} 단계 완료 · <b>사전업무</b>(보라색 1·2단계, 순서 무관) → <b>보장지도 관리</b>(3~8단계). 각 단계의 조건이 안 맞으면 실제 나이스처럼 버튼이 비활성화되거나 알림이 뜹니다. <b>버튼을 누르는 순서가 중요</b>하므로, 모르겠으면 오른쪽 아래 <b>최성봇</b>에게 물어보고 ①②③ 순서대로 누르세요.</div>
