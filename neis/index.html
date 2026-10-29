@@ -352,7 +352,7 @@ function seedData(){
   S.examClose.eng.perf=false;
   S.log=[];addLog('시스템','가상 자료 생성');save();
 }
-function save(){localStorage.setItem(KEY,JSON.stringify(S));}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function load(){try{const j=localStorage.getItem(KEY);if(j){S=JSON.parse(j);return true;}}catch(e){}return false;}
 function addLog(who,what){S.log.unshift(`${nowStr()} [${who}] ${what}`);if(S.log.length>400)S.log.length=400;}
 function nowStr(){const d=new Date();return `${S.simDate} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
