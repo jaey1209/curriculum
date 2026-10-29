@@ -206,9 +206,15 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .toast.on{opacity:.95}
 
 /* ───── 최성봇(연수 도우미 챗봇) ───── */
-#bot{position:fixed;right:22px;bottom:22px;z-index:40;display:none;flex-direction:column;align-items:flex-end;gap:10px}
+#bot{position:fixed;right:22px;bottom:22px;z-index:40;display:none;flex-direction:column;align-items:flex-end;gap:10px;touch-action:none}
+#bot.dragging{opacity:.85}
+#bot.dragging .bot-av{animation:none;cursor:grabbing}
+.bot-av{cursor:grab}
+#chat .ch{cursor:grab}
+.bot-hint{position:absolute;right:0;top:-22px;font-size:11px;color:#fff;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:999px;white-space:nowrap;pointer-events:none;opacity:0;transition:.2s}
+.bot-av:hover .bot-hint{opacity:1}
 #bot.on{display:flex}
-.bot-av{width:84px;height:84px;cursor:pointer;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));animation:bob 2.6s ease-in-out infinite;position:relative}
+.bot-av{width:84px;height:84px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));animation:bob 2.6s ease-in-out infinite;position:relative}
 .bot-av:hover{animation-play-state:paused;transform:scale(1.06)}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .bot-av .eye{animation:blink 4s infinite}
@@ -310,7 +316,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
     <div class="quick" id="chatQuick"></div>
     <div class="ci"><input id="chatIn" placeholder="최성봇에게 물어보세요 (예: 다음엔 뭐 해?)" onkeydown="if(event.key==='Enter')chatSend()"><button onclick="chatSend()">➤</button></div>
   </div>
-  <div class="bot-av" id="botAv" onclick="chatOpen()"><span class="bot-peek" id="botPeek"></span><span class="badge" id="botBadge" style="display:none"></span></div>
+  <div class="bot-av" id="botAv"><span class="bot-hint">끌어서 이동 · 클릭하면 대화</span><span class="bot-peek" id="botPeek"></span><span class="badge" id="botBadge" style="display:none"></span></div>
 </div>
 <div class="scrim" id="scrim"><div class="pop" id="pop"><div class="pt"><span id="mTitle"></span><button class="x" onclick="closeModal()">✕</button></div><div class="pb" id="mBody"></div><div class="pf" id="mFoot"></div></div></div>
 <div class="toast" id="toast"></div>
@@ -710,9 +716,9 @@ SCREENS['rec-view']=()=>{const c=cond.cls;const q=queried[view.menu];return page
 
 /* ═════════════════ 업무승인 ═════════════════ */
 SCREENS['appr-box']=()=>{
-  const list=S.approvals.slice().reverse();
+  const ak=cond.ak||'w';const list=S.approvals.slice().reverse().filter(a=>ak==='w'?a.status==='대기':a.status!=='대기');
   const rows=list.map(a=>`<tr><td><input type="checkbox" disabled></td><td>${a.at}</td><td class="l">${a.title}</td><td>${a.by}</td><td>${a.status==='대기'?'결재대기':a.status}</td><td>${a.decidedAt||''}</td><td>${a.status==='대기'?`<button class="btn s" id="b-approve" ${can.approver()?'':'disabled'} onclick="decide('${a.id}','승인')">승인</button> <button class="btn s w" ${can.approver()?'':'disabled'} onclick="decide('${a.id}','반려')">반려</button>`:''}</td></tr>`).join('');
-  return pageHead('승인요청결재')+condBar(fixedCond(1)+radio('ak',[['w','결재대기'],['d','결재완료']],'w','ak'),qbtn())+(queried[view.menu]?`<div class="rem-l">※ 실제 나이스에서는 결재권자가 업무승인과정(결재선)에 따라 결재합니다. 연수에서는 이 화면에서 {승인}을 눌러 결재 완료 상태를 만듭니다.</div>`+tbar(list.length,printBtn())+(rows?`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" disabled></th>${th('요청일시')}${th('제목','class="l"')}${th('요청자')}${th('상태')}${th('결재일시')}<th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 자료가 없습니다.</div>'):needQuery());
+  return pageHead('승인요청결재')+condBar(fixedCond(1)+radio('ak',[['w','결재대기'],['d','결재완료']],cond.ak||'w','ak'),qbtn())+(queried[view.menu]?`<div class="rem-l">※ 실제 나이스에서는 결재권자가 업무승인과정(결재선)에 따라 결재합니다. 연수에서는 이 화면에서 {승인}을 눌러 결재 완료 상태를 만듭니다.</div>`+tbar(list.length,printBtn())+(rows?`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" disabled></th>${th('요청일시')}${th('제목','class="l"')}${th('요청자')}${th('상태')}${th('결재일시')}<th>처리</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 자료가 없습니다.</div>'):needQuery());
 };
 function decide(id,st){const a=S.approvals.find(x=>x.id===id);const obj={attAll:S.attAll,calcAll:S.calcAll,msb:S.msbMgmt}[a.type];
   confirmBox('확인',`"${a.title}" 건을 ${st}하시겠습니까?`,()=>{a.status=st;a.decidedAt=nowStr();if(st==='승인')obj.approved={by:'결재권자',at:nowStr()};else{obj.req=null;}addLog(me.name,`결재 ${st}: ${a.title}`);save();toast(`${st} 처리되었습니다.`);render();});}
@@ -745,9 +751,9 @@ function nextAction(){
     if(ms.some(m=>!m.targets))return Object.assign(base,{step:3,title:'[3단계] 대상자 가져오기',tab:'target',why:`${subjLabel(sid)}의 학점이수 기준 미도달 학생을 가져옵니다. {지필/수행 학업성취율 현황}·{과목별출결현황}으로 근거 자료도 확인해 보세요.`,
       seq:[{t:'[대상자] 탭',tab:'target'},{t:`조회조건: 과목 <b>${subjLabel(sid)}</b> · 강의실 <b>전체</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='target'},{t:'[대상자가져오기]',b:'b-fetch'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
     if(ms.some(m=>!m.excSaved))return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택합니다. 없더라도 {저장}을 눌러 확인 처리합니다.`,
-      seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},{t:'예외 선택(필요한 학생만, 기타는 사유 입력)',cell:'exc-cell'},{t:'[저장]',b:'b-save'}]});
+      seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},{t:'예외 대상이 있으면 예외 선택 (기타는 사유 입력, 없으면 바로 저장)',cell:'exc-cell',done:Q('msb-manage')&&cond.tab==='exc'},{t:'[저장]',b:'b-save'}]});
     if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다. 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정됩니다.`,
-      seq:[{t:'[이수관리] 탭',tab:'hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:'참여시수 입력(전원) · 필요시 비고',cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'}]});
+      seq:[{t:'[이수관리] 탭',tab:'hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:`참여시수 입력 (미입력 ${CLASSES.reduce((n,c)=>n+msbRoomStats(sid,c).pending,0)}명 남음) · 필요시 비고`,cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'}]});
     if(ms.some(m=>!m.creditApplied))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 학점반영',tab:'close',why:`${subjLabel(sid)}의 이수/미이수 결과를 학점에 반영합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[학점반영]',b:'b-credit'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[마감]',b:'b-close'}]});
     if(ms.some(m=>!m.closed))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 마감',tab:'close',why:`${subjLabel(sid)} 학점반영이 끝났습니다. 마감합니다.`,
@@ -771,15 +777,26 @@ const curTab=na=>na.menu==='msb-manage'?cond.tab:na.menu==='att-subj'?(cond.atab
 /* ── 최성봇 ── */
 const BOT_SVG=(mood)=>`<svg viewBox="0 0 80 80" width="100%" height="100%"><g><line x1="40" y1="6" x2="40" y2="14" stroke="#2f66c2" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="6" r="4" fill="#ff7a1a"/><rect x="12" y="14" width="56" height="44" rx="16" fill="#fff" stroke="#2f66c2" stroke-width="3"/><rect x="18" y="22" width="44" height="28" rx="10" fill="#2f66c2"/><g class="eye" style="transform-origin:31px 35px"><ellipse cx="31" cy="35" rx="4.5" ry="${mood==='happy'?3:5.5}" fill="#fff"/></g><g class="eye" style="transform-origin:49px 35px"><ellipse cx="49" cy="35" rx="4.5" ry="${mood==='happy'?3:5.5}" fill="#fff"/></g>${mood==='happy'?'<path d="M32 43 q8 7 16 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'<path d="M33 44 q7 4 14 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}<circle cx="22" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><circle cx="58" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><rect x="26" y="58" width="28" height="14" rx="6" fill="#dfe8f8" stroke="#2f66c2" stroke-width="3"/><rect x="4" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/><rect x="68" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/></g></svg>`;
 let chatLog=[],chatSig='',chatIsOpen=false,botSteps=null;
+/* 최성봇 드래그 이동(위치 기억) */
+(function(){const bot=document.getElementById('bot');let st=null;
+  function place(x,y){const w=bot.offsetWidth,h=bot.offsetHeight;x=Math.max(4,Math.min(window.innerWidth-w-4,x));y=Math.max(4,Math.min(window.innerHeight-h-4,y));bot.style.left=x+'px';bot.style.top=y+'px';bot.style.right='auto';bot.style.bottom='auto';}
+  function down(e){const t=e.target.closest('#botAv,#chat .ch');if(!t||e.target.closest('button'))return;const r=bot.getBoundingClientRect();st={sx:e.clientX,sy:e.clientY,ox:r.left,oy:r.top,moved:false,t};e.preventDefault();}
+  function move(e){if(!st)return;const dx=e.clientX-st.sx,dy=e.clientY-st.sy;if(!st.moved&&Math.hypot(dx,dy)<6)return;st.moved=true;bot.classList.add('dragging');place(st.ox+dx,st.oy+dy);}
+  function up(e){if(!st)return;bot.classList.remove('dragging');if(st.moved){try{localStorage.setItem('neis-bot-pos',JSON.stringify({x:bot.offsetLeft,y:bot.offsetTop}));}catch(_){}}else if(st.t.id==='botAv')chatOpen();st=null;}
+  bot.addEventListener('pointerdown',down);window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);
+  window.botRestorePos=function(){try{const p=JSON.parse(localStorage.getItem('neis-bot-pos'));if(p)place(p.x,p.y);}catch(_){}};
+  window.addEventListener('resize',()=>{if(bot.style.left)place(bot.offsetLeft,bot.offsetTop);});
+})();
 function chatOpen(v){chatIsOpen=v===undefined?!chatIsOpen:v;$('#chat').classList.toggle('on',chatIsOpen);$('#botPeek').style.display=chatIsOpen?'none':'';if(chatIsOpen){$('#botBadge').style.display='none';scrollChat();}}
 function scrollChat(){const m=$('#chatMsgs');m.scrollTop=m.scrollHeight;}
-function say(html,who){chatLog.push({who:who||'bot',html,t:new Date()});if(chatLog.length>60)chatLog.shift();drawChat();if(who!=='user'&&!chatIsOpen){const b=$('#botBadge');b.style.display='';b.textContent=(+b.textContent||0)+1;}}
+function say(html,who){chatLog.push({who:who||'bot',html,t:new Date()});if(chatLog.length>60)chatLog.shift();drawChat();if(who!=='user'&&!chatIsOpen){const b=$('#botBadge');b.style.display='';b.textContent='!';}}
 function drawChat(){const m=$('#chatMsgs');m.innerHTML=chatLog.map(x=>`<div class="msg ${x.who}">${x.who==='bot'?`<span class="mini">${BOT_SVG()}</span>`:''}<div class="bub">${x.html}</div><span class="time">${String(x.t.getHours()).padStart(2,'0')}:${String(x.t.getMinutes()).padStart(2,'0')}</span></div>`).join('');scrollChat();}
-function stepBubble(na,items,curIdx,here){const tabName=na.tab?(na.menu==='msb-manage'?MSB_TABS:ATT_TABS).find(t=>t.id===na.tab).name:'';
-  const intro=here?'지금 이 화면 맞아요! 번호 순서대로 눌러 보세요 👇':`다음은 <b>${na.title.replace(/^\[\d단계\] /,'')}</b>이에요. 메뉴 <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${tabName}</code> 탭`:''}으로 가 주세요. 아래 [화면으로 이동]을 누르면 제가 데려다 드릴게요 🚀`;
+function stepBubble(na,items,curIdx,here,condOK){const tabName=na.tab?(na.menu==='msb-manage'?MSB_TABS:ATT_TABS).find(t=>t.id===na.tab).name:'';
+  const intro=here&&!condOK?'화면은 맞는데 <b>조회조건</b>이 달라요. 조회조건을 바꾸거나 [화면으로 이동]을 눌러 주세요 👇':here?'지금 이 화면 맞아요! 번호 순서대로 눌러 보세요 👇':`다음은 <b>${na.title.replace(/^\[\d단계\] /,'')}</b>이에요. 메뉴 <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${tabName}</code> 탭`:''}으로 가 주세요. 아래 [화면으로 이동]을 누르면 제가 데려다 드릴게요 🚀`;
   return `<b>${na.title}</b><br><span style="color:#667">실제 담당: ${na.role}</span><br>${na.why}<br><br>${intro}<ol>${items.map((x,i)=>`<li class="${x.done?'done':''} ${i===curIdx?'cur':''}"><span class="n">${i+1}</span><span>${x.t}</span></li>`).join('')}</ol>`;}
-function quickBtns(na,here){const q=$('#chatQuick');if(!na){q.innerHTML=`<button onclick="go('guide','gd-steps')">전체 흐름도</button><button onclick="go('guide','gd-setting')">처음부터 다시</button>`;return;}
-  q.innerHTML=`${here?'':'<button class="p" onclick="guideGo()">🚀 화면으로 이동</button>'}<button onclick="botAsk('다음')">다음 할 일</button><button onclick="botAsk('왜')">왜 안 돼요?</button><button onclick="go('guide','gd-steps')">전체 흐름도</button><button onclick="botAsk('도움')">뭘 물어볼 수 있어?</button>`;}
+function quickBtns(na,here,condOK){const q=$('#chatQuick');if(!na){q.innerHTML=`<button onclick="go('guide','gd-steps')">전체 흐름도</button><button onclick="go('guide','gd-setting')">처음부터 다시</button>`;return;}
+  q.innerHTML=`${here&&condOK?'':'<button class="p" onclick="guideGo()">🚀 화면으로 이동</button>'}<button onclick="botAsk('다음')">다음 할 일</button><button onclick="botAsk('왜')">왜 안 돼요?</button><button onclick="go('guide','gd-steps')">전체 흐름도</button><button onclick="botAsk('도움')">뭘 물어볼 수 있어?</button><button onclick="botHome()">원래 자리로</button>`;}
+function botHome(){const b=$('#bot');b.style.left='';b.style.top='';b.style.right='';b.style.bottom='';try{localStorage.removeItem('neis-bot-pos');}catch(_){}}
 function botAsk(t){say(esc(t==='다음'?'다음엔 뭐 해?':t==='왜'?'왜 버튼이 안 눌려?':t==='도움'?'뭘 물어볼 수 있어?':t),'user');botReply(t);}
 function chatSend(){const i=$('#chatIn');const t=i.value.trim();if(!t)return;i.value='';say(esc(t),'user');botReply(t);}
 function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
@@ -800,19 +817,20 @@ function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(
   say2('음… 그건 아직 잘 모르겠어요 🤖 "다음", "왜", "흐름", "기준" 같은 말로 물어봐 주세요!');}
 function renderGuide(force){
   const p=$('#bot');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
-  if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;}
+  if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();}
   const na=nextAction();
   if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="go(\'guide\',\'gd-setting\')">처음부터 다시</button></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}quickBtns(null);return;}
   const here=view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
-  let curIdx=-1;const items=na.seq.map((x,i)=>{let done=here&&!!x.done;if(x.f&&here)done=true;if(x.tab&&here)done=true;if(!done&&curIdx<0)curIdx=i;return {...x,done};});
+  const condOK=!na.set||Object.entries(na.set).every(([k,v])=>k==='atab'||k==='tab'||cond[k]===v);
+  let curIdx=-1;const items=na.seq.map((x,i)=>{let done=here&&!!x.done&&condOK;if(x.f)done=here&&condOK;if(x.tab&&here)done=true;if(!done&&curIdx<0)curIdx=i;return {...x,done};});
   if(!here)curIdx=-1;
   const stepName=na.title.replace(/^\[\d단계\] /,'');const tabName2=na.tab?(na.menu==='msb-manage'?MSB_TABS:ATT_TABS).find(t=>t.id===na.tab).name:'';
-  const cur=items[curIdx];const peekMain=here&&cur?`<span class="n">${curIdx+1}</span>${cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${MENU_PATH[na.menu].split(' › ').slice(-1)[0]}</b>${na.tab?` › ${tabName2.replace('최소성취수준보장지도(추가학습)','')} 탭`:''} 화면으로 가세요`;
+  const cur=items[curIdx];const peekMain=here&&cur?`<span class="n">${curIdx+1}</span>${cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.f?cur.t.replace('조회조건: ','조회조건을 바꾸세요 → ')+' (또는 아래 [데려다줘])':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${MENU_PATH[na.menu].split(' › ').slice(-1)[0]}</b>${na.tab?` › ${tabName2.replace('최소성취수준보장지도(추가학습)','')} 탭`:''} 화면으로 가세요`;
   const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):`메뉴 ${MENU_PATH[na.menu]}`;
-  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div><div class="pk-b">${here?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 자세히</button></div>`;
-  const sig=`${na.title}|${here}|${curIdx}|${view.menu}|${curTab(na)}`;
-  if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say('안녕하세요! 저는 <b>최성봇</b>이에요 🤖 최소 성취수준 보장지도 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here));}
-  quickBtns(na,here);
+  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div><div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 자세히</button></div>`;
+  const sig=`${na.title}|${here}|${condOK}|${curIdx}|${view.menu}|${curTab(na)}`;
+  if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say('안녕하세요! 저는 <b>최성봇</b>이에요 🤖 최소 성취수준 보장지도 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
+  quickBtns(na,here,condOK);
   if(here){items.forEach((x,i)=>{if(x.b&&x.b!=='b-modal-ok'){const el=document.getElementById(x.b);if(el){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=i+1;el.appendChild(n);if(i===curIdx)el.classList.add('next');}}
       if(x.f&&i===curIdx){const el=document.getElementById(x.f);if(el)el.classList.add('next-field');}
       if(x.cell&&i===curIdx){document.querySelectorAll('.'+x.cell).forEach(td=>td.classList.add('next-cell'));}});}
