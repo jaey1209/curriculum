@@ -217,18 +217,23 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .bot-av{width:84px;height:84px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));animation:bob 2.6s ease-in-out infinite;position:relative}
 .bot-av:hover{animation-play-state:paused;transform:scale(1.06)}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.bot-av .eye{animation:blink 4s infinite}
+.bot-av .eye{animation:blink 4s infinite;transform-box:fill-box;transform-origin:center}
+.bot-av svg,.msg .mini svg,#chat .ch svg{display:block;overflow:visible;shape-rendering:geometricPrecision}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 .bot-av .badge{position:absolute;top:-2px;left:-2px;min-width:20px;height:20px;border-radius:10px;background:var(--crit);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff}
-.bot-peek{position:absolute;left:96px;bottom:6px;width:max-content;max-width:420px;background:#fff;border:2px solid #4f85d6;border-radius:18px;padding:14px 18px;font-size:17px;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.2);color:#1f2d4d;white-space:normal}
+#bot{--pz:1}
+.bot-peek{position:absolute;left:96px;bottom:6px;width:max-content;max-width:calc(420px*var(--pz));background:#fff;border:2px solid #4f85d6;border-radius:18px;padding:14px 18px;font-size:calc(17px*var(--pz));line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.2);color:#1f2d4d;white-space:normal}
 .bot-peek::after{content:"";position:absolute;left:-10px;bottom:20px;border:8px solid transparent;border-right-color:#4f85d6}
-.bot-peek .pk-t{font-size:14px;color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
-.bot-peek .pk-m{font-weight:bold;color:#1d4fb3;font-size:19px;line-height:1.45}
-.bot-peek .pk-s{color:#555;font-size:15px;margin-top:4px}
+.bot-peek .pk-t{font-size:calc(14px*var(--pz));color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
+.bot-peek .pk-m{font-weight:bold;color:#1d4fb3;font-size:calc(19px*var(--pz));line-height:1.45}
+.bot-peek .pk-m small{font-size:.68em;font-weight:normal;color:#8b9099}
+.bot-peek .pk-s{color:#555;font-size:calc(15px*var(--pz));margin-top:4px}
 .bot-peek .pk-b{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
-.bot-peek .pk-b button{border:0;background:#2f66c2;color:#fff;border-radius:999px;padding:7px 16px;font-size:15px;cursor:pointer;font-weight:bold}
+.bot-peek .pk-b button{border:0;background:#2f66c2;color:#fff;border-radius:999px;padding:7px 16px;font-size:calc(15px*var(--pz));cursor:pointer;font-weight:bold}
 .bot-peek .pk-b button.w{background:#eef3fb;color:#1d4fb3}
-.bot-peek .n{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;font-size:14px;font-weight:bold;align-items:center;justify-content:center;vertical-align:middle;margin-right:4px}
+.bot-peek .pk-b .pk-z{margin-left:auto;display:flex;gap:4px}
+.bot-peek .pk-b .pk-z button{background:#fff;border:1px solid #c9d3e3;color:#333;padding:4px 9px;font-size:calc(13px*var(--pz));min-width:36px}
+.bot-peek .n{display:inline-flex;width:1.3em;height:1.3em;border-radius:50%;background:var(--orange);color:#fff;font-size:.75em;font-weight:bold;align-items:center;justify-content:center;vertical-align:middle;margin-right:4px}
 #chat{width:440px;max-width:calc(100vw - 44px);background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;border:1px solid #d7e0ee}
 #chat.on{display:flex}
 #chat .ch{background:linear-gradient(135deg,#2f66c2,#5a95ea);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
@@ -251,7 +256,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .msg .bub li.done{color:#9aa3b3;text-decoration:line-through}
 .msg .bub li.done .n{background:var(--ok)}
 .msg .bub li.cur{font-weight:bold}
-.msg .mini{width:26px;height:26px;flex:none}
+.msg .mini{width:32px;height:32px;flex:none}
 .msg .time{font-size:10px;color:#9aa3b3;align-self:flex-end;white-space:nowrap}
 .quick{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;background:#fff;border-top:1px solid #e3e8f0}
 .quick button{border:1px solid #4f85d6;background:#fff;color:#1d4fb3;border-radius:999px;padding:6px 13px;font-size:14px;cursor:pointer}
@@ -313,7 +318,6 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
   <div id="chat">
     <div class="ch"><span id="botFace"></span><div><div class="nm">최성봇</div><div class="st">최소 성취수준 보장지도 연수 도우미</div></div><button class="x" onclick="chatOpen(false)">✕</button></div>
     <div class="cm" id="chatMsgs"></div>
-    <div class="quick" id="chatQuick"></div>
     <div class="ci"><input id="chatIn" placeholder="최성봇에게 물어보세요 (예: 다음엔 뭐 해?)" onkeydown="if(event.key==='Enter')chatSend()"><button onclick="chatSend()">➤</button></div>
   </div>
   <div class="bot-av" id="botAv"><span class="bot-hint">끌어서 이동 · 클릭하면 대화</span><span class="bot-peek" id="botPeek"></span><span class="badge" id="botBadge" style="display:none"></span></div>
@@ -775,7 +779,7 @@ function toggleGuide(v){guideOn=v===undefined?!guideOn:v;$('#gToggle').classList
 function guideGo(){const na=nextAction();if(!na)return;Object.assign(cond,na.set||{});if(na.tab&&na.menu==='msb-manage')cond.tab=na.tab;unq();go(topOf(na.menu),na.menu);}
 const curTab=na=>na.menu==='msb-manage'?cond.tab:na.menu==='att-subj'?(cond.atab||'period'):null;
 /* ── 최성봇 ── */
-const BOT_SVG=(mood)=>`<svg viewBox="0 0 80 80" width="100%" height="100%"><g><line x1="40" y1="6" x2="40" y2="14" stroke="#2f66c2" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="6" r="4" fill="#ff7a1a"/><rect x="12" y="14" width="56" height="44" rx="16" fill="#fff" stroke="#2f66c2" stroke-width="3"/><rect x="18" y="22" width="44" height="28" rx="10" fill="#2f66c2"/><g class="eye" style="transform-origin:31px 35px"><ellipse cx="31" cy="35" rx="4.5" ry="${mood==='happy'?3:5.5}" fill="#fff"/></g><g class="eye" style="transform-origin:49px 35px"><ellipse cx="49" cy="35" rx="4.5" ry="${mood==='happy'?3:5.5}" fill="#fff"/></g>${mood==='happy'?'<path d="M32 43 q8 7 16 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'<path d="M33 44 q7 4 14 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}<circle cx="22" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><circle cx="58" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><rect x="26" y="58" width="28" height="14" rx="6" fill="#dfe8f8" stroke="#2f66c2" stroke-width="3"/><rect x="4" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/><rect x="68" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/></g></svg>`;
+const BOT_SVG=(mood)=>`<svg viewBox="0 0 80 80" width="100%" height="100%"><g><line x1="40" y1="6" x2="40" y2="14" stroke="#2f66c2" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="6" r="4" fill="#ff7a1a"/><rect x="12" y="14" width="56" height="44" rx="16" fill="#fff" stroke="#2f66c2" stroke-width="3"/><rect x="18" y="22" width="44" height="28" rx="10" fill="#2f66c2"/><g class="eye"><circle cx="31" cy="35" r="5.5" fill="#fff"/><circle cx="31.8" cy="35.8" r="2.7" fill="#1e3461"/><circle cx="30.3" cy="34" r="1.1" fill="#fff"/></g><g class="eye"><circle cx="49" cy="35" r="5.5" fill="#fff"/><circle cx="49.8" cy="35.8" r="2.7" fill="#1e3461"/><circle cx="48.3" cy="34" r="1.1" fill="#fff"/></g>${mood==='happy'?'<path d="M32 43 q8 7 16 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'<path d="M33 44 q7 4 14 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}<circle cx="22" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><circle cx="58" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><rect x="26" y="58" width="28" height="14" rx="6" fill="#dfe8f8" stroke="#2f66c2" stroke-width="3"/><rect x="4" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/><rect x="68" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/></g></svg>`;
 let chatLog=[],chatSig='',chatIsOpen=false,botSteps=null;
 /* 최성봇 드래그 이동(위치 기억) */
 (function(){const bot=document.getElementById('bot');let st=null;
@@ -792,16 +796,16 @@ function scrollChat(){const m=$('#chatMsgs');m.scrollTop=m.scrollHeight;}
 function say(html,who){chatLog.push({who:who||'bot',html,t:new Date()});if(chatLog.length>60)chatLog.shift();drawChat();if(who!=='user'&&!chatIsOpen){const b=$('#botBadge');b.style.display='';b.textContent='!';}}
 function drawChat(){const m=$('#chatMsgs');m.innerHTML=chatLog.map(x=>`<div class="msg ${x.who}">${x.who==='bot'?`<span class="mini">${BOT_SVG()}</span>`:''}<div class="bub">${x.html}</div><span class="time">${String(x.t.getHours()).padStart(2,'0')}:${String(x.t.getMinutes()).padStart(2,'0')}</span></div>`).join('');scrollChat();}
 function stepBubble(na,items,curIdx,here,condOK){const tabName=na.tab?(na.menu==='msb-manage'?MSB_TABS:ATT_TABS).find(t=>t.id===na.tab).name:'';
-  const intro=here&&!condOK?'화면은 맞는데 <b>조회조건</b>이 달라요. 조회조건을 바꾸거나 [화면으로 이동]을 눌러 주세요 👇':here?'지금 이 화면 맞아요! 번호 순서대로 눌러 보세요 👇':`다음은 <b>${na.title.replace(/^\[\d단계\] /,'')}</b>이에요. 메뉴 <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${tabName}</code> 탭`:''}으로 가 주세요. 아래 [화면으로 이동]을 누르면 제가 데려다 드릴게요 🚀`;
+  const intro=here&&!condOK?'화면은 맞는데 <b>조회조건</b>이 달라요. 조회조건을 바꾸거나 말풍선의 [🚀 데려다줘]를 눌러 주세요 👇':here?'지금 이 화면 맞아요! 번호 순서대로 눌러 보세요 👇':`다음은 <b>${na.title.replace(/^\[\d단계\] /,'')}</b>이에요. 메뉴 <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${tabName}</code> 탭`:''}으로 가 주세요. 말풍선의 [🚀 데려다줘]를 누르면 제가 데려다 드릴게요`;
   return `<b>${na.title}</b><br><span style="color:#667">실제 담당: ${na.role}</span><br>${na.why}<br><br>${intro}<ol>${items.map((x,i)=>`<li class="${x.done?'done':''} ${i===curIdx?'cur':''}"><span class="n">${i+1}</span><span>${x.t}</span></li>`).join('')}</ol>`;}
-function quickBtns(na,here,condOK){const q=$('#chatQuick');if(!na){q.innerHTML=`<button onclick="go('guide','gd-steps')">전체 흐름도</button><button onclick="go('guide','gd-setting')">처음부터 다시</button>`;return;}
-  q.innerHTML=`${here&&condOK?'':'<button class="p" onclick="guideGo()">🚀 화면으로 이동</button>'}<button onclick="botAsk('다음')">다음 할 일</button><button onclick="botAsk('왜')">왜 안 돼요?</button><button onclick="go('guide','gd-steps')">전체 흐름도</button><button onclick="botAsk('도움')">뭘 물어볼 수 있어?</button><button onclick="botHome()">원래 자리로</button>`;}
+function peekZoom(d){let z=+(getComputedStyle($('#bot')).getPropertyValue('--pz'))||1;z=Math.round(Math.min(1.8,Math.max(.7,z+d*.15))*100)/100;$('#bot').style.setProperty('--pz',z);try{localStorage.setItem('neis-peek-zoom',z);}catch(_){}}
 function botHome(){const b=$('#bot');b.style.left='';b.style.top='';b.style.right='';b.style.bottom='';try{localStorage.removeItem('neis-bot-pos');}catch(_){}}
 function botAsk(t){say(esc(t==='다음'?'다음엔 뭐 해?':t==='왜'?'왜 버튼이 안 눌려?':t==='도움'?'뭘 물어볼 수 있어?':t),'user');botReply(t);}
 function chatSend(){const i=$('#chatIn');const t=i.value.trim();if(!t)return;i.value='';say(esc(t),'user');botReply(t);}
 function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
   const say2=h=>setTimeout(()=>say(h),350);
-  if(/도움|뭘|무엇|명령|help/i.test(t))return say2('이런 걸 물어보실 수 있어요 😊<br>· <b>다음</b> — 지금 해야 할 단계와 버튼 순서<br>· <b>왜</b> — 버튼이 비활성화된 이유<br>· <b>흐름</b> — 8단계 전체 흐름도<br>· <b>초기화</b> — 처음부터 다시 연습<br>· <b>건너뛰기</b> — 1·2단계 완료 처리하고 3단계부터<br>· <b>기준</b> — 학점이수 기준·최성보 변경 안내<br>· <b>대상자 / 예외 / 시수 / 마감 / 승인</b> — 각 용어 설명');
+  if(/도움|뭘|무엇|명령|help/i.test(t))return say2('이런 걸 물어보실 수 있어요 😊<br>· <b>다음</b> — 지금 해야 할 단계와 버튼 순서<br>· <b>왜</b> — 버튼이 비활성화된 이유<br>· <b>흐름</b> — 8단계 전체 흐름도<br>· <b>초기화</b> — 처음부터 다시 연습<br>· <b>건너뛰기</b> — 1·2단계 완료 처리하고 3단계부터<br>· <b>기준</b> — 학점이수 기준·최성보 변경 안내<br>· <b>대상자 / 예외 / 시수 / 마감 / 승인</b> — 각 용어 설명<br>· <b>원래 자리</b> — 저를 왼쪽 아래 제자리로');
+  if(/원래 자리|제자리|위치/.test(t)){botHome();return say2('원래 자리(왼쪽 아래)로 돌아갈게요 🏠');}
   if(/초기화|리셋|다시 처음/.test(t))return say2('처음부터 다시 하려면 <code>연수도우미 › 설정·초기화·로그</code>에서 <b>[자료 초기화]</b>를 눌러 주세요. 지금 입력한 내용은 모두 지워져요! <br><button class="btn s" onclick="go(\'guide\',\'gd-setting\')">설정 화면으로</button>');
   if(/건너|스킵|3단계부터/.test(t))return say2('사전업무(1·2단계)를 완료 처리하고 3단계부터 연습할 수 있어요. <button class="btn s" onclick="confirmBox(\'확인\',\'1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.\',()=>skipPre())">3단계부터 시작</button>');
   if(/흐름|단계 전체|전체/.test(t))return say2('8단계 흐름이에요 📋<br>사전 ① 과목 출석률 마감 → ② 학기말 성적산출 마감<br>본업무 ③ 대상자 가져오기 → ④ 예외처리 → ⑤ 이수여부 처리 → ⑥ 학점반영·마감 → ⑦ 학생부 자료반영 → ⑧ 마감정보저장·승인요청<br><button class="btn s" onclick="go(\'guide\',\'gd-steps\')">흐름도 화면 열기</button>');
@@ -812,25 +816,24 @@ function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(
   if(/마감/.test(t)&&!/왜/.test(t))return say2('마감은 <b>[학점반영] → [마감]</b> 순서예요. 마감하면 예외처리·시수를 고칠 수 없고, 강의실이 전부 마감되어야 업무담당자가 [마감정보저장] → [승인요청]할 수 있어요.');
   if(/승인|결재/.test(t))return say2('<b>승인요청</b>은 결재 상신이에요. 실제 나이스에서는 결재권자가 결재하지만, 연수에서는 <code>업무승인 › 승인요청결재</code>에서 직접 [승인]을 눌러 결재 완료 상태를 만들어요.');
   if(!na)return say2('🎉 8단계가 모두 끝났어요! 수고하셨어요. 다시 연습하려면 "초기화"라고 말해 주세요.');
-  if(/왜|안 돼|안돼|비활성|회색|못 눌|안 눌/.test(t))return say2(`지금 단계가 막힌 이유는 이거예요 🔍<br>${na.why}<br><br>${here?'번호가 붙은 버튼을 순서대로 눌러 보세요.':'<button class="btn s" onclick="guideGo()">🚀 그 화면으로 이동</button>'}`);
+  if(/왜|안 돼|안돼|비활성|회색|못 눌|안 눌/.test(t))return say2(`지금 단계가 막힌 이유는 이거예요 🔍<br>${na.why}<br><br>${here?'번호가 붙은 버튼을 순서대로 눌러 보세요.':'<button class="btn s" onclick="guideGo()">🚀 그 화면으로 데려다줘</button>'}`);
   if(/다음|뭐|해야|할 일|순서|어디|어떻게/.test(t)){chatSig='';return setTimeout(()=>renderGuide(true),350);}
   say2('음… 그건 아직 잘 모르겠어요 🤖 "다음", "왜", "흐름", "기준" 같은 말로 물어봐 주세요!');}
 function renderGuide(force){
   const p=$('#bot');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
-  if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();}
+  if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();try{const z=+localStorage.getItem('neis-peek-zoom');if(z)$('#bot').style.setProperty('--pz',z);}catch(_){}}
   const na=nextAction();
-  if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="go(\'guide\',\'gd-setting\')">처음부터 다시</button></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}quickBtns(null);return;}
+  if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="go(\'guide\',\'gd-setting\')">처음부터 다시</button><span class="pk-z"><button onclick="peekZoom(-1)">가−</button><button onclick="peekZoom(1)">가+</button></span></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}return;}
   const here=view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
   const condOK=!na.set||Object.entries(na.set).every(([k,v])=>k==='atab'||k==='tab'||cond[k]===v);
   let curIdx=-1;const items=na.seq.map((x,i)=>{let done=here&&!!x.done&&condOK;if(x.f)done=here&&condOK;if(x.tab&&here)done=true;if(!done&&curIdx<0)curIdx=i;return {...x,done};});
   if(!here)curIdx=-1;
   const stepName=na.title.replace(/^\[\d단계\] /,'');const tabName2=na.tab?(na.menu==='msb-manage'?MSB_TABS:ATT_TABS).find(t=>t.id===na.tab).name:'';
-  const cur=items[curIdx];const peekMain=here&&cur?`<span class="n">${curIdx+1}</span>${cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.f?cur.t.replace('조회조건: ','조회조건을 바꾸세요 → ')+' (또는 아래 [데려다줘])':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${MENU_PATH[na.menu].split(' › ').slice(-1)[0]}</b>${na.tab?` › ${tabName2.replace('최소성취수준보장지도(추가학습)','')} 탭`:''} 화면으로 가세요`;
+  const cur=items[curIdx];const peekMain=here&&cur?`<span class="n">${curIdx+1}</span>${cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.f?cur.t.replace('조회조건: ','조회조건을 바꾸세요 → ')+' <small>(또는 아래 [데려다줘])</small>':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${MENU_PATH[na.menu].split(' › ').slice(-1)[0]}</b>${na.tab?` › ${tabName2.replace('최소성취수준보장지도(추가학습)','')} 탭`:''} 화면으로 가세요`;
   const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):`메뉴 ${MENU_PATH[na.menu]}`;
-  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div><div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 자세히</button></div>`;
+  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div><div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 대화하기</button><span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
   const sig=`${na.title}|${here}|${condOK}|${curIdx}|${view.menu}|${curTab(na)}`;
   if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say('안녕하세요! 저는 <b>최성봇</b>이에요 🤖 최소 성취수준 보장지도 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
-  quickBtns(na,here,condOK);
   if(here){items.forEach((x,i)=>{if(x.b&&x.b!=='b-modal-ok'){const el=document.getElementById(x.b);if(el){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=i+1;el.appendChild(n);if(i===curIdx)el.classList.add('next');}}
       if(x.f&&i===curIdx){const el=document.getElementById(x.f);if(el)el.classList.add('next-field');}
       if(x.cell&&i===curIdx){document.querySelectorAll('.'+x.cell).forEach(td=>td.classList.add('next-cell'));}});}
