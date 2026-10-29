@@ -208,37 +208,37 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 /* ───── 최성봇(연수 도우미 챗봇) ───── */
 #bot{position:fixed;right:22px;bottom:22px;z-index:40;display:none;flex-direction:column;align-items:flex-end;gap:10px}
 #bot.on{display:flex}
-.bot-av{width:74px;height:74px;cursor:pointer;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));animation:bob 2.6s ease-in-out infinite;position:relative}
+.bot-av{width:84px;height:84px;cursor:pointer;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));animation:bob 2.6s ease-in-out infinite;position:relative}
 .bot-av:hover{animation-play-state:paused;transform:scale(1.06)}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .bot-av .eye{animation:blink 4s infinite}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 .bot-av .badge{position:absolute;top:-2px;right:-2px;min-width:20px;height:20px;border-radius:10px;background:var(--crit);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff}
-.bot-peek{position:absolute;right:86px;bottom:6px;width:max-content;max-width:330px;background:#fff;border:2px solid #4f85d6;border-radius:16px;padding:10px 14px;font-size:13px;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.2);color:#1f2d4d;white-space:normal}
-.bot-peek::after{content:"";position:absolute;right:-10px;bottom:14px;border:8px solid transparent;border-left-color:#4f85d6}
-.bot-peek .pk-t{font-size:11px;color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
-.bot-peek .pk-m{font-weight:bold;color:#1d4fb3}
-.bot-peek .pk-s{color:#555;font-size:12px;margin-top:2px}
-.bot-peek .pk-b{margin-top:7px;display:flex;gap:6px;flex-wrap:wrap}
-.bot-peek .pk-b button{border:0;background:#2f66c2;color:#fff;border-radius:999px;padding:4px 11px;font-size:12px;cursor:pointer;font-weight:bold}
+.bot-peek{position:absolute;right:96px;bottom:6px;width:max-content;max-width:420px;background:#fff;border:2px solid #4f85d6;border-radius:18px;padding:14px 18px;font-size:17px;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.2);color:#1f2d4d;white-space:normal}
+.bot-peek::after{content:"";position:absolute;right:-10px;bottom:20px;border:8px solid transparent;border-left-color:#4f85d6}
+.bot-peek .pk-t{font-size:14px;color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
+.bot-peek .pk-m{font-weight:bold;color:#1d4fb3;font-size:19px;line-height:1.45}
+.bot-peek .pk-s{color:#555;font-size:15px;margin-top:4px}
+.bot-peek .pk-b{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.bot-peek .pk-b button{border:0;background:#2f66c2;color:#fff;border-radius:999px;padding:7px 16px;font-size:15px;cursor:pointer;font-weight:bold}
 .bot-peek .pk-b button.w{background:#eef3fb;color:#1d4fb3}
-.bot-peek .n{display:inline-flex;width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:bold;align-items:center;justify-content:center;vertical-align:middle;margin-right:4px}
-#chat{width:400px;max-width:calc(100vw - 44px);background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;border:1px solid #d7e0ee}
+.bot-peek .n{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;font-size:14px;font-weight:bold;align-items:center;justify-content:center;vertical-align:middle;margin-right:4px}
+#chat{width:440px;max-width:calc(100vw - 44px);background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;border:1px solid #d7e0ee}
 #chat.on{display:flex}
 #chat .ch{background:linear-gradient(135deg,#2f66c2,#5a95ea);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
 #chat .ch svg{width:34px;height:34px}
-#chat .ch .nm{font-weight:bold;font-size:14px}
-#chat .ch .st{font-size:11px;opacity:.9}
+#chat .ch .nm{font-weight:bold;font-size:16px}
+#chat .ch .st{font-size:13px;opacity:.9}
 #chat .ch .x{margin-left:auto;background:none;border:0;color:#fff;font-size:16px;cursor:pointer}
 #chat .cm{padding:12px;height:min(46vh,420px);overflow:auto;background:#f3f6fb;display:flex;flex-direction:column;gap:8px}
 .msg{display:flex;gap:8px;align-items:flex-end;max-width:92%}
 .msg.bot{align-self:flex-start}
 .msg.user{align-self:flex-end;flex-direction:row-reverse}
-.msg .bub{padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.55;background:#fff;color:#222;border:1px solid #dde4ee;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.msg .bub{padding:10px 14px;border-radius:14px;font-size:15px;line-height:1.55;background:#fff;color:#222;border:1px solid #dde4ee;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
 .msg.user .bub{background:#2f66c2;color:#fff;border:0;border-bottom-left-radius:14px;border-bottom-right-radius:4px}
 .msg .bub b{color:#1d4fb3}
 .msg.user .bub b{color:#fff}
-.msg .bub code{background:#eef2f8;padding:0 4px;border-radius:3px;color:#1e3461;font-family:inherit;font-size:12px}
+.msg .bub code{background:#eef2f8;padding:0 4px;border-radius:3px;color:#1e3461;font-family:inherit;font-size:14px}
 .msg .bub ol{margin:6px 0 0;padding:0;list-style:none}
 .msg .bub li{display:flex;gap:6px;align-items:flex-start;padding:3px 0;border-top:1px dashed #e3e8f0}
 .msg .bub li .n{width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px}
@@ -248,11 +248,11 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .msg .mini{width:26px;height:26px;flex:none}
 .msg .time{font-size:10px;color:#9aa3b3;align-self:flex-end;white-space:nowrap}
 .quick{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;background:#fff;border-top:1px solid #e3e8f0}
-.quick button{border:1px solid #4f85d6;background:#fff;color:#1d4fb3;border-radius:999px;padding:4px 11px;font-size:12px;cursor:pointer}
+.quick button{border:1px solid #4f85d6;background:#fff;color:#1d4fb3;border-radius:999px;padding:6px 13px;font-size:14px;cursor:pointer}
 .quick button:hover{background:#eef3fb}
 .quick button.p{background:#2f66c2;color:#fff}
 #chat .ci{display:flex;gap:6px;padding:8px 10px 10px;background:#fff}
-#chat .ci input{flex:1;border:1px solid #c9d3e3;border-radius:999px;height:34px;padding:0 14px;font-size:13px}
+#chat .ci input{flex:1;border:1px solid #c9d3e3;border-radius:999px;height:38px;padding:0 14px;font-size:15px}
 #chat .ci button{border:0;background:#2f66c2;color:#fff;border-radius:999px;width:34px;height:34px;font-size:15px;cursor:pointer}
 .typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:#9aa3b3;margin:0 1px;animation:ty 1s infinite}
 .typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
