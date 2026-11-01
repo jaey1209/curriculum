@@ -4,7 +4,7 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
 (async()=>{
   const b=await chromium.launch();const p=await b.newPage({viewport:{width:+(process.env.VW||1500),height:+(process.env.VH||860)}});
   const errs=[],log=[];p.on('pageerror',e=>errs.push('PAGEERROR '+e.message));p.on('console',m=>{if(m.type()==='error')errs.push('CONSOLE '+m.text());});
-  await p.goto('file://'+path.resolve(__dirname,'../index.html'));await p.evaluate(()=>localStorage.clear());await p.reload();
+  await p.goto('file://'+path.resolve(__dirname,'../index.html')+(process.env.HASH?'#'+process.env.HASH:''));await p.evaluate(()=>localStorage.clear());await p.reload();
   await p.click('#b-login');await p.waitForTimeout(200);
   // 드래그 테스트
   const av=await p.$('#botAv');const bb=await av.boundingBox();
@@ -19,6 +19,8 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
   let guard=0,lastSig='',stall=0,shots=0;const seen=new Set();
   while(guard++<260){
     const bubble=(await p.textContent('#botPeek')).replace(/\s+/g,' ').trim();
+    // STOPAT=n 이면 n단계 화면에 도착했을 때 스크린샷을 찍고 멈춘다
+    if(process.env.STOPAT){const st=await p.evaluate(()=>{const n=nextAction();return n?n.step:99;});if(st>=+process.env.STOPAT&&!(await p.$('#botPeek button:has-text("데려다줘")'))&&!(await p.evaluate(()=>document.getElementById('scrim').classList.contains('on')))){await p.screenshot({path:SP+'/stop.png'});log.push('STOP at '+st);break;}}
     const sig=bubble+'|'+await p.evaluate(()=>view.menu+'/'+(cond.tab||'')+'/'+(cond.atab||''));
     if(sig===lastSig){stall++;if(stall>8){log.push('STALL: '+bubble);break;}}else{stall=0;}lastSig=sig;
     if(!seen.has(bubble.slice(0,60))){seen.add(bubble.slice(0,60));if(shots<40){shots++;}}

@@ -47,6 +47,7 @@ a{color:var(--blue)}
 .roles button:hover{color:#2b63c6}
 .roles button.on{color:#2b63c6;border-bottom-color:#2b63c6;text-decoration:underline;text-underline-offset:4px}
 .gnb .sp{flex:1}
+.gnb .copy{font-size:11px;color:#8b9099;white-space:nowrap;flex:none}
 .gnb .who{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2);white-space:nowrap;flex:none}
 .gnb .who>*{white-space:nowrap}
 @media(max-width:1500px){.gnb .school{display:none}.roles button{padding:0 10px;font-size:13px}.gnb .logo{width:170px}}
@@ -293,6 +294,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .bot-peek .pk-m{font-weight:bold;color:#1d4fb3;font-size:calc(19px*var(--pz));line-height:1.45}
 .bot-peek .pk-m small{font-size:.68em;font-weight:normal;color:#8b9099}
 .bot-peek .pk-s{color:#555;font-size:calc(15px*var(--pz));margin-top:4px}
+.bot-peek .pk-r{margin-top:6px;display:inline-block;background:#fff3e6;border:1px solid #f2c48d;color:#b25400;border-radius:8px;padding:2px 10px;font-size:calc(14px*var(--pz));font-weight:bold}
 .bot-peek .pk-b{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
 .bot-peek .pk-b button{border:0;background:#2f66c2;color:#fff;border-radius:999px;padding:7px 16px;font-size:calc(15px*var(--pz));cursor:pointer;font-weight:bold}
 .bot-peek .pk-b button.w{background:#eef3fb;color:#1d4fb3}
@@ -360,7 +362,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
     <div class="lg-body">
       <p class="lg-desc">최소 성취수준 보장지도(추가학습) 업무 담당자 연수용 가상 나이스입니다.<br>실제 나이스와 연결되지 않으며, 학생·교사·점수는 모두 가상 자료입니다.</p>
       <button class="lg-btn" id="b-login" onclick="login()">로그인</button>
-      <p class="lg-hint">※ 인증서 없이 [로그인]을 누르면 연습을 시작합니다. 입력 내용은 이 브라우저에만 저장됩니다.</p>
+      <p class="lg-hint">※ 인증서 없이 [로그인]을 누르면 연습을 시작합니다. 입력 내용은 이 브라우저에만 저장됩니다.</p><p class="lg-hint" id="lgMode"></p>
     </div>
   </div>
 </div>
@@ -370,6 +372,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
     <div class="logo"><span class="emb"></span><span class="moe"><b>교육행정정보시스템</b>Ministry of Education</span></div>
     <nav class="roles" id="roles"></nav>
     <div class="sp"></div>
+    <span class="copy">© 2026 Jae-Young Lee</span>
     <div class="who"><button class="gbtn" id="gToggle" onclick="toggleGuide()">🤖 최성봇</button><button class="gdbtn" onclick="go('guide','gd-steps')">연수도우미</button><span class="pill" id="gDate"></span><span class="school" id="gSchool"></span><span id="gUser"></span><button class="pill" onclick="logout()">로그아웃</button></div>
   </div>
   <div class="body">
@@ -393,7 +396,11 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 
 <script>
 /* ═════════════════ 기본 자료(가상) ═════════════════ */
-const KEY='neis-msb-v5';
+const KEY_BASE='neis-msb-v6';
+/* 연수 버전: basic(기본·업무담당자 3~8단계) / full(심화·1·2단계 마감 오류부터). 링크 뒤 #심화 → 심화, #기본 → 기본, 없으면 관리자 화면 설정(기본값 basic) */
+let mode=(()=>{let h='';try{h=decodeURIComponent((location.hash||'')+(location.search||''));}catch(e){}if(/심화|full/i.test(h))return 'full';if(/기본|basic/i.test(h))return 'basic';try{return localStorage.getItem('neis-mode')==='full'?'full':'basic';}catch(e){return 'basic';}})();
+const keyOf=m=>KEY_BASE+'-'+(m||mode);
+const MODE_NAME={basic:'기본(업무담당자 3~8단계)',full:'심화(1·2단계 마감 오류부터)'};
 const SCHOOL='재영고등학교';
 const YEAR=2026, SEM=2;
 const TERM_START='2026-08-18', TERM_END='2026-12-31';
@@ -444,15 +451,18 @@ function seedData(){
   [['mat','1-1',2],['mat','1-1',7],['mat','1-2',4],['mat','1-3',11],['mat','1-3',19],['kor','1-2',9],['kor','1-3',3],['eng','1-1',14],['eng','1-2',16]].forEach(([s,c,i])=>{const st=pick(c,i);const sc=S.score[s][st.id];sc.w1=22;sc.w2=28;sc.p1=50;sc.p2=45;sc.final=Math.round(sc.w1*.3+sc.w2*.3+sc.p1*.2+sc.p2*.2);});
   const a1=pick('1-2',12);S.absent.mat[a1.id]=30;S.absent.kor[a1.id]=28;S.absent.eng[a1.id]=27;
   const a2=pick('1-1',20);S.absent.mat[a2.id]=26;
-  const wd=pick('1-3',5);S.withdrawn[wd.id]={type:'자퇴',date:'2026.12.18.',reason:'[검정고시] 검정고시 준비',reflected:false};
   PERIODS.mat.slice(-3).forEach(x=>{delete S.periodClose.mat['1-2'][x.d+'|'+x.p];});
   delete S.dayClose['1-3']['2026-12-29'];delete S.dayClose['1-3']['2026-12-30'];
   PERIODS.eng.slice(-1).forEach(x=>{delete S.periodClose.eng['1-1'][x.d+'|'+x.p];});
   S.examClose.eng.perf=false;
-  S.log=[];addLog('시스템','가상 자료 생성');save();
+  if(mode==='basic')preDone();
+  S.log=[];addLog('시스템',mode==='basic'?'가상 자료 생성(기본: 출결·성적 마감 완료 상태)':'가상 자료 생성(심화: 마감 오류 포함)');save();
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
-function load(){try{const j=localStorage.getItem(KEY);if(j){S=JSON.parse(j);return true;}}catch(e){}return false;}
+function save(){try{localStorage.setItem(keyOf(),JSON.stringify(S));}catch(e){}}
+function load(){try{const j=localStorage.getItem(keyOf());if(j){S=JSON.parse(j);return true;}}catch(e){}return false;}
+const otherMode=()=>mode==='full'?'basic':'full';
+function otherState(){try{const j=localStorage.getItem(keyOf(otherMode()));return j?JSON.parse(j):null;}catch(e){return null;}}
+function saveOther(o){try{localStorage.setItem(keyOf(otherMode()),JSON.stringify(o));}catch(e){}}
 function addLog(who,what){S.log.unshift({ts:new Date().toISOString(),sim:S.simDate,who,what});if(S.log.length>2000)S.log.length=2000;}
 const logDate=e=>typeof e==='string'?'(날짜 없음)':e.ts.slice(0,10);
 const logLine=e=>typeof e==='string'?esc(e):`${e.ts.slice(11,16)} <span style="color:#8b9099">(기준일 ${e.sim})</span> [${esc(e.who)}] ${esc(e.what)}`;
@@ -505,7 +515,7 @@ const ICON={search:'<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-wi
   lock:'<svg viewBox="0 0 16 16" fill="none" stroke="#333" stroke-width="1.2"><path d="M3 2h7l3 3v9H3z"/><path d="M10 2v3h3"/><rect x="6" y="8.5" width="4.5" height="3.5" rx=".5"/><path d="M7 8.5V7.5a1.3 1.3 0 0 1 2.6 0v1"/></svg>'};
 
 /* ═════════════════ 로그인·메뉴 ═════════════════ */
-function renderLogin(){}
+function renderLogin(){const el=document.getElementById('lgMode');if(el)el.textContent=mode==='full'?'연수 버전: 심화(1·2단계 마감 오류부터)':'';}
 function login(){
   me=ME;if(!load())seedData();
   cond.subj='mat';cond.cls='1-1';cond.room='all';cond.wdf='un';cond.rtab='reflect';queried={};openTabs=[];
@@ -734,8 +744,9 @@ const MSB_TABS=[{id:'target',name:'최소성취수준보장지도(추가학습)�
 function msbTargets(s,c){return (msbOf(s,c).targets||[]).map(sid=>studentById(sid));}
 function msbSummary(s){let t=0,cr=0,at=0,ac=0,both=0;roomsOf().forEach(c=>msbTargets(s,c).forEach(st=>{t++;const sf=shortfall(s,st.id);if(sf.length)cr++;if(sf.includes('출석'))at++;if(sf.includes('학업'))ac++;if(sf.length===2)both++;}));return {t,cr,at,ac,both};}
 function roomsCloseText(s){const un=roomsOf().filter(c=>!roomClosed(s,c));return un.length?`<span class="tip">출결이 마감되지 않은 강의실이 있습니다.<span class="tt">강의실 : ${un.map(c=>c.split('-')[1]).join(', ')}</span></span>`:'조회된 모든 강의실이 마감되었습니다.';}
+const ACTUAL_NOTE=(who,what)=>`<div class="note" style="margin:0 0 8px">👤 <b>실제 담당: ${who}</b> — ${what} 실제로는 ${who} 선생님이 하는 일이에요. 연수에서는 업무담당자가 대신 눌러 보며 흐름을 익혀요.</div>`;
 SCREENS['msb-manage']=()=>{const s=cond.subj;const t=cond.tab||'target';const na=guideOn?nextAction():null;
-  return pageHead('최소성취수준보장지도(추가학습)이수관리')+wizard(MSB_TABS,t,'msbTab',na&&na.menu==='msb-manage'?na.tab:null)+({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);};
+  return pageHead('최소성취수준보장지도(추가학습)이수관리')+wizard(MSB_TABS,t,'msbTab',na&&na.menu==='msb-manage'?na.tab:null)+(t==='hours'?ACTUAL_NOTE('교과담임','참여시수 입력은'):'')+({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);};
 function msbTab(t){cond.tab=t;unq();render();}
 function msbTargetTab(s){
   const sm=msbSummary(s);const q=queried[view.menu];const rooms=roomsOf();
@@ -855,7 +866,7 @@ const recHead=`<thead><tr><th rowspan="2">번호</th><th rowspan="2" class="l">�
 const REC_ITEMS=['학년반이력','전공과정','인적·학적사항','출결상황','수상경력','자격증및인증취득상황','학교폭력조치상황관리','창의적체험활동','교과학습발달상황','독서활동상황','행동특성및종합의견','세부능력및특기사항'];
 const REC_TABS=[{id:'reflect',name:'학생부반영',icon:'edit'},{id:'check',name:'자료검증 및 반마감',icon:'list',sub:{id:'checkres',name:'검증결과조회',icon:'doc'}},{id:'view',name:'학생부 조회 및 출력',icon:'doc',sub:{id:'items',name:'학생부 항목별 조회',icon:'list'}},{id:'close',name:'학생부 마감',icon:'lock'}];
 function recTab(t){if(!['reflect','view'].includes(t)){toast('연수 범위 밖 화면입니다. (실제 나이스에만 있음)');return;}cond.rtab=t;unq();render();}
-SCREENS['rec-reflect']=()=>{const t=cond.rtab||'reflect';const na=guideOn?nextAction():null;return pageHead('학교생활기록부')+wizard(REC_TABS,t,'recTab',na&&na.menu==='rec-reflect'?(na.tab||'reflect'):null)+(t==='reflect'?recReflectTab():recViewTab());};
+SCREENS['rec-reflect']=()=>{const t=cond.rtab||'reflect';const na=guideOn?nextAction():null;return pageHead('학교생활기록부')+wizard(REC_TABS,t,'recTab',na&&na.menu==='rec-reflect'?(na.tab||'reflect'):null)+(t==='reflect'?ACTUAL_NOTE('학급담임','학생부 자료반영은')+recReflectTab():recViewTab());};
 function recReflectTab(){
   const c=cond.cls;const q=queried[view.menu];const R=S.recReflect[c];const unclosed=SUBJECTS.filter(s=>!msbOf(s.id,c).closed);
   cond.recItems=cond.recItems||REC_ITEMS.slice();const all=cond.recItems.length===REC_ITEMS.length;const stu=students(c).find(x=>x.id===cond.recStu)||students(c)[0];
@@ -904,26 +915,20 @@ function nextAction(){
     seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[성적산출전체마감]',b:'b-calcall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-calcreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.calcAll.req)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 승인요청',role:'업무담당자',ok:true,menu:'calc-close',why:'전체마감이 끝났어요. 조회조건 옆 [승인요청]을 누르면 기안문서상신 창이 떠요. [결재자지정] → [상신] 순서예요.',seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[승인요청]',b:'b-calcreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.calcAll.approved)return apprAction(2,'성적산출 전체마감','calc-close');
-  const wdh=Object.entries(S.withdrawn).find(([sid,w])=>!w.hak);
-  if(wdh)return {step:3,title:'[3단계 전] 학업중단 학생 학적반영',role:'업무담당자',ok:true,menu:'hak-wd',set:{wdf:'un'},why:`${studentById(wdh[0]).name} 학생(${wdh[1].type})은 2차 정기시험 응시 후 학업을 중단했어요. 그대로 두지 말고 먼저 학적을 반영한 뒤 최소성취수준보장지도를 진행해요.`,
-    seq:[{t:'조회조건: [미반영된자료]',f:'f-wdf'},{t:'[조회]',b:'b-query',done:Q('hak-wd')},{t:'학생 선택(○)',done:cond.wdSel===wdh[0]},{t:'[학적반영]',b:'b-wdhak'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
-  for(const s of SUBJECTS){const sid=s.id;const role=`교과담임(${userName(s.teacher)})`;const ok=true;const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
+  for(const s of SUBJECTS){const sid=s.id;const role='업무담당자';const ok=true;const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
     if(ms.some(m=>!m.targets))return Object.assign(base,{step:3,title:'[3단계] 대상자 가져오기',tab:'target',why:`${subjLabel(sid)}의 학점이수 기준 미도달 학생을 가져옵니다. {지필/수행 학업성취율 현황}·{과목별출결현황}으로 근거 자료도 확인해 보세요.`,
       seq:[{t:'[대상자] 탭',tab:'target'},{t:`조회조건: 과목 <b>${subjLabel(sid)}</b> · 강의실 <b>전체</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='target'},{t:'[대상자가져오기]',b:'b-fetch'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
     if(ms.some(m=>!m.excSaved))return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택합니다. 없더라도 {저장}을 눌러 확인 처리합니다.`,
       seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},{t:'예외 대상 학생의 [예외] 선택 (기타는 사유 입력 · 해당 학생이 없으면 바로 [저장])',cell:'exc-cell',hdr:'th-exc',done:CLASSES.some(c=>Object.keys(msbOf(sid,c).exc).length)},{t:'[저장]',b:'b-save'}]});
-    if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다. 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정됩니다.`,
+    if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{role:`교과담임(${userName(s.teacher)})`,step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다. 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정돼요. 실제로는 교과담임 선생님이 입력하고, 연수에서는 업무담당자가 대신 입력해 봐요.`,
       seq:[{t:'[이수관리] 탭',tab:'hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:`참여시수 입력 (미입력 ${CLASSES.reduce((n,c)=>n+msbRoomStats(sid,c).pending,0)}명 남음) · 필요시 비고`,cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'}]});
     if(ms.some(m=>!m.creditApplied))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 학점반영',tab:'close',why:`${subjLabel(sid)}의 이수/미이수 결과를 학점에 반영합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[학점반영]',b:'b-credit'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[마감]',b:'b-close'}]});
     if(ms.some(m=>!m.closed))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 마감',tab:'close',why:`${subjLabel(sid)} 학점반영이 끝났습니다. 마감합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[마감]',b:'b-close'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
   }
-  for(const c of CLASSES)if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'rec-reflect',tab:'reflect',set:{cls:c,rtab:'reflect'},why:`${clsName(c)} 학생들의 학교생활기록부를 생성해요. 이수/미이수 결과는 [교과학습발달상황]에 반영돼요. 학기말이라 [전체] 항목을 그대로 두고 반영하면 돼요.`,
+  for(const c of CLASSES)if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'rec-reflect',tab:'reflect',set:{cls:c,rtab:'reflect'},why:`${clsName(c)} 학생들의 학교생활기록부를 생성해요. 이수/미이수 결과는 [교과학습발달상황]에 반영돼요. 학기말이라 [전체] 항목을 그대로 두고 반영하면 돼요. 실제로는 학급담임 선생님이 하는 일이고, 연수에서는 업무담당자가 대신 눌러 봐요.`,
     seq:[{t:'[학생부반영] 탭',tab:'reflect'},{t:`조회조건: 반 <b>${c.split('-')[1]}</b>`,f:'f-cls'},{t:'[조회]',b:'b-query',done:Q('rec-reflect')},{t:'[전체반영]',b:'b-reflect'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
-  const wd=Object.entries(S.withdrawn).find(([sid,w])=>!w.reflected);
-  if(wd)return {step:7,title:'[7단계] 학업중단 학생 최소성취수준보장지도 성적 학생부 반영',role:'업무담당자',ok:true,menu:'hak-wd',set:{wdf:'re'},why:`최성보 업무가 끝났으니 학적을 반영해 둔 ${studentById(wd[0]).name} 학생(${wd[1].type})의 최성보 성적을 학생부에 반영해요.`,
-    seq:[{t:'조회조건: [반영된자료]',f:'f-wdf'},{t:'[조회]',b:'b-query',done:Q('hak-wd')},{t:'학생 선택(○)',done:cond.wdSel===wd[0]},{t:'[최소성취수준보장지도 성적 학생부 반영]',b:'b-wdreflect'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
   if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부' 확인",done:Q('msb-mgmt')},{t:'[마감정보저장]',b:'b-mgmtsave'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-mgmtreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'마감정보가 저장되었어요. [승인요청] → 기안문서상신 창에서 [결재자지정] → [상신] 순서예요.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[승인요청]',b:'b-mgmtreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.msbMgmt.approved)return apprAction(8,'최소성취수준보장지도(추가학습) 마감','msb-mgmt');
@@ -952,24 +957,26 @@ function chatOpen(v){chatIsOpen=v===undefined?!chatIsOpen:v;$('#chat').classList
 function scrollChat(){const m=$('#chatMsgs');m.scrollTop=m.scrollHeight;}
 function say(html,who){chatLog.push({who:who||'bot',html,t:new Date()});if(chatLog.length>60)chatLog.shift();drawChat();if(who!=='user'&&!chatIsOpen){const b=$('#botBadge');b.style.display='';b.textContent='!';}}
 function drawChat(){const m=$('#chatMsgs');m.innerHTML=chatLog.map(x=>`<div class="msg ${x.who}">${x.who==='bot'?`<span class="mini">${BOT_SVG()}</span>`:''}<div class="bub">${x.html}</div><span class="time">${String(x.t.getHours()).padStart(2,'0')}:${String(x.t.getMinutes()).padStart(2,'0')}</span></div>`).join('');scrollChat();}
+const roleLine=na=>na.role==='업무담당자'?'<span style="color:#667">담당: 업무담당자</span>':`<span style="color:#b25400;font-weight:bold">👤 실제 담당: ${na.role}</span> <span style="color:#667">(연수에서는 업무담당자가 대신 눌러 봐요)</span>`;
 function stepBubble(na,items,curIdx,here,condOK){const tabName=tabNameOf(na);
   const intro=here&&!condOK?'화면은 맞는데 <b>조회조건</b>이 달라요. 조회조건을 바꾸거나 말풍선의 [🚀 데려다줘]를 눌러 주세요 👇':here?'지금 이 화면 맞아요! 번호 순서대로 눌러 보세요 👇':`다음은 <b>${na.title.replace(/^\[\d단계\] /,'')}</b>이에요. 메뉴 <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${tabName}</code> 탭`:''}으로 가 주세요. 말풍선의 [🚀 데려다줘]를 누르면 제가 데려다 드릴게요`;
-  return `<b>${na.title}</b><br><span style="color:#667">실제 담당: ${na.role}</span><br>${na.why}<br><br>${intro}<ol>${items.map((x,i)=>`<li class="${x.done?'done':''} ${i===curIdx?'cur':''}"><span class="n">${i+1}</span><span>${x.t}</span></li>`).join('')}</ol>`;}
+  return `<b>${na.title}</b><br>${roleLine(na)}<br>${na.why}<br><br>${intro}<ol>${items.map((x,i)=>`<li class="${x.done?'done':''} ${i===curIdx?'cur':''}"><span class="n">${i+1}</span><span>${x.t}</span></li>`).join('')}</ol>`;}
 function peekZoom(d){let z=+(getComputedStyle($('#bot')).getPropertyValue('--pz'))||1;z=Math.round(Math.min(1.8,Math.max(.7,z+d*.15))*100)/100;$('#bot').style.setProperty('--pz',z);try{localStorage.setItem('neis-peek-zoom',z);}catch(_){}}
 function botHome(){const b=$('#bot');b.style.left='';b.style.top='';b.style.right='';b.style.bottom='';try{localStorage.removeItem('neis-bot-pos');}catch(_){}}
 function botAsk(t){say(esc(t==='다음'?'다음엔 뭐 해?':t==='왜'?'왜 버튼이 안 눌려?':t==='도움'?'뭘 물어볼 수 있어?':t),'user');botReply(t);}
 function chatSend(){const i=$('#chatIn');const t=i.value.trim();if(!t)return;i.value='';say(esc(t),'user');botReply(t);}
 function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
   const say2=h=>setTimeout(()=>say(h),350);
-  if(/도움|뭘|무엇|명령|help/i.test(t))return say2('이런 걸 물어보실 수 있어요 😊<br>· <b>다음</b> — 지금 해야 할 단계와 버튼 순서<br>· <b>왜</b> — 버튼이 비활성화된 이유<br>· <b>흐름</b> — 8단계 전체 흐름도<br>· <b>초기화</b> — 처음부터 다시 연습<br>· <b>건너뛰기</b> — 1·2단계 완료 처리하고 3단계부터<br>· <b>기준</b> — 학점이수 기준·최성보 변경 안내<br>· <b>대상자 / 예외 / 시수 / 마감 / 승인</b> — 각 용어 설명<br>· <b>원래 자리</b> — 저를 왼쪽 아래 제자리로');
+  if(/도움|뭘|무엇|명령|help/i.test(t))return say2('이런 걸 물어보실 수 있어요 😊<br>· <b>다음</b> — 지금 해야 할 단계와 버튼 순서<br>· <b>왜</b> — 버튼이 비활성화된 이유<br>· <b>흐름</b> — 8단계 전체 흐름도<br>· <b>초기화</b> — 처음부터 다시 연습<br>'+(mode==='full'?'· <b>건너뛰기</b> — 1·2단계 완료 처리하고 3단계부터<br>':'')+'· <b>기준</b> — 학점이수 기준·최성보 변경 안내<br>· <b>대상자 / 예외 / 시수 / 마감 / 승인</b> — 각 용어 설명<br>· <b>원래 자리</b> — 저를 왼쪽 아래 제자리로');
   if(/접어|숨겨|가려/.test(t)){peekMin(true);return say2('말풍선을 접었어요. 로봇 옆 [다음 할 일 보기]를 누르면 다시 펼쳐져요 🙂');}
   if(/펼쳐|보여/.test(t)){peekMin(false);return say2('말풍선을 다시 펼쳤어요!');}
   if(/원래 자리|제자리|위치/.test(t)){botHome();return say2('원래 자리(왼쪽 아래)로 돌아갈게요 🏠');}
   if(/초기화|리셋|다시 처음/.test(t))return say2('처음부터 다시 하려면 <code>연수도우미 › 설정·초기화·로그</code>에서 <b>[자료 초기화]</b>를 눌러 주세요. 지금 입력한 내용은 모두 지워져요! <br><button class="btn s" onclick="go(\'guide\',\'gd-setting\')">설정 화면으로</button>');
+  if(/건너|스킵|3단계부터/.test(t)&&mode==='basic')return say2('기본 버전은 이미 1·2단계가 끝난 상태로 시작해요. 3단계부터 진행하면 돼요 🙂');
   if(/건너|스킵|3단계부터/.test(t))return say2('사전업무(1·2단계)를 완료 처리하고 3단계부터 연습할 수 있어요. <button class="btn s" onclick="confirmBox(\'확인\',\'1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.\',()=>skipPre())">3단계부터 시작</button>');
   if(/흐름|단계 전체|전체/.test(t))return say2('8단계 흐름이에요 📋<br>사전 ① 과목 출석률 마감 → ② 학기말 성적산출 마감<br>본업무 ③ 대상자 가져오기 → ④ 예외처리 → ⑤ 이수여부 처리 → ⑥ 학점반영·마감 → ⑦ 학생부 자료반영 → ⑧ 마감정보저장·승인요청<br><button class="btn s" onclick="go(\'guide\',\'gd-steps\')">흐름도 화면 열기</button>');
   if(/기준|2\/3|40|시수 기준|변경/.test(t))return say2('학점이수 기준은 <b>출석 2/3 이상</b> + <b>학업성취율 40% 이상(E 미만 아님)</b>이에요. 보장지도 이수기준 시수는 (학점 × 학점당 3시수)의 2/3, 전문교과는 학점당 2시수예요. <button class="btn s" onclick="go(\'guide\',\'gd-rule\')">변경 안내 보기</button>');
-  if(/학적|자퇴|학업중단/.test(t))return say2('2차 정기시험을 보고 학업을 중단한 학생은 성적산출 대상이에요. <code>학적 › 학업중단관리 › 휴학/자퇴/퇴학/제적관리</code>에서 ① 먼저 [학적반영]을 하고, ② 최성보 업무를 마친 뒤 [반영된자료]에서 학생을 골라 [최소성취수준보장지도 성적 학생부 반영]을 눌러요.');
+  if(/학적|자퇴|학업중단/.test(t))return say2('학업중단 학생의 학적반영은 <b>학적 담당자</b>의 일이라 이 연수에서는 다루지 않아요 🙂');
   if(/대상자/.test(t))return say2('<b>대상자</b>는 학점이수 기준에 미도달한 학생이에요. 출결 마감과 성적산출 마감이 결재까지 끝나야 <b>[대상자가져오기]</b> 버튼이 켜져요. 가져오면 이전 예외처리·시수 입력은 모두 지워지니 주의!');
   if(/예외/.test(t))return say2('<b>예외처리</b>는 특수교육대상자·학교외 장소 수강·기타 사유로 보장지도 없이 학점을 주는 거예요. 기타를 고르면 사유를 꼭 써야 저장돼요.');
   if(/시수|참여/.test(t))return say2('<b>참여시수</b>를 입력하면 이수기준 시수 이상이면 자동으로 이수, 미만이면 미이수로 판정돼요. 4학점이면 필요시수 12, 이수기준 8시수예요.');
@@ -997,9 +1004,9 @@ function renderGuide0(force){
   const stepName=na.title.replace(/^\[\d단계\] /,'');const tabName2=tabNameOf(na);
   const cur=items[curIdx];const peekMain=here&&cur?`<span class="n">${curIdx+1}</span>${cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.f?cur.t.replace('조회조건: ','조회조건을 바꾸세요 → ')+' <small>(또는 아래 [데려다줘])</small>':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${MENU_PATH[na.menu].split(' › ').slice(-1)[0]}</b>${na.tab?` › ${tabName2.replace('최소성취수준보장지도(추가학습)','')} 탭`:''} 화면으로 가세요`;
   const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):`메뉴 ${MENU_PATH[na.menu]}`;
-  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div><div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 대화하기</button><span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
+  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div>${na.role==='업무담당자'?'':`<div class="pk-r">👤 실제 담당: ${na.role}</div>`}<div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 대화하기</button><span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
   const sig=`${na.title}|${here}|${condOK}|${curIdx}|${view.menu}|${curTab(na)}`;
-  if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say('안녕하세요! 저는 <b>최성봇</b>이에요 🤖 최소 성취수준 보장지도 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
+  if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say(mode==='basic'?'안녕하세요! 저는 <b>최성봇</b>이에요 🤖 출결 마감(1단계)과 성적 마감(2단계)은 담당 부서에서 이미 끝냈어요. <b>3단계 대상자 가져오기</b>부터 업무담당자 일을 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!':'안녕하세요! 저는 <b>최성봇</b>이에요 🤖 심화 버전이라 출결·성적 마감에 일부러 빠진 곳이 있어요. 어디서 막히는지 찾아가며 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
   if(here){items.forEach((x,i)=>{if(x.b&&x.b!=='b-modal-ok'){const el=document.getElementById(x.b);if(el){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=i+1;el.appendChild(n);if(i===curIdx)el.classList.add('next');}}
       if(x.f&&i===curIdx){const el=document.getElementById(x.f);if(el)el.classList.add('next-field');}
       if(x.cell&&i===curIdx){document.querySelectorAll('.'+x.cell).forEach(td=>td.classList.add('next-cell'));}
@@ -1008,17 +1015,17 @@ function renderGuide0(force){
 /* ═════════════════ 연수도우미 ═════════════════ */
 function steps(){return [
   {pre:1,t:'[1단계] 과목 출석률 마감',d:'① 교과담임: <code>학적 › 출결관리 › 과목별출결관리</code>의 [학기별 과목 출결 마감] 탭에서 강의실별 {학기별과목마감} (과목교시마감수 = 반별일출결마감수 = 시간표총수업수일 때만 가능) ② 업무담당자: <code>과목 전체 마감</code> 탭에서 {전체마감} → {승인요청} → 기안문서상신 창 {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]).',ok:()=>attAllApproved(),go:['hak','att-subj']},
-  {pre:1,t:'[2단계] 학기말 성적 산출 마감',d:'<code>성적 › 성적처리 › 성적산출마감관리</code>에서 {성적산출전체마감} → 조회조건 옆 {승인요청} → {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]). (1단계와 순서 무관)<br>※ 2차 정기시험 후 학업을 중단한 학생이 있으면 <code>학적 › 학업중단관리 › 휴학/자퇴/퇴학/제적관리</code>에서 먼저 {학적반영}.',ok:()=>calcAllApproved(),go:['score','calc-close']},
+  {pre:1,t:'[2단계] 학기말 성적 산출 마감',d:'<code>성적 › 성적처리 › 성적산출마감관리</code>에서 {성적산출전체마감} → 조회조건 옆 {승인요청} → {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]). (1단계와 순서 무관)',ok:()=>calcAllApproved(),go:['score','calc-close']},
   {t:'[3단계] 대상자 가져오기',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)이수관리 › 대상자</code>에서 {조회} → {대상자가져오기} → {확인}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).targets)),go:['score','msb-manage']},
   {t:'[4단계] 예외처리 대상자 등록',d:'<code>› 예외처리</code> 탭에서 예외사유(특수교육대상자·학교외 장소 수강·기타) 선택 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).excSaved)),go:['score','msb-manage']},
-  {t:'[5단계] 대상자 이수여부 처리',d:'<code>› 이수관리</code> 탭에서 참여시수 입력 → 이수여부 자동 판정 → 비고 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).hoursSaved&&!msbRoomStats(s.id,c).pending)),go:['score','msb-manage']},
+  {t:'[5단계] 대상자 이수여부 처리',who:'교과담임',d:'<code>› 이수관리</code> 탭에서 참여시수 입력 → 이수여부 자동 판정 → 비고 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).hoursSaved&&!msbRoomStats(s.id,c).pending)),go:['score','msb-manage']},
   {t:'[6단계] 최성보 마감 관리',d:'<code>› 마감</code> 탭에서 {학점반영} → {마감}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed)),go:['score','msb-manage']},
-  {t:'[7단계] 학교생활기록부 자료반영',d:'<code>학생부 › 학교생활기록부 › 학교생활기록부</code>의 [학생부반영] 탭에서 학급담임이 {전체반영}. 자퇴 학생은 <code>학적 › 학업중단관리 › 휴학/자퇴/퇴학/제적관리</code>의 [반영된자료]에서 {최소성취수준보장지도 성적 학생부 반영}.',ok:()=>CLASSES.every(c=>S.recReflect[c])&&Object.values(S.withdrawn).every(w=>w.reflected),go:['rec','rec-reflect']},
+  {t:'[7단계] 학교생활기록부 자료반영',who:'학급담임',d:'<code>학생부 › 학교생활기록부 › 학교생활기록부</code>의 [학생부반영] 탭에서 반별로 {전체반영}.',ok:()=>CLASSES.every(c=>S.recReflect[c]),go:['rec','rec-reflect']},
   {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청} → 기안문서상신 창 {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]).',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
 ];}
 SCREENS['gd-steps']=()=>{const st=steps();const done=st.filter(s=>s.ok()).length;const na=nextAction();
-  return pageHead('최소 성취수준 보장지도 관리 업무 흐름도')+`<div class="note info">${done} / ${st.length} 단계 완료 · <b>사전업무</b>(보라색 1·2단계, 순서 무관) → <b>보장지도 관리</b>(3~8단계). 각 단계의 조건이 안 맞으면 실제 나이스처럼 버튼이 비활성화되거나 알림이 뜹니다. <b>버튼을 누르는 순서가 중요</b>하므로, 모르겠으면 오른쪽 아래 <b>최성봇</b>에게 물어보고 ①②③ 순서대로 누르세요.</div>
-  <ol class="steps">${st.map((s,i)=>`<li class="${s.ok()?'done':''} ${s.pre?'pre':''} ${na&&na.step===i+1?'cur':''}"><span class="no">${s.ok()?'✓':i+1}</span><div><div class="t">${s.t}</div><div class="d">${s.d}</div></div><button class="btn w s go" onclick="go('${s.go[0]}','${s.go[1]}')">이동</button></li>`).join('')}</ol>`;};
+  return pageHead('최소 성취수준 보장지도 관리 업무 흐름도')+`<div class="note info"><b>연수 버전: ${MODE_NAME[mode]}</b> · ${done} / ${st.length} 단계 완료<br>${mode==='basic'?'<b>1·2단계(출결 마감·성적 마감)는 담당 부서에서 이미 끝낸 상태</b>로 시작해요. 업무담당자는 <b>3단계부터 8단계까지</b> 직접 눌러 봐요.':'<b>사전업무</b>(보라색 1·2단계, 순서 무관)에 일부러 빠진 마감이 있어요. 어디서 막히는지 찾아가며 <b>보장지도 관리</b>(3~8단계)까지 진행해요.'} 각 단계의 조건이 안 맞으면 실제 나이스처럼 버튼이 비활성화되거나 알림이 떠요. <b>버튼을 누르는 순서가 중요</b>하니, 모르겠으면 왼쪽 아래 <b>최성봇</b>에게 물어보고 ①②③ 순서대로 누르세요.</div>
+  <ol class="steps">${st.map((s,i)=>`<li class="${s.ok()?'done':''} ${s.pre?'pre':''} ${na&&na.step===i+1?'cur':''}"><span class="no">${s.ok()?'✓':i+1}</span><div><div class="t">${s.t}${s.pre&&mode==='basic'?' <span class="chip ok">담당 부서 완료 상태로 시작</span>':''}${s.who?` <span class="chip warn">실제 담당: ${s.who}</span>`:''}</div><div class="d">${s.d}</div></div><button class="btn w s go" onclick="go('${s.go[0]}','${s.go[1]}')">이동</button></li>`).join('')}</ol>`;};
 SCREENS['gd-rule']=()=>pageHead('학점이수 기준 및 최소 성취수준 보장지도 변경 안내')
   +`<div class="rem-l">※ 2025학년도 2학기부터 적용 (고교학점제 적용 고등학교)</div><div class="grid-wrap auto"><table class="grid"><thead><tr><th>구분</th><th class="l">항목</th><th class="l">당초</th><th class="l">변경</th></tr></thead><tbody>
   <tr><td rowspan="3">학점이수 인정기준</td><td class="l">과목 및 창체의 출석률 충족 기준</td><td class="l">실제 수업횟수의 2/3 이상 출석</td><td class="l">1학점당 수업량(16회)의 2/3 이상 출석</td></tr>
@@ -1031,25 +1038,29 @@ SCREENS['gd-rule']=()=>pageHead('학점이수 기준 및 최소 성취수준 보
 SCREENS['gd-setting']=()=>pageHead('설정·초기화·로그')
   +`<div class="card" style="max-width:760px;margin-bottom:12px"><p><b>시뮬레이션 기준일</b> <input type="date" value="${S.simDate}" onchange="S.simDate=this.value;save();go(view.top,view.menu)"> <span class="status">(처리 이력의 날짜로만 쓰입니다)</span></p>
   <p><button class="btn n" onclick="confirmBox('확인','모든 마감·예외처리·시수·결재 내용을 지우고 가상 자료를 다시 만듭니다. 되돌릴 수 없습니다.',()=>{seedData();addLog(me.name,'자료 초기화');save();queried={};toast('초기화했습니다.');go('guide','gd-steps');})">자료 초기화</button>
-  <button class="btn" onclick="confirmBox('확인','1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.',()=>{skipPre();})">사전업무(1·2단계) 완료 처리하고 3단계부터</button>
+  ${mode==='full'?`<button class="btn" onclick="confirmBox('확인','1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.',()=>{skipPre();})">사전업무(1·2단계) 완료 처리하고 3단계부터</button>`:''}
   <button class="btn w" onclick="exportJson()">자료 내려받기(JSON)</button> <label class="btn w" style="display:inline-flex">자료 불러오기<input type="file" accept="application/json" style="display:none" onchange="importJson(this.files[0])"></label></p></div>
   <div class="sec">처리 이력(로그)</div>${logGrouped()}`;
-function logGroups(){const g={};S.log.forEach(e=>{const d=logDate(e);(g[d]=g[d]||[]).push(e);});return Object.keys(g).sort().reverse().map(d=>({d,items:g[d]}));}
-function logGrouped(del){const gs=logGroups();if(!gs.length)return '<div class="log"><div>기록 없음</div></div>';return gs.map(g=>`<div class="sec" style="display:flex;align-items:center;gap:10px">${g.d} <span class="status">${g.items.length}건</span>${del?`<button class="btn w s" onclick="adminDelDate('${g.d}')">이 날짜 기록 삭제</button>`:''}</div><div class="log" style="margin-bottom:10px">${g.items.map(e=>`<div>${logLine(e)}</div>`).join('')}</div>`).join('');}
+function allLogs(){const o=otherState();return S.log.concat(o&&o.log||[]);}
+function logGroups(src){const g={};(src||S.log).forEach(e=>{const d=logDate(e);(g[d]=g[d]||[]).push(e);});return Object.keys(g).sort().reverse().map(d=>({d,items:g[d]}));}
+function logGrouped(del){const gs=logGroups(del?allLogs():null);if(!gs.length)return '<div class="log"><div>기록 없음</div></div>';return gs.map(g=>`<div class="sec" style="display:flex;align-items:center;gap:10px">${g.d} <span class="status">${g.items.length}건</span>${del?`<button class="btn w s" onclick="adminDelDate('${g.d}')">이 날짜 기록 삭제</button>`:''}</div><div class="log" style="margin-bottom:10px">${g.items.map(e=>`<div>${logLine(e)}</div>`).join('')}</div>`).join('');}
 const ADMIN_CODE='1234';
 SCREENS['gd-admin']=()=>{
   if(!cond.adminOK)return pageHead('관리자(기록 관리)')+`<div class="card" style="max-width:520px"><p><b>관리자 코드</b>를 입력하세요. 연수 담당자만 사용하는 화면입니다.</p><p style="display:flex;gap:6px"><input type="password" id="adminCode" placeholder="관리자 코드" style="border:1px solid #b9c0cc;height:30px;padding:0 10px;flex:1" onkeydown="if(event.key==='Enter')adminLogin()"><button class="btn" onclick="adminLogin()">확인</button></p><p class="status">※ 기록은 이 PC의 브라우저에만 저장됩니다. 연수실 PC마다 이 화면에서 지워 주세요.</p></div>`;
-  const gs=logGroups();const total=S.log.length;
-  return pageHead('관리자(기록 관리)')+`<div class="note info">이 브라우저에 저장된 실습 기록 ${total}건 · 연수일 ${gs.length}일. 이전 연수 기록은 날짜별로 지우거나, 아래 [전체 실습 자료 초기화]로 처음 상태로 되돌리세요. <b>서버가 없어 다른 PC의 기록은 여기서 지워지지 않습니다.</b></div>
+  const gs=logGroups(allLogs());const total=allLogs().length;
+  const mr=m=>`<label style="display:flex;align-items:center;gap:6px;margin:4px 0"><input type="radio" name="mode" ${mode===m?'checked':''} onclick="setMode('${m}')"> <b>${MODE_NAME[m]}</b></label>`;
+  return pageHead('관리자(기록 관리)')+`<div class="card" style="max-width:760px;margin-bottom:12px"><div class="sec" style="margin-top:0">연수 버전</div>${mr('basic')}<div class="status" style="margin:0 0 6px 22px">출결 마감·성적 마감이 모두 끝난 상태에서 시작해 업무담당자 일(3~8단계)만 연습해요.</div>${mr('full')}<div class="status" style="margin:0 0 6px 22px">교시·일출결·수행평가 마감이 일부러 빠져 있어, 어디서 막히는지 찾는 연습을 해요.</div><p class="status" style="margin:8px 0 0">※ 이 설정은 이 PC 브라우저에만 적용돼요. 여러 PC에 한 번에 적용하려면 링크를 나눠 주세요. 링크 뒤에 <code>#심화</code>를 붙이면 심화, 아무것도 안 붙이면(또는 <code>#기본</code>) 기본 버전으로 열려요. 두 버전의 실습 내용은 따로 저장돼요.</p></div>`+`<div class="note info">이 브라우저에 저장된 실습 기록(두 버전 합계) ${total}건 · 연수일 ${gs.length}일. 이전 연수 기록은 날짜별로 지우거나, 아래 [전체 실습 자료 초기화]로 처음 상태로 되돌리세요. <b>서버가 없어 다른 PC의 기록은 여기서 지워지지 않습니다.</b></div>
   <div class="tbar"><span class="total">날짜별 기록</span><span class="sp"></span><button class="btn n" onclick="adminDelAll()">전체 로그 삭제</button><button class="btn n" onclick="adminReset()">전체 실습 자료 초기화(로그 포함)</button><button class="btn w" onclick="cond.adminOK=false;render()">관리자 나가기</button></div>
   <div class="grid-wrap auto"><table class="grid"><thead><tr>${th('연수일')}${th('기록 수')}${th('첫 기록')}${th('마지막 기록')}<th>처리</th></tr></thead><tbody>${gs.map(g=>{const t=g.items.map(e=>typeof e==='string'?'':e.ts.slice(11,16)).filter(Boolean).sort();return `<tr><td>${g.d}</td><td>${g.items.length}</td><td>${t[0]||''}</td><td>${t[t.length-1]||''}</td><td><button class="btn s n" onclick="adminDelDate('${g.d}')">이 날짜 전체 삭제</button></td></tr>`;}).join('')||'<tr><td colspan="5" style="padding:16px;color:#888">기록이 없습니다.</td></tr>'}</tbody></table></div>
   <div style="height:14px"></div>${logGrouped(true)}`;
 };
+function setMode(m){if(m===mode)return;mode=m;try{localStorage.setItem('neis-mode',m);}catch(e){}if(location.hash){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}if(!load())seedData();queried={};chatLog=[];chatSig='';toast(`연수 버전을 [${MODE_NAME[m]}]으로 바꿨어요.`);go('guide','gd-admin');}
 function adminLogin(){if($('#adminCode').value===ADMIN_CODE){cond.adminOK=true;render();}else alertBox('알림','관리자 코드가 올바르지 않습니다.');}
-function adminDelDate(d){confirmBox('확인',`${d} 기록 ${S.log.filter(e=>logDate(e)===d).length}건을 모두 삭제하시겠습니까?`,()=>{S.log=S.log.filter(e=>logDate(e)!==d);save();toast('삭제했습니다.');render();});}
-function adminDelAll(){confirmBox('확인',`전체 로그 ${S.log.length}건을 모두 삭제하시겠습니까?`,()=>{S.log=[];save();toast('전체 로그를 삭제했습니다.');render();});}
-function adminReset(){confirmBox('확인','마감·예외처리·시수·결재 등 모든 실습 내용과 로그를 지우고 처음 상태로 되돌립니다.\n다음 연수를 위한 초기화입니다. 진행하시겠습니까?',()=>{seedData();S.log=[];save();queried={};chatLog=[];chatSig='';toast('초기화했습니다. 다음 연수를 시작할 수 있습니다.');render();});}
-function skipPre(){CLASSES.forEach(c=>DAYS.forEach(d=>S.dayClose[c][d]=true));SUBJECTS.forEach(s=>{CLASSES.forEach(c=>{PERIODS[s.id].forEach(x=>S.periodClose[s.id][c][x.d+'|'+x.p]=true);S.roomClose[s.id][c]={by:'시스템',at:nowStr()};});S.examClose[s.id]={written:true,perf:true};});const a={by:'시스템',at:nowStr()};S.attAll={done:a,req:a,approved:a};S.calcAll={done:a,req:a,approved:a};addLog(me.name,'사전업무(1·2단계) 완료 처리');save();toast('완료 처리했습니다.');cond.tab='target';go('score','msb-manage');}
+function adminDelDate(d){confirmBox('확인',`${d} 기록 ${allLogs().filter(e=>logDate(e)===d).length}건을 모두 삭제하시겠습니까?`,()=>{S.log=S.log.filter(e=>logDate(e)!==d);save();const o=otherState();if(o){o.log=(o.log||[]).filter(e=>logDate(e)!==d);saveOther(o);}toast('삭제했습니다.');render();});}
+function adminDelAll(){confirmBox('확인',`전체 로그 ${allLogs().length}건을 모두 삭제하시겠습니까?`,()=>{S.log=[];save();const o=otherState();if(o){o.log=[];saveOther(o);}toast('전체 로그를 삭제했습니다.');render();});}
+function adminReset(){confirmBox('확인','마감·예외처리·시수·결재 등 모든 실습 내용과 로그를 지우고 처음 상태로 되돌립니다.\n다음 연수를 위한 초기화입니다(기본·심화 두 버전 모두). 진행하시겠습니까?',()=>{try{localStorage.removeItem(keyOf(otherMode()));}catch(e){}seedData();S.log=[];save();queried={};chatLog=[];chatSig='';toast('초기화했습니다. 다음 연수를 시작할 수 있습니다.');render();});}
+function preDone(){CLASSES.forEach(c=>DAYS.forEach(d=>S.dayClose[c][d]=true));SUBJECTS.forEach(s=>{CLASSES.forEach(c=>{PERIODS[s.id].forEach(x=>S.periodClose[s.id][c][x.d+'|'+x.p]=true);S.roomClose[s.id][c]={by:'담당 부서',at:nowStr()};});S.examClose[s.id]={written:true,perf:true};});const a={by:'담당 부서',at:nowStr()};S.attAll={done:a,req:a,approved:a};S.calcAll={done:a,req:a,approved:a};}
+function skipPre(){preDone();addLog(me.name,'사전업무(1·2단계) 완료 처리');save();toast('완료 처리했습니다.');cond.tab='target';go('score','msb-manage');}
 function exportJson(){const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(S));a.download=`neis-msb-${S.simDate}.json`;a.click();}
 function importJson(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{S=JSON.parse(r.result);save();toast('불러왔습니다.');go('guide','gd-steps');}catch(e){toast('파일을 읽을 수 없습니다.');}};r.readAsText(f);}
 
