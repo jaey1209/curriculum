@@ -24,7 +24,7 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
     if(!seen.has(bubble.slice(0,60))){seen.add(bubble.slice(0,60));if(shots<40){shots++;}}
     if(bubble.includes('다 끝났어요')){log.push('완료! 총 반복 '+guard);break;}
     // 확인창이 떠 있으면 교사는 [확인]을 누른다
-    if(await p.evaluate(()=>document.getElementById('scrim').classList.contains('on'))){const ok=await p.$('#b-modal-ok');if(ok){await ok.click({force:true});}else{await p.click('#mFoot .btn',{force:true});}await p.waitForTimeout(80);continue;}
+    if(await p.evaluate(()=>document.getElementById('scrim').classList.contains('on'))){const pn=await p.$('#pop .btn.next');if(pn){await pn.click({force:true});await p.waitForTimeout(80);continue;}const ok=await p.$('#b-modal-ok');if(ok){await ok.click({force:true});}else{await p.click('#mFoot .btn',{force:true});}await p.waitForTimeout(80);continue;}
     // 말풍선에 [데려다줘]가 있으면 누른다
     const go=await p.$('#botPeek button:has-text("데려다줘")');
     if(go){await go.click({force:true});await p.waitForTimeout(80);continue;}
