@@ -43,11 +43,15 @@ a{color:var(--blue)}
 .gnb .logo .moe{font-size:10px;color:#555;line-height:1.1}
 .gnb .logo .moe b{display:block;font-size:12px;color:#1d3f7a}
 .roles{display:flex;align-items:stretch;height:100%;gap:2px}
-.roles button{background:none;border:0;padding:0 14px;font-size:14px;color:#333;border-bottom:2px solid transparent;margin-bottom:-1px}
+.roles button{white-space:nowrap;background:none;border:0;padding:0 14px;font-size:14px;color:#333;border-bottom:2px solid transparent;margin-bottom:-1px}
 .roles button:hover{color:#2b63c6}
 .roles button.on{color:#2b63c6;border-bottom-color:#2b63c6;text-decoration:underline;text-underline-offset:4px}
 .gnb .sp{flex:1}
-.gnb .who{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2)}
+.gnb .who{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2);white-space:nowrap;flex:none}
+.gnb .who>*{white-space:nowrap}
+@media(max-width:1500px){.gnb .school{display:none}.roles button{padding:0 10px;font-size:13px}.gnb .logo{width:170px}}
+@media(max-width:1300px){#gDate{display:none}.roles button{padding:0 7px}}
+@media(max-width:1440px){.cond{gap:10px 16px;padding:8px 10px}.cond select,.cond input[type=text],.cond input[type=date]{min-width:80px}.cond .fixed{gap:16px}}
 .gnb .who b{color:var(--ink)}
 .gnb .school{font-size:12px;color:var(--ink-2)}
 .gnb .who .pill{border:1px solid var(--line);border-radius:3px;padding:2px 8px;background:#fff;font-size:12px}
@@ -263,14 +267,16 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 /* ───── 최성봇(연수 도우미 챗봇) ───── */
 #bot{position:fixed;left:22px;bottom:46px;z-index:65;display:none;flex-direction:column;align-items:flex-start;gap:10px;touch-action:none}
 #bot.dragging{opacity:.85}
-#bot.dragging .bot-av{animation:none;cursor:grabbing}
+#bot.dragging .bot-av>svg{animation:none}
+#bot.dragging .bot-av{cursor:grabbing}
 .bot-av{cursor:grab}
 #chat .ch{cursor:grab}
 .bot-hint{position:absolute;left:0;top:-22px;font-size:11px;color:#fff;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:999px;white-space:nowrap;pointer-events:none;opacity:0;transition:.2s}
 .bot-av:hover .bot-hint{opacity:1}
 #bot.on{display:flex}
-.bot-av{width:84px;height:84px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));animation:bob 2.6s ease-in-out infinite;position:relative}
-.bot-av:hover{animation-play-state:paused;transform:scale(1.06)}
+.bot-av{width:84px;height:84px;position:relative}
+.bot-av>svg{filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));animation:bob 2.6s ease-in-out infinite}
+.bot-av:hover>svg{animation-play-state:paused;transform:scale(1.06)}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .bot-av .eye{animation:blink 4s infinite;transform-box:fill-box;transform-origin:center}
 .bot-av svg,.msg .mini svg,#chat .ch svg{display:block;overflow:visible;shape-rendering:geometricPrecision}
@@ -279,7 +285,11 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 #bot{--pz:1}
 .bot-peek{position:absolute;left:96px;bottom:6px;width:max-content;max-width:calc(420px*var(--pz));background:#fff;border:2px solid #4f85d6;border-radius:18px;padding:14px 18px;font-size:calc(17px*var(--pz));line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.2);color:#1f2d4d;white-space:normal}
 .bot-peek::after{content:"";position:absolute;left:-10px;bottom:20px;border:8px solid transparent;border-right-color:#4f85d6}
-.bot-peek .pk-t{font-size:calc(14px*var(--pz));color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
+.bot-peek .pk-x{position:absolute;top:4px;right:8px;border:0;background:none;font-size:20px;line-height:1;color:#8b9099;cursor:pointer;padding:2px 4px}
+.bot-peek .pk-x:hover{color:#1d4fb3}
+.bot-peek.mini{padding:0;border-width:2px;max-width:none}
+.bot-peek .pk-pill{border:0;background:#fff;color:#1d4fb3;font-weight:bold;font-size:calc(15px*var(--pz));padding:9px 16px;border-radius:16px;cursor:pointer;white-space:nowrap}
+.bot-peek .pk-t{padding-right:24px;font-size:calc(14px*var(--pz));color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
 .bot-peek .pk-m{font-weight:bold;color:#1d4fb3;font-size:calc(19px*var(--pz));line-height:1.45}
 .bot-peek .pk-m small{font-size:.68em;font-weight:normal;color:#8b9099}
 .bot-peek .pk-s{color:#555;font-size:calc(15px*var(--pz));margin-top:4px}
@@ -563,7 +573,10 @@ function megaOpen(v){const m=$('#mega');if(!m)return;const on=v===undefined?!m.c
   const col=([title,items,mod])=>`<div class="col"><h4>${title}</h4>${mod?MENUS[mod].map(g=>{const live=g.items.some(i=>typeof i==='object');return `<a class="${live?'live':''} ${naGrp===g.grp&&topOf(na.menu)===mod?'next':''}" onclick="megaPick('${mod}','${g.grp}')">${g.grp}</a>`;}).join(''):items.map(i=>`<a onclick="toast('연수 범위 밖 메뉴입니다.')">${i}</a>`).join('')}</div>`;
   m.innerHTML=`<button class="x" onclick="megaOpen(false)">✕</button><div class="cols">${MEGA.map(col).join('')}<div class="col"><h4 class="gd">연수도우미</h4>${MENUS.guide[0].items.map(i=>`<a class="live" onclick="go('guide','${i.id}')">${i.name}</a>`).join('')}</div></div>
   <div class="row2"><div class="col"><h4>[업무승인관리]업무승인</h4>${['결재문서관리','결재진행관리','결재완료문서관리','결재반려문서관리'].map(i=>`<a onclick="toast('연수에서는 승인요청 뒤 [결재완료 처리(연수용)] 버튼으로 결재를 대신해요.')">${i}</a>`).join('')}</div><div class="col"><h4>학교업무환경</h4><a onclick="toast('연수 범위 밖 메뉴입니다.')">학교업무분장설정</a></div></div>`;}
-function megaPick(mod,grp){const g=MENUS[mod].find(x=>x.grp===grp);const first=g.items.find(i=>typeof i==='object');openGrp[mod]=grp;if(first)go(mod,first.id);else{megaOpen(false);view.top=mod;go(mod,view.menu&&topOf(view.menu)===mod?view.menu:undefined);openGrp[mod]=grp;toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)');}}
+function megaPick(mod,grp){const g=MENUS[mod].find(x=>x.grp===grp);const first=g.items.find(i=>typeof i==='object');if(first){go(mod,first.id);return;}
+  const live=MENUS[mod].flatMap(x=>x.items).find(i=>typeof i==='object');
+  if(!live){megaOpen(false);toast(`[${grp}]은(는) 연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)`);return;}
+  go(mod,view.menu&&topOf(view.menu)===mod?view.menu:live.id);openGrp[mod]=null;toggleGrp(mod,grp);toast(`[${grp}] 아래 메뉴는 연수 범위 밖입니다. (실제 나이스에만 있음)`);}
 function toggleGrp(top,g){openGrp[top]=openGrp[top]===g?null:g;document.querySelectorAll('#tree .grp').forEach(el=>{el.classList.toggle('open',el.textContent.replace('▼','')===(openGrp[top]||''));});}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')megaOpen(false);});
 function render(){const f=SCREENS[view.menu];$('#main').innerHTML=(f?f():'<div class="empty">연수 범위 밖 메뉴입니다.</div>');$('#main').scrollTop=0;renderGuide();}
@@ -678,12 +691,12 @@ SCREENS['hak-wd']=()=>{
   const sel=cond.wdSel?studentById(cond.wdSel):null;const w=sel?S.withdrawn[sel.id]:null;
   const toolbar=f==='un'?`<button class="btn n" id="b-wdhak" ${cond.wdSel?'':'disabled'} onclick="wdHak()">학적반영</button><button class="btn n" onclick="toast('연수 범위 밖 기능입니다.')">추가</button><button class="btn n" onclick="toast('연수 범위 밖 기능입니다.')">삭제</button>${printBtn()}`:`<button class="btn n" ${cond.wdSel&&!w.reflected?'':'disabled'} onclick="wdHakCancel()">학적반영취소</button>${printBtn()}`;
   const wdfRadio=`<span class="radio" id="f-wdf">${[['un','미반영된자료'],['re','반영된자료']].map(o=>`<label><input type="radio" name="wdf" ${f===o[0]?'checked':''} onclick="cond.wdf='${o[0]}';cond.wdSel=null;unq();render()"> ${o[1]}</label>`).join('')}</span>`;
-  return pageHead('휴학/자퇴/퇴학/제적관리')+condBar(fixedCond(1)+L(1,'기간',`<input type="text" value="2026.03.01." disabled style="min-width:100px"> <span class="ci"><input type="text" value="2027.02.28." disabled style="min-width:100px"></span>`)+wdfRadio,qbtn())
+  return pageHead('휴학/자퇴/퇴학/제적관리')+condBar(fixedCond(1)+L(1,'기간',`<input type="text" value="2026.03.01." disabled style="min-width:0;width:96px"> <span class="ci"><input type="text" value="2027.02.28." disabled style="min-width:0;width:96px"></span>`)+wdfRadio,qbtn())
   +(queried[view.menu]?`<div class="rem-l">※ 2차 정기시험에 응시한 뒤 학업을 중단한 학생은 학기말 성적산출 대상입니다. 먼저 {학적반영}을 하고, 최소성취수준보장지도 업무를 마친 뒤 {반영된자료}에서 학생을 선택해 {최소성취수준보장지도 성적 학생부 반영}을 합니다.</div>`+tbar(list.length,toolbar)
   +`<div class="grid-wrap auto"><table class="grid"><thead><tr><th></th>${th('학년')}${th('반')}${th('번호')}${th('성명')}${th('변동구분')}${th('변동사유','class="l"')}${th('변동일자')}${th('학적반영')}${th('비고','class="l"')}</tr></thead><tbody>${rows||'<tr><td colspan="10" style="padding:20px;color:#888">조회된 데이터가 없습니다.</td></tr>'}</tbody></table></div>`
   +`<div class="tbar"><span class="total">휴학/자퇴/퇴학/제적생 상세조회</span><span class="sp"></span>${f==='re'&&sel?`<button class="btn" id="b-wdreflect" ${!w.reflected?'':'disabled'} onclick="wdReflect()">최소성취수준보장지도 성적 학생부 반영</button>`:''}<button class="btn" ${sel?'':'disabled'} onclick="toast('연수 범위 밖 기능입니다.')">학교생활기록부생성</button><button class="btn n" disabled>저장</button><button class="btn n" disabled>취소</button></div>
   <div class="detail"><div><table class="ftbl"><tr><td class="k">*성명</td><td class="v"><input value="${sel?sel.name:''}" disabled></td><td class="k">*변동일자</td><td class="v"><input value="${w?w.date:''}" disabled></td><td class="k">*변동구분</td><td class="v"><input value="${w?w.type:''}" disabled></td></tr><tr><td class="k n">학년</td><td class="v"><input value="${sel?sel.g+'학년':''}" disabled></td><td class="k n">반</td><td class="v"><input value="${sel?sel.c:''}" disabled></td><td class="k">*변동사유</td><td class="v"><input value="${w?w.reason:''}" disabled></td></tr><tr><td class="k n">번호</td><td class="v"><input value="${sel?sel.no:''}" disabled></td><td class="k n">비고</td><td class="v" colspan="3"><input value="${w?w.reason:''}" disabled></td></tr></table></div>
-  <div class="bigbtns">${['기본학적','학생생활','성적','건강기록부','학교생활기록부','출결내역','PAPS','정정대장','학교스포츠클럽<br>누가기록'].map(b=>`<button ${sel?'':'disabled style="background:#9a9ea7"'} onclick="${b==='학교생활기록부'?`recPop('${sel?sel.id:''}')`:`toast('연수 범위 밖 기능입니다.')`}">${b}</button>`).join('')}<button class="g2" style="grid-column:2" onclick="toast('연수 범위 밖 기능입니다.')">개별화 교육계획</button></div></div>`
+  <div class="bigbtns">${['기본학적','학생생활','성적','건강기록부','학교생활기록부','출결내역','PAPS','정정대장','학교스포츠클럽<br>누가기록'].map(b=>`<button ${sel?'':'disabled style="background:#9a9ea7"'} onclick="${b==='학교생활기록부'?`recPop('${sel?sel.id:''}')`:`toast('연수 범위 밖 기능입니다.')`}">${b}</button>`).join('')}<button style="grid-column:2;background:#9a9ea7" ${sel?'':'disabled'} onclick="toast('연수 범위 밖 기능입니다.')">개별화 교육계획</button></div></div>`
   :needQuery());
 };
 function wdHak(){const sid=cond.wdSel;confirmBox('확인','학적반영하시겠습니까?',()=>{S.withdrawn[sid].hak=true;addLog(me.name,`학적반영 ${sid}`);save();render();alertBox('알림','학적반영되었습니다.');});}
@@ -949,6 +962,8 @@ function chatSend(){const i=$('#chatIn');const t=i.value.trim();if(!t)return;i.v
 function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
   const say2=h=>setTimeout(()=>say(h),350);
   if(/도움|뭘|무엇|명령|help/i.test(t))return say2('이런 걸 물어보실 수 있어요 😊<br>· <b>다음</b> — 지금 해야 할 단계와 버튼 순서<br>· <b>왜</b> — 버튼이 비활성화된 이유<br>· <b>흐름</b> — 8단계 전체 흐름도<br>· <b>초기화</b> — 처음부터 다시 연습<br>· <b>건너뛰기</b> — 1·2단계 완료 처리하고 3단계부터<br>· <b>기준</b> — 학점이수 기준·최성보 변경 안내<br>· <b>대상자 / 예외 / 시수 / 마감 / 승인</b> — 각 용어 설명<br>· <b>원래 자리</b> — 저를 왼쪽 아래 제자리로');
+  if(/접어|숨겨|가려/.test(t)){peekMin(true);return say2('말풍선을 접었어요. 로봇 옆 [다음 할 일 보기]를 누르면 다시 펼쳐져요 🙂');}
+  if(/펼쳐|보여/.test(t)){peekMin(false);return say2('말풍선을 다시 펼쳤어요!');}
   if(/원래 자리|제자리|위치/.test(t)){botHome();return say2('원래 자리(왼쪽 아래)로 돌아갈게요 🏠');}
   if(/초기화|리셋|다시 처음/.test(t))return say2('처음부터 다시 하려면 <code>연수도우미 › 설정·초기화·로그</code>에서 <b>[자료 초기화]</b>를 눌러 주세요. 지금 입력한 내용은 모두 지워져요! <br><button class="btn s" onclick="go(\'guide\',\'gd-setting\')">설정 화면으로</button>');
   if(/건너|스킵|3단계부터/.test(t))return say2('사전업무(1·2단계)를 완료 처리하고 3단계부터 연습할 수 있어요. <button class="btn s" onclick="confirmBox(\'확인\',\'1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.\',()=>skipPre())">3단계부터 시작</button>');
@@ -964,7 +979,13 @@ function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(
   if(/왜|안 돼|안돼|비활성|회색|못 눌|안 눌/.test(t))return say2(`지금 단계가 막힌 이유는 이거예요 🔍<br>${na.why}<br><br>${here?'번호가 붙은 버튼을 순서대로 눌러 보세요.':'<button class="btn s" onclick="guideGo()">🚀 그 화면으로 데려다줘</button>'}`);
   if(/다음|뭐|해야|할 일|순서|어디|어떻게/.test(t)){chatSig='';return setTimeout(()=>renderGuide(true),350);}
   say2('음… 그건 아직 잘 모르겠어요 🤖 "다음", "왜", "흐름", "기준" 같은 말로 물어봐 주세요!');}
-function renderGuide(force){
+let peekMinOn=(()=>{try{return localStorage.getItem('neis-peek-min')==='1';}catch(_){return false;}})();
+function peekMin(v){peekMinOn=v;try{localStorage.setItem('neis-peek-min',v?'1':'0');}catch(_){}renderGuide();}
+function applyPeekMin(){const el=$('#botPeek');if(!el||!guideOn)return;el.classList.toggle('mini',peekMinOn);
+  if(peekMinOn){const na=nextAction();el.innerHTML=`<button class="pk-pill" title="말풍선 펼치기" onclick="peekMin(false)">💡 ${na?na.step+'단계 — 다음 할 일 보기':'다 끝났어요!'}</button>`;}
+  else if(!el.querySelector('.pk-x'))el.insertAdjacentHTML('afterbegin','<button class="pk-x" title="말풍선 접기" onclick="peekMin(true)">－</button>');}
+function renderGuide(force){renderGuide0(force);applyPeekMin();}
+function renderGuide0(force){
   const p=$('#bot');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
   if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();try{const z=+localStorage.getItem('neis-peek-zoom');if(z)$('#bot').style.setProperty('--pz',z);}catch(_){}}
   const na=nextAction();

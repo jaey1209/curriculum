@@ -2,7 +2,7 @@
 const { chromium } = require('playwright');
 const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
 (async()=>{
-  const b=await chromium.launch();const p=await b.newPage({viewport:{width:1500,height:860}});
+  const b=await chromium.launch();const p=await b.newPage({viewport:{width:+(process.env.VW||1500),height:+(process.env.VH||860)}});
   const errs=[],log=[];p.on('pageerror',e=>errs.push('PAGEERROR '+e.message));p.on('console',m=>{if(m.type()==='error')errs.push('CONSOLE '+m.text());});
   await p.goto('file://'+path.resolve(__dirname,'../index.html'));await p.evaluate(()=>localStorage.clear());await p.reload();
   await p.click('#b-login');await p.waitForTimeout(200);
