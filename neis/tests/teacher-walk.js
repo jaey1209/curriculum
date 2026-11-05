@@ -12,9 +12,9 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
   const pos=await p.evaluate(()=>({left:document.getElementById('bot').style.left,top:document.getElementById('bot').style.top,saved:localStorage.getItem('neis-bot-pos')}));
   log.push('드래그 후 위치: '+JSON.stringify(pos));
   await p.screenshot({path:SP+'/t_drag.png'});
-  // 클릭만으로 드래그가 되지 않고 채팅이 열리는지
-  await p.click('#botAv',{force:true});await p.waitForTimeout(100);log.push('클릭 시 채팅 열림: '+await p.evaluate(()=>document.getElementById('chat').classList.contains('on')));
-  await p.click('#chat .x');await p.waitForTimeout(100);
+  // 클릭만으로 드래그가 되지 않고 말풍선이 펼쳐지는지(대화 기능은 없음)
+  await p.click('#botAv',{force:true,position:{x:42,y:60}});await p.waitForTimeout(100);log.push('클릭 시 말풍선 펼침: '+await p.evaluate(()=>!document.getElementById('botPeek').classList.contains('mini')));
+  await p.click('#botAv',{force:true,position:{x:42,y:60}});await p.waitForTimeout(100);
   await p.evaluate(()=>botHome());
   let guard=0,lastSig='',stall=0,shots=0;const seen=new Set();
   while(guard++<260){

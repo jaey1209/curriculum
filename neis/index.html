@@ -442,7 +442,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
     <div class="cm" id="chatMsgs"></div>
     <div class="ci"><input id="chatIn" placeholder="최성봇에게 물어보세요 (예: 다음엔 뭐 해?)" onkeydown="if(event.key==='Enter')chatSend()"><button onclick="chatSend()">➤</button></div>
   </div>
-  <div class="bot-av" id="botAv"><span class="bot-hint">끌어서 이동 · 클릭하면 대화</span><span class="bot-peek" id="botPeek"></span><span class="badge" id="botBadge" style="display:none"></span></div>
+  <div class="bot-av" id="botAv"><span class="bot-hint">끌어서 이동 · 클릭하면 말풍선 펼치기·접기</span><span class="bot-peek" id="botPeek"></span><span class="badge" id="botBadge" style="display:none"></span></div>
 </div>
 <div class="scrim" id="scrim"><div class="pop" id="pop"><div class="pt"><span id="mTitle"></span><button class="x" onclick="closeModal()">✕</button></div><div class="pb" id="mBody"></div><div class="pf" id="mFoot"></div></div></div>
 <div class="toast" id="toast"></div>
@@ -1022,7 +1022,7 @@ function nextAction(){
 }
 function apprAction(step,what,menu,tab){return {step,title:`[${step}단계] ${what} — 결재 대기`,role:'결재권자',ok:true,menu,tab,set:tab?{atab:tab}:{},why:`"${what}" 승인요청이 결재권자에게 올라갔어요. 실제로는 결재권자가 결재할 때까지 기다리지만, 연수에서는 [결재완료 처리(연수용)]를 눌러 결재가 끝난 상태로 만들어요.`,seq:[...(tab?[{t:'[과목전체마감] 탭',tab}]:[]),{t:'[조회]',b:'b-query',done:!!queried[menu]},{t:'[결재완료 처리(연수용)]',b:'b-approve'},{t:'확인창 [확인]',b:'b-modal-ok'}]};}
 function examAction(s,kind){const menu=kind==='written'?'ex-written':'ex-perf';return {step:2,title:`[2단계] 학기말 성적 산출 마감 — ${kind==='written'?'정기시험':'수행평가'} 마감 보완`,role:`교과담임(${userName(s.teacher)})`,ok:true,menu,why:`${subjLabel(s.id)}의 ${kind==='written'?'정기시험':'수행평가'}이 마감되지 않아 성적산출전체마감을 할 수 없습니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried[menu]},{t:`${subjLabel(s.id)} 행의 [마감]`,b:`b-exam-${s.id}`}]};}
-function toggleGuide(v){guideOn=v===undefined?!guideOn:v;$('#gToggle').classList.toggle('off',!guideOn);if(guideOn)chatOpen(true);go(view.top,view.menu);}
+function toggleGuide(v){guideOn=v===undefined?!guideOn:v;$('#gToggle').classList.toggle('off',!guideOn);go(view.top,view.menu);}
 function guideGo(){const na=nextAction();if(!na)return;Object.assign(cond,na.set||{});if(na.tab&&na.menu==='msb-manage')cond.tab=na.tab;unq();go(topOf(na.menu),na.menu);}
 const curTab=na=>na.menu==='msb-manage'?cond.tab:na.menu==='att-subj'?(cond.atab||'period'):na.menu==='rec-reflect'?(cond.rtab||'reflect'):null;
 const tabNameOf=na=>{const T={'msb-manage':MSB_TABS,'att-subj':ATT_TABS,'rec-reflect':REC_TABS}[na.menu];const t=T&&T.find(x=>x.id===na.tab);return t?tabPlain(t.name):'';};
@@ -1035,14 +1035,14 @@ let chatLog=[],chatSig='',chatIsOpen=false,botSteps=null;
   function place(x,y){const w=bot.offsetWidth,h=bot.offsetHeight;x=Math.max(4,Math.min(window.innerWidth-w-4,x));y=Math.max(4,Math.min(window.innerHeight-h-4,y));bot.style.left=x+'px';bot.style.top=y+'px';bot.style.right='auto';bot.style.bottom='auto';layoutBot();}
   function down(e){if(e.target.closest('#botPeek'))return;const t=e.target.closest('#botAv,#chat .ch');if(!t||e.target.closest('button'))return;const r=bot.getBoundingClientRect();st={sx:e.clientX,sy:e.clientY,ox:r.left,oy:r.top,moved:false,t};e.preventDefault();}
   function move(e){if(!st)return;const dx=e.clientX-st.sx,dy=e.clientY-st.sy;if(!st.moved&&Math.hypot(dx,dy)<6)return;st.moved=true;bot.classList.add('dragging');place(st.ox+dx,st.oy+dy);}
-  function up(e){if(!st)return;bot.classList.remove('dragging');if(st.moved){try{localStorage.setItem('neis-bot-pos2',JSON.stringify({x:bot.offsetLeft,y:bot.offsetTop}));}catch(_){}}else if(st.t.id==='botAv')chatOpen();st=null;}
+  function up(e){if(!st)return;bot.classList.remove('dragging');if(st.moved){try{localStorage.setItem('neis-bot-pos2',JSON.stringify({x:bot.offsetLeft,y:bot.offsetTop}));}catch(_){}}else if(st.t.id==='botAv')peekMin(!peekMinOn);st=null;}
   bot.addEventListener('pointerdown',down);window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);
   window.botRestorePos=function(){try{const p=JSON.parse(localStorage.getItem('neis-bot-pos2'));if(p)place(p.x,p.y);}catch(_){}};
   window.addEventListener('resize',()=>{if(bot.style.left)place(bot.offsetLeft,bot.offsetTop);else layoutBot();});
 })();
-function chatOpen(v){chatIsOpen=v===undefined?!chatIsOpen:v;$('#chat').classList.toggle('on',chatIsOpen);$('#botPeek').style.display=chatIsOpen?'none':'';if(chatIsOpen){$('#botBadge').style.display='none';}layoutBot();if(chatIsOpen)scrollChat();}
+function chatOpen(v){chatIsOpen=false;const c=document.getElementById('chat');if(c)c.classList.remove('on');$('#botPeek').style.display='';layoutBot();} /* 대화 기능은 뺌: 말풍선 안내만 사용 */
 function scrollChat(){const m=$('#chatMsgs');m.scrollTop=m.scrollHeight;const last=m.lastElementChild;if(last){const d=last.getBoundingClientRect().top-m.getBoundingClientRect().top-6;if(d<0)m.scrollTop+=d;}}
-function say(html,who){chatLog.push({who:who||'bot',html,t:new Date()});if(chatLog.length>60)chatLog.shift();drawChat();if(who!=='user'&&!chatIsOpen){const b=$('#botBadge');b.style.display='';b.textContent='!';}}
+function say(html,who){chatLog.push({who:who||'bot',html,t:new Date()});if(chatLog.length>60)chatLog.shift();drawChat();}
 function drawChat(){const m=$('#chatMsgs');m.innerHTML=chatLog.map(x=>`<div class="msg ${x.who}">${x.who==='bot'?`<span class="mini">${BOT_SVG()}</span>`:''}<div class="bub">${x.html}</div><span class="time">${String(x.t.getHours()).padStart(2,'0')}:${String(x.t.getMinutes()).padStart(2,'0')}</span></div>`).join('');scrollChat();}
 const roleLine=na=>na.role==='업무담당자'?'<span style="color:#667">담당: 업무담당자</span>':`<span style="color:#b25400;font-weight:bold">👤 실제 담당: ${na.role}</span> <span style="color:#667">(연수에서는 업무담당자가 대신 눌러 봐요)</span>`;
 function stepBubble(na,items,curIdx,here,condOK){const tabName=tabNameOf(na);
@@ -1130,7 +1130,7 @@ function renderGuide0(force){
   if(sc&&here&&(na.step===4||na.step===5)&&queried['msb-manage']){S.scenShown=S.scenShown||{};if(!S.scenShown[na.step]){S.scenShown[na.step]=1;save();if(peekMinOn){peekMinOn=false;autoPeek=na.step;}setTimeout(()=>say(`📋 <b>연수 시나리오 (${na.step}단계)</b><br>${sc}`),0);}}
   peekLine=(here&&cur?peekMain:`${tabName2?tabName2.replace('최소성취수준보장지도(추가학습)','')+' 탭':MENU_PATH[na.menu].split(' › ').slice(-1)[0].replace('최소성취수준보장지도(추가학습)','')} 화면으로 가세요`).replace(/<span class="n">(\d+)<\/span>/,'👉 ').replace(/<small>.*?<\/small>/g,'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();peekGo=!(here&&condOK);
   const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):`메뉴 ${MENU_PATH[na.menu]}`;
-  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div>${sc?`<div class="pk-sc">📋 <b>연수 시나리오</b><br>${sc}</div>`:''}${na.role==='업무담당자'?'':`<div class="pk-r">👤 실제 담당: ${na.role}</div>`}<div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 대화하기</button><span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
+  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div>${sc?`<div class="pk-sc">📋 <b>연수 시나리오</b><br>${sc}</div>`:''}${na.role==='업무담당자'?'':`<div class="pk-r">👤 실제 담당: ${na.role}</div>`}<div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
   const sig=`${na.title}|${here}|${condOK}|${curIdx}|${view.menu}|${curTab(na)}`;
   if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say(mode==='basic'?'안녕하세요! 저는 <b>최성봇</b>이에요 '+BOT_ICO()+' 출결 마감(1단계)과 성적 마감(2단계)은 담당 부서에서 이미 끝냈어요. <b>3단계 대상자 가져오기</b>부터 업무담당자 일을 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!':'안녕하세요! 저는 <b>최성봇</b>이에요 '+BOT_ICO()+' 심화 버전이라 출결·성적 마감에 일부러 빠진 곳이 있어요. 어디서 막히는지 찾아가며 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
   document.querySelectorAll('.btn .gnum,th .gnum').forEach(e=>e.remove());document.querySelectorAll('.btn.next,.next-field,.next-cell,.next-hdr').forEach(e=>e.classList.remove('next','next-field','next-cell','next-hdr'));

@@ -64,7 +64,6 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
   await followUntil(async () => p.evaluate(() => view.menu === 'msb-manage' && cond.tab === 'exc' && !!queried['msb-manage']));
   await W(200);
   ok('[8] 최성봇이 시나리오를 말풍선으로 알려 줌(처음 한 번 펼침)', await p.$eval('#botPeek', e => !e.classList.contains('mini') && /특수교육대상자/.test(e.querySelector('.pk-sc')?.innerText || '')));
-  ok('[8] 시나리오가 대화창에도 남음', await p.evaluate(() => chatLog.some(x => /연수 시나리오/.test(x.html))));
   await p.click('#botPeek .pk-x'); await W();
   await overlaps('4단계 예외처리');
   // 기타 사유 입력 직후 [저장] 1번
@@ -135,26 +134,20 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
     ok(`[5] ${nm}: 말풍선 버튼 모두 화면 안`, pk.length > 0 && pk.every(Boolean), pk);
     const x = await p.$eval('#botPeek .pk-x', e => { const r = e.getBoundingClientRect(); return [r.width, r.height]; });
     ok(`[6] ${nm}: 접기 버튼 32px 이상`, x[0] >= 32 && x[1] >= 32, x);
-    // 말풍선 본문 클릭은 채팅을 열지 않음
+    // 말풍선 본문 클릭은 아무 일도 하지 않음(대화 기능 없음)
     await p.click('#botPeek .pk-s', { position: { x: 5, y: 5 } }); await W();
-    ok(`[6] ${nm}: 말풍선 본문 클릭으로 채팅이 열리지 않음`, !(await p.evaluate(() => chatIsOpen)));
+    ok(`[6] ${nm}: 말풍선 본문 클릭해도 그대로`, await p.$eval('#botPeek', e => !e.classList.contains('mini')));
     await p.click('#botPeek .pk-x'); await W();
-    // 채팅 열기(로봇 클릭)
+    // 로봇 클릭 → 말풍선 펼침, 로봇·말풍선 모두 화면 안
     await clickBot(); await W(200);
-    const ch = await p.evaluate(() => { const a = document.getElementById('chatIn').getBoundingClientRect(); const c = document.getElementById('chat').getBoundingClientRect(); const v = document.getElementById('botAv').getBoundingClientRect(); const el = document.elementFromPoint(a.left + a.width / 2, a.top + a.height / 2); return { input: a.top >= 0 && a.bottom <= innerHeight && a.left >= 0 && a.right <= innerWidth, top: el && el.id === 'chatIn', chat: c.top >= 0 && c.bottom <= innerHeight, robot: v.top >= 0 && v.bottom <= innerHeight && v.left >= 0 && v.right <= innerWidth }; });
-    ok(`[5] ${nm}: 채팅 입력칸 보이고 누를 수 있음, 로봇 안 잘림`, ch.input && ch.top && ch.chat && ch.robot, ch);
-    await p.click('#chatIn'); await p.keyboard.type('왜'); await p.keyboard.press('Enter'); await W(600);
-    // 채팅이 열린 채로 알림창 버튼 누르기
+    const ch = await p.evaluate(() => { const pk = document.getElementById('botPeek'), a = pk.getBoundingClientRect(), v = document.getElementById('botAv').getBoundingClientRect(); return { open: !pk.classList.contains('mini'), peek: a.top >= 0 && a.bottom <= innerHeight && a.left >= 0 && a.right <= innerWidth, robot: v.top >= 0 && v.bottom <= innerHeight && v.left >= 0 && v.right <= innerWidth }; });
+    ok(`[5] ${nm}: 로봇 클릭으로 말풍선 펼침, 화면 안`, ch.open && ch.peek && ch.robot, ch);
+    // 말풍선이 펼쳐진 채로 알림창 버튼 누르기
     await p.evaluate(() => alertBox('알림', '모서리 테스트'));
     await p.click('#mFoot .btn >> nth=0', { timeout: 3000 }).then(() => ok(`[3] ${nm}: 알림창 [확인]을 누를 수 있음`, true), e => ok(`[3] ${nm}: 알림창 [확인]을 누를 수 있음`, false, e.message.split('\n')[0]));
-    await p.click('#chat .x'); await W();
+    await clickBot(); await W(200);
+    ok(`[6] ${nm}: 로봇 한 번 더 클릭하면 접힘`, await p.$eval('#botPeek', e => e.classList.contains('mini')));
   }
-  // 새 답변의 시작 위치로 스크롤
-  await clickBot(); await W(200);
-  await p.click('#chatIn'); await p.keyboard.type('도움'); await p.keyboard.press('Enter'); await W(700);
-  const sc = await p.evaluate(() => { const m = document.getElementById('chatMsgs'); const l = m.lastElementChild; return { top: l.getBoundingClientRect().top - m.getBoundingClientRect().top, view: m.clientHeight }; });
-  ok('[작은 수정] 새 답변의 첫 부분이 보이게 스크롤', sc.top >= 0 && sc.top < sc.view - 20, sc);
-  await p.click('#chat .x'); await W();
 
   // ── 왼쪽 메뉴 접기 ──
   await p.click('#tree .fold'); await W();
