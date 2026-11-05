@@ -51,7 +51,7 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
   const rowSel = await p.evaluate(() => { const e = studentById(S.scen.exc); const rows = [...document.querySelectorAll('#main table.grid tbody tr')]; return rows.findIndex(r => r.cells[1].innerText.trim() == e.c && r.cells[2].innerText.trim() == e.no); });
   log(`화면에서 시나리오 학생 행 번호: ${rowSel + 1}`);
   const rows = await p.$$('#main table.grid tbody tr');
-  await (await rows[rowSel].$('select')).selectOption('특수교육대상자'); await W();
+  { const sel = await rows[rowSel].$('select'); const bx = await sel.boundingBox(); await p.mouse.click(bx.x + 5, bx.y + 5); await W(); await p.keyboard.press('Escape'); log(`예외 칸을 누르자 시나리오 말풍선 접힘: ${await p.$eval('#botPeek', e => e.classList.contains('mini'))}`); await sel.selectOption('특수교육대상자'); await W(); }
   await p.click('#b-save'); await W(); log(`[저장]: ${await pop()}`); await ok();
 
   // 실수: 이수관리 안 하고 마감 탭에서 학점반영 시도

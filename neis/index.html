@@ -305,6 +305,8 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .bot-peek::after{content:"";position:absolute;left:-18px;bottom:20px;border:8px solid transparent;border-right-color:#4f85d6}
 .bot-peek.L::after{left:auto;right:-18px;border-right-color:transparent;border-left-color:#4f85d6}
 .bot-peek.mini::after{bottom:12px}
+#bot.T .bot-peek::after{bottom:auto;top:14px}
+#bot.T .bot-peek.mini::after{top:12px}
 .bot-peek .pk-x{position:absolute;top:2px;right:2px;width:36px;height:36px;border:0;border-radius:10px;background:none;font-size:22px;line-height:1;color:#8b9099;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}
 .bot-peek .pk-x:hover{background:#eef3fb}
 .bot-peek .pk-x:hover{color:#1d4fb3}
@@ -384,6 +386,21 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 #noti .ft{display:flex;justify-content:flex-end;gap:4px;padding:6px 10px;border-top:1px solid #e7eaf0;background:#fafbfc}
 #noti .ft .btn{height:22px;font-size:11px;padding:0 8px;font-weight:normal}
 #noti .vln{display:block;width:2px;height:6px;margin-left:18px;background:#d5dae2}#noti .vln.on{background:#2b63c6}
+/* 작은 화면(150% 배율 노트북 1280×720 등) */
+@media (max-width:1400px),(max-height:800px){
+  #bot{top:85px;bottom:auto;right:10px}
+  .bot-av{width:46px;height:46px}
+  .bot-av .badge{min-width:16px;height:16px;font-size:10px;top:-4px;left:-4px}
+  .ph .crumb,.ph .ib,.ph .ib-grp{display:none}
+  .ph{min-height:44px}
+  table.grid th,table.grid td{padding:4px 3px;font-size:12px}
+  table.grid td input[type=number]{width:46px}
+  table.grid td input.note-in{min-width:56px;max-width:96px}
+  table.grid td select{min-width:96px}
+  table.grid td select.c-res{min-width:54px}
+  table.grid td input.wide{min-width:150px}
+  .main{padding-left:12px;padding-right:12px}
+}
 /* 초기화면 */
 .hm{max-width:760px;margin:70px auto 0;text-align:center}
 .hm .sc{font-size:15px;color:#667}
@@ -1071,10 +1088,10 @@ function peekZoom(d){let z=+(getComputedStyle($('#bot')).getPropertyValue('--pz'
 function botHome(){const b=$('#bot');b.style.left='';b.style.top='';b.style.right='';b.style.bottom='';try{localStorage.removeItem('neis-bot-pos2');}catch(_){}layoutBot();}
 /* 말풍선·채팅창을 로봇 옆에 두되 항상 화면 안에 들어오게 배치 */
 function layoutBot(){const bot=$('#bot'),av=$('#botAv');if(!bot||!av||!bot.classList.contains('on'))return;const r=av.getBoundingClientRect();const W=window.innerWidth,H=window.innerHeight,g=12,m=4;
-  const right=r.left+r.width/2>W/2;bot.classList.toggle('R',right);
+  const right=r.left+r.width/2>W/2;bot.classList.toggle('R',right);bot.classList.toggle('T',r.top<H/3);
   const pk=$('#botPeek');if(pk&&pk.style.display!=='none'){const w=pk.offsetWidth,h=pk.offsetHeight;
     let L=right;if(L&&r.left-g-w<m)L=false;if(!L&&r.right+g+w>W-m&&r.left-g-w>=m)L=true;
-    let left=L?r.left-g-w:r.right+g;left=Math.max(m,Math.min(W-m-w,left));let top=r.bottom-6-h;top=Math.max(m,Math.min(H-m-h,top));
+    let left=L?r.left-g-w:r.right+g;left=Math.max(m,Math.min(W-m-w,left));let top=r.top<H/3?(pk.classList.contains('mini')?r.top+r.height/2-h/2:r.top):r.bottom-6-h;top=Math.max(m,Math.min(H-m-h,top));
     pk.style.left=left+'px';pk.style.top=top+'px';pk.classList.toggle('L',L);}
   const ch=$('#chat');if(chatIsOpen&&ch){const w=ch.offsetWidth,h=ch.offsetHeight;let top,left;
     if(r.top-g-h>=m){top=r.top-g-h;left=right?r.right-w:r.left;}else if(r.bottom+g+h<=H-m){top=r.bottom+g;left=right?r.right-w:r.left;}

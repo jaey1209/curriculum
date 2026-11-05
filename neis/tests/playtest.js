@@ -51,7 +51,8 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
   ok('[확인1] 처음 화면이 3단계 안내로 시작', (await step()) === 3, await p.textContent('#botPeek'));
   ok('[4] 말풍선 기본 접힘(한 줄 요약)', await p.evaluate(() => document.getElementById('botPeek').classList.contains('mini')));
   const botBox = await p.$eval('#botAv', e => { const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width }; });
-  ok('[4] 기본 위치가 오른쪽 아래', botBox.x > VW * 0.7 && botBox.y > VH * 0.6, botBox);
+  const small = VW <= 1400 || VH <= 800;
+  ok(small ? '[4] 작은 화면: 기본 위치가 오른쪽 위(화면 제목 줄)' : '[4] 기본 위치가 오른쪽 아래', small ? botBox.x > VW * 0.7 && botBox.y < 140 : botBox.x > VW * 0.7 && botBox.y > VH * 0.6, botBox);
   await overlaps('업무 흐름도');
 
   // ── 3단계 ──

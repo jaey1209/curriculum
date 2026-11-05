@@ -13,8 +13,8 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
   log.push('드래그 후 위치: '+JSON.stringify(pos));
   await p.screenshot({path:SP+'/t_drag.png'});
   // 클릭만으로 드래그가 되지 않고 말풍선이 펼쳐지는지(대화 기능은 없음)
-  await p.click('#botAv',{force:true,position:{x:42,y:60}});await p.waitForTimeout(100);log.push('클릭 시 말풍선 펼침: '+await p.evaluate(()=>!document.getElementById('botPeek').classList.contains('mini')));
-  await p.click('#botAv',{force:true,position:{x:42,y:60}});await p.waitForTimeout(100);
+  await p.click('#botAv',{force:true});await p.waitForTimeout(100);log.push('클릭 시 말풍선 펼침: '+await p.evaluate(()=>!document.getElementById('botPeek').classList.contains('mini')));
+  await p.click('#botAv',{force:true});await p.waitForTimeout(100);
   await p.evaluate(()=>botHome());
   let guard=0,lastSig='',stall=0,shots=0;const seen=new Set();
   while(guard++<260){
@@ -37,6 +37,8 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
     if(nxt){const txt=(await nxt.textContent()).trim();const dis=await nxt.isDisabled();if(dis){log.push('DISABLED next btn: '+txt+' @ '+bubble);break;}await nxt.click({force:true});await p.waitForTimeout(80);continue;}
     // 점선으로 표시된 칸이 있으면 입력한다 (참여시수 / 예외)
     const cells=await p.$$('td.next-cell');
+    // 교사는 칸을 먼저 마우스로 누른다(저절로 펼친 시나리오 말풍선은 이때 접힘)
+    if(cells.length){const bb2=await cells[0].boundingBox();if(bb2){await p.mouse.click(bb2.x+3,bb2.y+3);await p.waitForTimeout(60);}}
     if(cells.length){const first=cells[0];const inp=await first.$('input[type=number]');const sel=await first.$('select');
       if(inp){for(const c of cells){const i=await c.$('input[type=number]');if(i){await i.fill(String([8,7,9,5][Math.floor(Math.random()*4)]));await i.dispatchEvent('change');await p.waitForTimeout(40);break;}}continue;}
       if(sel){await sel.selectOption({index:1});await sel.dispatchEvent('change');await p.waitForTimeout(60);continue;}
