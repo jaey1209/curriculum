@@ -41,6 +41,7 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
   const follow = async () => {
     if (await scrimOn()) { const n = await p.$('#pop .btn.next'); await (n ? n.click() : p.click('#mFoot .btn >> nth=0')); await W(); return true; }
     const go = await p.$('#botPeek button:has-text("데려다줘")'); if (go) { await go.click(); await W(); return true; }
+    const rt = await p.$('#roles button.next'); if (rt) { await rt.click(); await W(); return true; }
     const nx = await p.$('#main .btn.next'); if (nx) { await nx.click(); await W(); return true; }
     return false;
   };

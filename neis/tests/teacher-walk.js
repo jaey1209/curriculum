@@ -30,6 +30,8 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
     // 말풍선에 [데려다줘]가 있으면 누른다
     const go=await p.$('#botPeek button:has-text("데려다줘")');
     if(go){await go.click({force:true});await p.waitForTimeout(80);continue;}
+    // 상단 업무 탭이 주황색이면 그 탭을 누른다
+    const rt=await p.$('#roles button.next');if(rt){await rt.click({force:true});await p.waitForTimeout(80);continue;}
     // 주황색으로 깜빡이는 버튼(.btn.next)을 누른다
     const nxt=await p.$('.btn.next');
     if(nxt){const txt=(await nxt.textContent()).trim();const dis=await nxt.isDisabled();if(dis){log.push('DISABLED next btn: '+txt+' @ '+bubble);break;}await nxt.click({force:true});await p.waitForTimeout(80);continue;}
