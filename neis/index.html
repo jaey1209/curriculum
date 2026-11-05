@@ -79,11 +79,13 @@ a{color:var(--blue)}
 .tree .grp.open .chev{transform:rotate(180deg)}
 .tree .items{display:none;padding:4px 0 6px;border-bottom:1px solid var(--line-2);background:#fff}
 .tree .grp.open+.items{display:block}
-.tree .it{display:block;width:100%;text-align:left;background:none;border:0;padding:5px 8px 5px 22px;color:#333;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+.tree .it{display:block;width:100%;text-align:left;background:none;border:0;padding:5px 14px 5px 22px;color:#333;font-size:13px;line-height:1.35;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;position:relative}
 .tree .it:hover{color:var(--menu-on)}
 .tree .it.on{color:var(--menu-on);font-weight:bold}
 .tree .it.next{box-shadow:inset 3px 0 0 var(--orange)}
-.tree .fold{position:absolute;right:0;top:50%;width:12px;height:60px;background:#2b63c6;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;border-radius:4px 0 0 4px;transform:translateY(-50%)}
+.tree .fold{position:absolute;right:0;top:50%;width:12px;height:60px;background:#2b63c6;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;border-radius:4px 0 0 4px;transform:translateY(-50%);cursor:pointer;z-index:2}
+.tree.folded{width:14px;overflow:hidden}
+.tree.folded>*:not(.fold){display:none}
 .mainwrap{flex:1;display:flex;flex-direction:column;min-width:0}
 .main{flex:1;overflow:auto;padding:10px 18px 120px;min-width:0;background:#fff}
 .tabbar{height:32px;flex:none;border-top:1px solid #cfd5df;background:#f5f7fa;display:flex;align-items:center;gap:4px;padding:0 8px;overflow:hidden}
@@ -188,7 +190,7 @@ a{color:var(--blue)}
 .tip{position:relative;cursor:help;text-decoration:underline;color:#333}
 .tip .tt{display:none;position:absolute;left:0;top:100%;background:#fff;border:1px solid #777;color:#333;padding:2px 8px;white-space:nowrap;z-index:5;font-size:11px;font-weight:normal;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .tip:hover .tt{display:block}
-.note{background:#fff8e6;border:1px solid #f1dfae;border-radius:3px;padding:6px 10px;font-size:12px;color:#7a4d00;margin:6px 0 10px}
+.note{word-break:keep-all;overflow-wrap:anywhere;background:#fff8e6;border:1px solid #f1dfae;border-radius:3px;padding:6px 10px;font-size:12px;color:#7a4d00;margin:6px 0 10px}
 .note.crit{background:#fdeaed;border-color:#f3b9c1;color:var(--crit)}
 .note.ok{background:#e6f6ec;border-color:#b6e2c6;color:var(--ok)}
 .note.info{background:#eef3fb;border-color:#c9d9f2;color:#2b4a7e}
@@ -209,6 +211,7 @@ table.grid tr.sel td{background:var(--sel)}
 table.grid td input[type=text],table.grid td input[type=number]{border:1px solid #b9c0cc;border-radius:2px;height:24px;padding:0 6px;background:#fff}
 table.grid td input[type=number]{width:60px;text-align:right}
 table.grid td input.wide{width:100%;min-width:220px}
+table.grid td input.note-in{width:100%;min-width:70px;max-width:130px;border:1px solid #b9c0cc;border-radius:2px;height:24px;padding:0 6px}
 table.grid td select{border:1px solid #b9c0cc;border-radius:2px;height:24px;padding:0 4px;background:#fff;min-width:120px}
 table.grid td input:disabled,table.grid td select:disabled{background:#f1f2f4;color:#888}
 table.grid .bad{color:var(--crit);font-weight:bold}
@@ -233,7 +236,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .bigbtns button{background:var(--blue);color:#fff;border:0;border-radius:3px;height:38px;font-weight:bold;font-size:12px}
 
 /* ───── 팝업 ───── */
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;align-items:center;justify-content:center;z-index:60}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;align-items:center;justify-content:center;z-index:80}
 .scrim.on{display:flex}
 .pop{background:#fff;border:1px solid #9aa3b3;min-width:400px;max-width:min(1100px,96vw);box-shadow:0 10px 40px rgba(0,0,0,.35)}
 .pop .pt{background:#f3f4f7;border-bottom:1px solid #d5dae2;padding:6px 12px;font-weight:bold;font-size:12px;display:flex;align-items:center}
@@ -262,18 +265,19 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .stabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:8px}
 .stabs button{background:#eef1f6;border:1px solid var(--line);border-bottom:0;padding:5px 14px;font-size:12px;color:#444;border-radius:3px 3px 0 0}
 .stabs button.on{background:#fff;color:var(--menu-on);font-weight:bold;position:relative;top:1px}
-.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:4px;font-size:13px;opacity:0;transition:.25s;z-index:70;pointer-events:none}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:4px;font-size:13px;opacity:0;transition:.25s;z-index:90;pointer-events:none}
 .toast.on{opacity:.95}
 
 /* ───── 최성봇(연수 도우미 챗봇) ───── */
-#bot{position:fixed;left:22px;bottom:46px;z-index:65;display:none;flex-direction:column;align-items:flex-start;gap:10px;touch-action:none}
+#bot{position:fixed;right:18px;bottom:44px;z-index:65;display:none;touch-action:none}
 #bot.dragging{opacity:.85}
 #bot.dragging .bot-av>svg{animation:none}
 #bot.dragging .bot-av{cursor:grabbing}
 .bot-av{cursor:grab}
 #chat .ch{cursor:grab}
-.bot-hint{position:absolute;left:0;top:-22px;font-size:11px;color:#fff;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:999px;white-space:nowrap;pointer-events:none;opacity:0;transition:.2s}
-.bot-av:hover .bot-hint{opacity:1}
+.bot-hint{position:absolute;left:0;top:-22px;z-index:2;font-size:11px;color:#fff;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:999px;white-space:nowrap;pointer-events:none;opacity:0;transition:.2s}
+#botAv>svg:hover~.bot-hint{opacity:1}
+#bot.R .bot-hint{left:auto;right:0}
 #bot.on{display:flex}
 .bot-av{width:84px;height:84px;position:relative}
 .bot-av>svg{filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));animation:bob 2.6s ease-in-out infinite}
@@ -284,13 +288,21 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 .bot-av .badge{position:absolute;top:-2px;left:-2px;min-width:20px;height:20px;border-radius:10px;background:var(--crit);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff}
 #bot{--pz:1}
-.bot-peek{position:absolute;left:96px;bottom:6px;width:max-content;max-width:calc(420px*var(--pz));background:#fff;border:2px solid #4f85d6;border-radius:18px;padding:14px 18px;font-size:calc(17px*var(--pz));line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.2);color:#1f2d4d;white-space:normal}
-.bot-peek::after{content:"";position:absolute;left:-10px;bottom:20px;border:8px solid transparent;border-right-color:#4f85d6}
-.bot-peek .pk-x{position:absolute;top:4px;right:8px;border:0;background:none;font-size:20px;line-height:1;color:#8b9099;cursor:pointer;padding:2px 4px}
+.bot-peek{position:fixed;left:0;top:0;width:max-content;max-width:min(calc(420px*var(--pz)),calc(100vw - 120px));word-break:keep-all;overflow-wrap:anywhere;cursor:default;background:#fff;border:2px solid #4f85d6;border-radius:18px;padding:14px 18px;font-size:calc(17px*var(--pz));line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.2);color:#1f2d4d;white-space:normal}
+.bot-peek::after{content:"";position:absolute;left:-18px;bottom:20px;border:8px solid transparent;border-right-color:#4f85d6}
+.bot-peek.L::after{left:auto;right:-18px;border-right-color:transparent;border-left-color:#4f85d6}
+.bot-peek.mini::after{bottom:12px}
+.bot-peek .pk-x{position:absolute;top:2px;right:2px;width:36px;height:36px;border:0;border-radius:10px;background:none;font-size:22px;line-height:1;color:#8b9099;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}
+.bot-peek .pk-x:hover{background:#eef3fb}
 .bot-peek .pk-x:hover{color:#1d4fb3}
 .bot-peek.mini{padding:0;border-width:2px;max-width:none}
-.bot-peek .pk-pill{border:0;background:#fff;color:#1d4fb3;font-weight:bold;font-size:calc(15px*var(--pz));padding:9px 16px;border-radius:16px;cursor:pointer;white-space:nowrap}
-.bot-peek .pk-t{padding-right:24px;font-size:calc(14px*var(--pz));color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
+.bot-peek .pk-row{display:flex;align-items:center;gap:4px;padding:3px}
+.bot-peek .pk-pill{border:0;background:#fff;color:#1d4fb3;font-weight:bold;font-size:calc(15px*var(--pz));padding:8px 12px;border-radius:14px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;max-width:min(calc(440px*var(--pz)),calc(100vw - 250px))}
+.bot-peek .pk-pill:hover{background:#eef3fb}
+.bot-peek .pk-pl{overflow:hidden;text-overflow:ellipsis}
+.bot-peek .pk-open{flex:none;font-size:.8em;color:#8b9099;font-weight:normal}
+.bot-peek .pk-go{flex:none;border:0;background:#2f66c2;color:#fff;border-radius:999px;padding:6px 12px;font-size:calc(14px*var(--pz));font-weight:bold;cursor:pointer;white-space:nowrap}
+.bot-peek .pk-t{padding-right:34px;font-size:calc(14px*var(--pz));color:#ff7a1a;font-weight:bold;letter-spacing:.02em;margin-bottom:2px}
 .bot-peek .pk-m{font-weight:bold;color:#1d4fb3;font-size:calc(19px*var(--pz));line-height:1.45}
 .bot-peek .pk-m small{font-size:.68em;font-weight:normal;color:#8b9099}
 .bot-peek .pk-s{color:#555;font-size:calc(15px*var(--pz));margin-top:4px}
@@ -301,7 +313,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .bot-peek .pk-b .pk-z{margin-left:auto;display:flex;gap:4px}
 .bot-peek .pk-b .pk-z button{background:#fff;border:1px solid #c9d3e3;color:#333;padding:4px 9px;font-size:calc(13px*var(--pz));min-width:36px}
 .bot-peek .n{display:inline-flex;width:1.3em;height:1.3em;border-radius:50%;background:var(--orange);color:#fff;font-size:.75em;font-weight:bold;align-items:center;justify-content:center;vertical-align:middle;margin-right:4px}
-#chat{width:440px;max-width:calc(100vw - 44px);background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;border:1px solid #d7e0ee}
+#chat{position:fixed;left:0;top:0;width:440px;max-width:calc(100vw - 16px);background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;border:1px solid #d7e0ee}
 #chat.on{display:flex}
 #chat .ch{background:linear-gradient(135deg,#2f66c2,#5a95ea);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
 #chat .ch svg{width:34px;height:34px}
@@ -312,7 +324,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .msg{display:flex;gap:8px;align-items:flex-end;max-width:92%}
 .msg.bot{align-self:flex-start}
 .msg.user{align-self:flex-end;flex-direction:row-reverse}
-.msg .bub{padding:10px 14px;border-radius:14px;font-size:15px;line-height:1.55;background:#fff;color:#222;border:1px solid #dde4ee;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.msg .bub{word-break:keep-all;overflow-wrap:anywhere;padding:10px 14px;border-radius:14px;font-size:15px;line-height:1.55;background:#fff;color:#222;border:1px solid #dde4ee;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
 .msg.user .bub{background:#2f66c2;color:#fff;border:0;border-bottom-left-radius:14px;border-bottom-right-radius:4px}
 .msg .bub b{color:#1d4fb3}
 .msg.user .bub b{color:#fff}
@@ -338,14 +350,14 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 
 /* 연수도우미 */
 .steps{list-style:none;margin:0;padding:0}
-.steps li{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;font-size:13px}
+.steps li{background:#fff;border:1px solid var(--line);border-radius:4px;padding:6px 12px;margin-bottom:5px;line-height:1.45;display:flex;gap:12px;align-items:flex-start;font-size:13px}
 .steps .no{width:26px;height:26px;border-radius:50%;background:#e9f0fc;color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;flex:none}
 .steps li.done .no{background:var(--ok);color:#fff}
 .steps li.done{border-color:var(--ok)}
 .steps li.pre{border-left:4px solid #8e7cc3}
 .steps li.cur{border-color:var(--orange);box-shadow:0 0 0 2px rgba(255,122,26,.25)}
 .steps .t{font-weight:bold}
-.steps .d{font-size:12px;color:var(--ink-2)}
+.steps .d{font-size:12px;color:var(--ink-2);word-break:keep-all;overflow-wrap:anywhere}
 .steps .d code{background:#f1f3f5;padding:0 4px;border-radius:2px;font-family:inherit;color:var(--navy)}
 .steps .go{margin-left:auto;flex:none}
 .log{font-size:12px;font-family:ui-monospace,Consolas,monospace;background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px 10px;max-height:320px;overflow:auto}
@@ -396,7 +408,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 
 <script>
 /* ═════════════════ 기본 자료(가상) ═════════════════ */
-const KEY_BASE='neis-msb-v6';
+const KEY_BASE='neis-msb-v7';
 /* 연수 버전: basic(기본·업무담당자 3~8단계) / full(심화·1·2단계 마감 오류부터). 링크 뒤 #심화 → 심화, #기본 → 기본, 없으면 관리자 화면 설정(기본값 basic) */
 let mode=(()=>{let h='';try{h=decodeURIComponent((location.hash||'')+(location.search||''));}catch(e){}if(/심화|full/i.test(h))return 'full';if(/기본|basic/i.test(h))return 'basic';try{return localStorage.getItem('neis-mode')==='full'?'full':'basic';}catch(e){return 'basic';}})();
 const keyOf=m=>KEY_BASE+'-'+(m||mode);
@@ -455,6 +467,12 @@ function seedData(){
   delete S.dayClose['1-3']['2026-12-29'];delete S.dayClose['1-3']['2026-12-30'];
   PERIODS.eng.slice(-1).forEach(x=>{delete S.periodClose.eng['1-1'][x.d+'|'+x.p];});
   S.examClose.eng.perf=false;
+  /* 연수 시나리오(공통수학2): 예외 1명(특수교육대상자), 참여시수 부족 미이수 1명 */
+  S.scen={exc:pick('1-2',4).id,excType:'특수교육대상자',un:pick('1-3',19).id,unHours:5};
+  /* 공통국어2·공통영어2는 최성보(3~6단계)를 마친 상태로 시작 — 연수는 공통수학2만 실습 */
+  ['kor','eng'].forEach(sid=>CLASSES.forEach(c=>{const m=S.msb[sid][c];const at={by:'담당 교과',at:'2026-12-31 09:00'};
+    m.targets=students(c).filter(st=>shortfall(sid,st.id).length).map(st=>st.id);m.hours={};m.targets.forEach(id=>m.hours[id]={h:Math.ceil(subj(sid).credit*m.hpc*2/3)+1,note:''});
+    m.excSaved=true;m.hoursSaved=true;m.creditApplied=at;m.closed=at;m.fetchedAt=at.at;}));
   if(mode==='basic')preDone();
   S.log=[];addLog('시스템',mode==='basic'?'가상 자료 생성(기본: 출결·성적 마감 완료 상태)':'가상 자료 생성(심화: 마감 오류 포함)');save();
 }
@@ -507,6 +525,11 @@ const allRoomsClosed=()=>SUBJECTS.every(s=>CLASSES.every(c=>roomClosed(s.id,c)))
 const attAllApproved=()=>!!S.attAll.approved;
 const calcAllApproved=()=>!!S.calcAll.approved;
 const msbOf=(s,c)=>S.msb[s][c];
+const PRACTICE_SUBJ='mat';
+const scenStu=k=>S.scen&&S.scen[k]?studentById(S.scen[k]):null;
+const stuLabel=st=>`${st.c}반 ${st.no}번 ${st.name}`;
+function scenNote(s,who){if(s!==PRACTICE_SUBJ||!S.scen)return who?ACTUAL_NOTE(who[0],who[1]):'';const e=scenStu('exc'),u=scenStu('un');
+  return `<div class="note info scen" style="margin:0 0 8px;padding:5px 10px;line-height:1.55">${who?`<b style="color:#b25400">👤 실제 담당: ${who[0]}</b> <span style="color:#7a5a2e">(연수에서는 업무담당자가 대신 입력해 봐요)</span><br>`:''}📋 <b>연수 시나리오(${subj(s).name})</b> ① <b>${stuLabel(e)}</b> — 특수교육대상자 → 예외 선택 &nbsp;② <b>${stuLabel(u)}</b> — ${S.scen.unHours}시수만 참여 → <b>미이수</b> &nbsp;③ 나머지 — 8~12시수 → 이수 <span class="status">(공통국어2·공통영어2는 마감 완료 · 실제로는 과목마다 반복)</span></div>`;}
 const ICON={search:'<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>',
   excel:'<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="1"/><path d="M2 6h12M2 10h12M6 2v12M10 2v12"/></svg>',
   doc:'<svg viewBox="0 0 16 16" fill="none" stroke="#333" stroke-width="1.2"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8h4M6 10.5h4"/></svg>',
@@ -565,7 +588,7 @@ function go(top,menu){
   const na=guideOn?nextAction():null;
   $('#roles').innerHTML=ROLES.map(r=>`<button class="${(cond.role||'부서장(교무업무)')===r?'on':''}" onclick="roleClick('${r}')">${r}</button>`).join('');
   $('#rail').innerHTML=RAIL.map(([k,svg,t])=>`<button title="${t}" class="${k==='menu'?'on':''}" onclick="railClick('${k}')"><svg viewBox="0 0 24 24">${svg}</svg>${k==='bell'?'<span class="dot"></span>':''}</button>`).join('')+'<button class="mj" onclick="toast(\'맞춤 메뉴는 연수 범위 밖입니다.\')">맞춤</button>';
-  $('#tree').innerHTML=MENUS[top].map(g=>`<div class="grp ${openGrp[top]===g.grp?'open':''}" onclick="toggleGrp('${top}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${g.items.map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" title="${i.name}" onclick="go('${top}','${i.id}')">${i.name}</button>`:`<button class="it" onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`).join('')+'<div class="fold">◀</div>';
+  $('#tree').innerHTML=MENUS[top].map(g=>`<div class="grp ${openGrp[top]===g.grp?'open':''}" onclick="toggleGrp('${top}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${g.items.map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" title="${i.name}" onclick="go('${top}','${i.id}')">${i.name.replace(')',')<wbr>')}</button>`:`<button class="it" onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`).join('')+'<div class="fold" title="메뉴 접기/펼치기" onclick="treeFold()">'+($('#tree').classList.contains('folded')?'▶':'◀')+'</div>';
   renderTabbar();
   $('#gDate').textContent=`기준일 ${S.simDate}`;
   render();
@@ -587,6 +610,7 @@ function megaPick(mod,grp){const g=MENUS[mod].find(x=>x.grp===grp);const first=g
   const live=MENUS[mod].flatMap(x=>x.items).find(i=>typeof i==='object');
   if(!live){megaOpen(false);toast(`[${grp}]은(는) 연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)`);return;}
   go(mod,view.menu&&topOf(view.menu)===mod?view.menu:live.id);openGrp[mod]=null;toggleGrp(mod,grp);toast(`[${grp}] 아래 메뉴는 연수 범위 밖입니다. (실제 나이스에만 있음)`);}
+function treeFold(){const t=$('#tree');t.classList.toggle('folded');const f=t.querySelector('.fold');if(f)f.textContent=t.classList.contains('folded')?'▶':'◀';layoutBot();}
 function toggleGrp(top,g){openGrp[top]=openGrp[top]===g?null:g;document.querySelectorAll('#tree .grp').forEach(el=>{el.classList.toggle('open',el.textContent.replace('▼','')===(openGrp[top]||''));});}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')megaOpen(false);});
 function render(){const f=SCREENS[view.menu];$('#main').innerHTML=(f?f():'<div class="empty">연수 범위 밖 메뉴입니다.</div>');$('#main').scrollTop=0;renderGuide();}
@@ -746,7 +770,7 @@ function msbSummary(s){let t=0,cr=0,at=0,ac=0,both=0;roomsOf().forEach(c=>msbTar
 function roomsCloseText(s){const un=roomsOf().filter(c=>!roomClosed(s,c));return un.length?`<span class="tip">출결이 마감되지 않은 강의실이 있습니다.<span class="tt">강의실 : ${un.map(c=>c.split('-')[1]).join(', ')}</span></span>`:'조회된 모든 강의실이 마감되었습니다.';}
 const ACTUAL_NOTE=(who,what)=>`<div class="note" style="margin:0 0 8px">👤 <b>실제 담당: ${who}</b> — ${what} 실제로는 ${who} 선생님이 하는 일이에요. 연수에서는 업무담당자가 대신 눌러 보며 흐름을 익혀요.</div>`;
 SCREENS['msb-manage']=()=>{const s=cond.subj;const t=cond.tab||'target';const na=guideOn?nextAction():null;
-  return pageHead('최소성취수준보장지도(추가학습)이수관리')+wizard(MSB_TABS,t,'msbTab',na&&na.menu==='msb-manage'?na.tab:null)+(t==='hours'?ACTUAL_NOTE('교과담임','참여시수 입력은'):'')+({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);};
+  return pageHead('최소성취수준보장지도(추가학습)이수관리')+wizard(MSB_TABS,t,'msbTab',na&&na.menu==='msb-manage'?na.tab:null)+(t==='hours'?scenNote(s,['교과담임','참여시수 입력은']):t!=='close'?scenNote(s):'')+({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);};
 function msbTab(t){cond.tab=t;unq();render();}
 function msbTargetTab(s){
   const sm=msbSummary(s);const q=queried[view.menu];const rooms=roomsOf();
@@ -792,32 +816,44 @@ function msbExcTab(s){
   const q=queried[view.menu];const rooms=roomsOf();const ed=can.teacherOf(s);const f=cond.filter||'all';
   const rows=rooms.flatMap(c=>{const m=msbOf(s,c);const locked=!!m.closed;return msbTargets(s,c).filter(st=>f==='all'||!m.exc[st.id]).map(st=>{const e=m.exc[st.id]||{};
     return `<tr><td><input type="checkbox" disabled></td><td>${st.c}</td><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td><td>${S.withdrawn[st.id]?S.withdrawn[st.id].type:''}</td><td>${subj(s).area}</td><td>${subjLabel(s)}</td><td>${subj(s).credit}</td><td>${attOK(s,st.id)?'도달':'미도달'}</td><td>${achOK(s,st.id)?'도달':'미도달'}</td>
-      <td class="exc-cell"><select ${ed&&!locked?'':'disabled'} onchange="excSet('${s}','${c}','${st.id}','type',this.value)"><option value="">--선택--</option>${EXC_TYPES.map(t=>`<option ${e.type===t?'selected':''}>${t}</option>`).join('')}</select></td>
-      <td><input type="text" class="wide" ${ed&&!locked&&e.type==='기타'?'':'disabled'} value="${esc(e.reason||'')}" onchange="excSet('${s}','${c}','${st.id}','reason',this.value)"></td></tr>`;});}).join('');
+      <td class="${S.scen&&S.scen.exc===st.id&&s===PRACTICE_SUBJ?'exc-cell':''}"><select ${ed&&!locked?'':'disabled'} onchange="excSet('${s}','${c}','${st.id}','type',this.value,this)"><option value="">--선택--</option>${EXC_TYPES.map(t=>`<option ${e.type===t?'selected':''}>${t}</option>`).join('')}</select></td>
+      <td><input type="text" class="wide exc-rs" ${ed&&!locked&&e.type==='기타'?'':'disabled'} value="${esc(e.reason||'')}" oninput="excSet('${s}','${c}','${st.id}','reason',this.value,this)"></td></tr>`;});}).join('');
   return condBar(fixedCond()+selSubj()+selRoom(true)+radio('f',[['all','전체'],['un','미이수']],f,'filter'),qbtn())
   +(q?tbar(rows?rows.split('<tr>').length-1:0,`<button class="btn" id="b-save" ${ed?'':'disabled'} onclick="excSave('${s}')">저장</button>${printBtn()}${excelBtn()}`)
   +(rows?`<div class="grid-wrap"><table class="grid"><thead><tr><th rowspan="2"><input type="checkbox" disabled></th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 대상자</th><th colspan="3" class="grp">최소 성취수준 보장지도(추가학습) 대상과목</th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 사유</th></tr><tr>${th('반','class="l2"')}${th('번호','class="l2"')}${th('성명','class="l2 l"')}${th('학적변동','class="l2"')}${th('편제','class="l2"')}${th('과목','class="l2"')}${th('학점','class="l2"')}${th('과목<br>출석률','class="l2"')}${th('학업<br>성취률','class="l2"')}${th('예외','class="l2" id="th-exc"')}${th('예외사유(기타)','class="l2 l"')}</tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 대상자가 없습니다. [대상자] 탭에서 먼저 <b>[대상자가져오기]</b>를 하세요.</div>'):needQuery());
 }
-function excSet(s,c,sid,k,v){const m=msbOf(s,c);m.exc[sid]=m.exc[sid]||{};if(k==='type'){if(!v)delete m.exc[sid];else{m.exc[sid].type=v;if(v!=='기타')m.exc[sid].reason='';}}else m.exc[sid][k]=v;m.excSaved=false;save();render();}
+function excSet(s,c,sid,k,v,el){const m=msbOf(s,c);m.exc[sid]=m.exc[sid]||{};if(k==='type'){if(!v)delete m.exc[sid];else{m.exc[sid].type=v;if(v!=='기타')m.exc[sid].reason='';}}else m.exc[sid][k]=v;m.excSaved=false;save();
+  if(!el){render();return;}
+  /* 화면 전체를 다시 그리지 않고 그 행만 고친다(다음 클릭이 사라지지 않게) */
+  if(k==='type'){const tr=el.closest('tr');const rs=tr&&tr.querySelector('.exc-rs');if(rs){rs.disabled=v!=='기타';if(v!=='기타')rs.value='';}renderGuide();}}
 function excSave(s){const bad=[];roomsOf().forEach(c=>Object.entries(msbOf(s,c).exc).forEach(([sid,e])=>{if(e.type==='기타'&&!(e.reason||'').trim())bad.push(studentById(sid).name);}));if(bad.length){alertBox('알림',`'기타' 예외는 예외사유를 입력해야 합니다.\n${bad.join(', ')}`);return;}roomsOf().forEach(c=>msbOf(s,c).excSaved=true);addLog(me.name,`예외처리 저장 ${s}`);save();render();alertBox('알림','자료의 저장이 완료되었습니다.');}
 
 function msbHoursTab(s){
   const q=queried[view.menu];const rooms=roomsOf();const ed=can.teacherOf(s);const f=cond.filter2||'all';
   const rows=rooms.flatMap(c=>{const m=msbOf(s,c);const locked=!!m.closed;
     return msbTargets(s,c).filter(st=>!m.exc[st.id]).map(st=>{const hp=hpcOf(m,st.id),need=subj(s).credit*hp,base=Math.ceil(need*2/3);const h=m.hours[st.id]||{};const done=h.h!=null&&h.h>=base;if(f==='un'&&done)return'';
-      return `<tr><td><input type="checkbox" class="hck" data-c="${c}" data-sid="${st.id}" ${locked?'disabled':''}></td><td>${st.c}</td><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td><td>${S.withdrawn[st.id]?S.withdrawn[st.id].type:''}</td><td>${subj(s).area}</td><td>${subjLabel(s)}</td><td>${subj(s).credit}</td><td><input type="number" min="1" max="5" value="${hp}" ${ed&&!locked?'':'disabled'} style="width:48px" onchange="hpcSet('${s}','${c}','${st.id}',this.value)"></td><td>${attOK(s,st.id)?'도달':'미도달'}</td><td>${achOK(s,st.id)?'도달':'미도달'}</td><td>${need}</td><td>${base}</td>
-        <td class="${h.h==null?'hours-cell':''}"><input type="number" min="0" max="${need}" value="${h.h??''}" ${ed&&!locked?'':'disabled'} onchange="hoursSet('${s}','${c}','${st.id}','h',this.value)"></td><td><select disabled><option>${h.h==null?'':done?'이수':'미이수'}</option></select></td>
-        <td><input type="text" class="wide" value="${esc(h.note||'')}" ${ed&&!locked?'':'disabled'} onchange="hoursSet('${s}','${c}','${st.id}','note',this.value)"></td><td>${m.creditApplied?'Y':'N'}</td></tr>`;});}).join('');
+      return `<tr><td><input type="checkbox" class="hck" data-c="${c}" data-sid="${st.id}" ${locked?'disabled':''}></td><td>${st.c}</td><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td><td>${S.withdrawn[st.id]?S.withdrawn[st.id].type:''}</td><td>${subj(s).area}</td><td>${subjLabel(s)}</td><td>${subj(s).credit}</td><td><input type="number" min="1" max="5" value="${hp}" ${ed&&!locked?'':'disabled'} style="width:48px" oninput="hpcSet('${s}','${c}','${st.id}',this.value,this)"></td><td>${attOK(s,st.id)?'도달':'미도달'}</td><td>${achOK(s,st.id)?'도달':'미도달'}</td><td class="c-need">${need}</td><td class="c-base">${base}</td>
+        <td class="${h.h==null?'hours-cell':''}"><input type="number" class="hin" min="0" max="${need}" value="${h.h??''}" ${ed&&!locked?'':'disabled'} oninput="hoursSet('${s}','${c}','${st.id}','h',this.value,this)" onkeydown="hinKey(event,this)"></td><td><select class="c-res" disabled style="min-width:70px"><option>${h.h==null?'':done?'이수':'미이수'}</option></select></td>
+        <td><input type="text" class="note-in" value="${esc(h.note||'')}" ${ed&&!locked?'':'disabled'} oninput="hoursSet('${s}','${c}','${st.id}','note',this.value,this)"></td><td>${m.creditApplied?'Y':'N'}</td></tr>`;});}).join('');
   return condBar(fixedCond()+selSubj()+selRoom(true)+radio('f2',[['all','전체'],['un','미이수']],f,'filter2'),qbtn())
   +(q?tbar(rows?rows.split('<tr>').length-1:0,`<button class="btn" id="b-save" ${ed?'':'disabled'} onclick="hoursSave('${s}')">저장</button>${printBtn()}${excelBtn()}`)
   +`<div class="subbar"><span>학점당 시수</span><input type="text" id="hpcIn" placeholder="학점당 시수를 입력해주세요." ${ed?'':'disabled'}><button class="btn" ${ed?'':'disabled'} onclick="hpcApply('${s}')">시수 적용</button><span class="status">※ 일반교과 학점당 3시수, 특성화고 전문교과는 2시수 — 적용할 학생을 선택(☑)한 뒤 [시수 적용]</span></div>`
-  +(rows?`<div class="grid-wrap"><table class="grid"><thead><tr><th rowspan="2"><input type="checkbox" onclick="document.querySelectorAll('.hck:not(:disabled)').forEach(x=>x.checked=this.checked)"></th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 대상자</th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 대상과목</th><th colspan="2" class="grp">최소 성취수준 보장지도(추가학습) 사유</th><th colspan="5" class="grp">최소 성취수준 보장지도(추가학습)</th><th rowspan="2">학점 반영여부</th></tr><tr>${th('반','class="l2"')}${th('번호','class="l2"')}${th('성명','class="l2 l"')}${th('학적변동','class="l2"')}${th('편제','class="l2"')}${th('과목','class="l2"')}${th('학점','class="l2"')}${th('학점당<br>시수','class="l2"')}${th('과목<br>출석률','class="l2"')}${th('학업<br>성취률','class="l2"')}${th('필요<br>시수','class="l2"')}${th('이수<br>기준','class="l2"')}${th('참여<br>시수','class="l2"')}${th('이수여부','class="l2"')}${th('비고','class="l2 l"')}</tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 대상자가 없습니다(대상자 미산출 또는 전원 예외처리).</div>'):needQuery());
+  +(rows?`<div class="grid-wrap"><table class="grid"><thead><tr><th rowspan="2"><input type="checkbox" onclick="document.querySelectorAll('.hck:not(:disabled)').forEach(x=>x.checked=this.checked)"></th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 대상자</th><th colspan="4" class="grp">최소 성취수준 보장지도(추가학습) 대상과목</th><th colspan="2" class="grp">최소 성취수준 보장지도(추가학습) 사유</th><th colspan="5" class="grp">최소 성취수준 보장지도(추가학습)</th><th rowspan="2">학점<br>반영<br>여부</th></tr><tr>${th('반','class="l2"')}${th('번호','class="l2"')}${th('성명','class="l2 l"')}${th('학적변동','class="l2"')}${th('편제','class="l2"')}${th('과목','class="l2"')}${th('학점','class="l2"')}${th('학점당<br>시수','class="l2"')}${th('과목<br>출석률','class="l2"')}${th('학업<br>성취률','class="l2"')}${th('필요<br>시수','class="l2"')}${th('이수<br>기준','class="l2"')}${th('참여<br>시수','class="l2"')}${th('이수여부','class="l2"')}${th('비고','class="l2 l"')}</tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">조회된 대상자가 없습니다(대상자 미산출 또는 전원 예외처리).</div>'):needQuery());
 }
 const hpcOf=(m,sid)=>(m.hpcStu&&m.hpcStu[sid])||m.hpc;
-function hpcSet(s,c,sid,v){const m=msbOf(s,c);m.hpcStu=m.hpcStu||{};m.hpcStu[sid]=+v||3;m.hoursSaved=false;save();render();}
+function hpcSet(s,c,sid,v,el){const m=msbOf(s,c);m.hpcStu=m.hpcStu||{};m.hpcStu[sid]=+v||3;m.hoursSaved=false;save();if(!el){render();return;}hoursRow(s,c,sid,el.closest('tr'));renderGuide();}
 function hpcApply(s){const v=+($('#hpcIn')||{}).value;const ck=[...document.querySelectorAll('.hck:checked')];if(!ck.length){alertBox('알림','선택된 내역이 없습니다.');return;}if(!(v>0)){alertBox('알림','학점당 시수를 입력해주세요.');return;}
   ck.forEach(x=>{const m=msbOf(s,x.dataset.c);m.hpcStu=m.hpcStu||{};m.hpcStu[x.dataset.sid]=v;m.hoursSaved=false;});save();render();alertBox('알림',`선택한 ${ck.length}명에게 학점당 ${v}시수를 적용했습니다.`);}
-function hoursSet(s,c,sid,k,v){const m=msbOf(s,c);m.hours[sid]=m.hours[sid]||{};m.hours[sid][k]=k==='h'?(v===''?null:+v):v;m.hoursSaved=false;save();render();}
+function hoursSet(s,c,sid,k,v,el){const m=msbOf(s,c);m.hours[sid]=m.hours[sid]||{};m.hours[sid][k]=k==='h'?(v===''?null:+v):v;m.hoursSaved=false;save();
+  if(!el){render();return;}if(k==='h'){hoursRow(s,c,sid,el.closest('tr'));renderGuide();}}
+/* 참여시수 행만 갱신(필요시수·이수기준·이수여부·점선 표시) */
+function hoursRow(s,c,sid,tr){if(!tr)return;const m=msbOf(s,c);const need=subj(s).credit*hpcOf(m,sid),base=Math.ceil(need*2/3);const h=(m.hours[sid]||{}).h;
+  const q=x=>tr.querySelector(x);if(q('.c-need'))q('.c-need').textContent=need;if(q('.c-base'))q('.c-base').textContent=base;
+  const hi=q('.hin');if(hi){hi.max=need;hi.parentElement.classList.toggle('hours-cell',h==null);if(h!=null)hi.parentElement.classList.remove('next-cell');}
+  const r=q('.c-res option');if(r)r.textContent=h==null?'':h>=base?'이수':'미이수';}
+/* Tab·Enter: 다음 학생 참여시수 칸으로, Shift+Tab: 이전 학생 */
+function hinKey(e,el){if(e.key!=='Tab'&&e.key!=='Enter')return;const all=[...document.querySelectorAll('input.hin:not(:disabled)')];const j=all.indexOf(el)+(e.shiftKey?-1:1);
+  if(all[j]){e.preventDefault();all[j].focus();try{all[j].select();}catch(_){}}else if(!e.shiftKey){e.preventDefault();const b=document.getElementById('b-save');if(b)b.focus();}}
 function hoursSave(s){roomsOf().forEach(c=>msbOf(s,c).hoursSaved=true);addLog(me.name,`이수관리 저장 ${s}`);save();render();alertBox('알림','자료의 저장이 완료되었습니다.');}
 function msbRoomStats(s,c){const m=msbOf(s,c);const T=msbTargets(s,c);let ex=0,done=0,un=0,pending=0;T.forEach(st=>{const base=Math.ceil(subj(s).credit*hpcOf(m,st.id)*2/3);if(m.exc[st.id])ex++;else{const h=(m.hours[st.id]||{}).h;if(h==null)pending++;else if(h>=base)done++;else un++;}});return {t:T.length,ex,done,un,pending,applied:m.creditApplied?T.length:0};}
 function msbCloseTab(s){
@@ -830,7 +866,7 @@ function msbCloseTab(s){
   ${!fetched?'<div class="note">대상자를 가져오지 않은 강의실이 있습니다.</div>':''}`:needQuery());
 }
 function creditApply(s){const rooms=roomsOf();confirmBox('확인',`학점반영 하시겠습니까?\n\n· 이수자·예외처리자 → 이수\n· 미이수자 → 미이수`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.creditApplied={by:me.name,at:nowStr()};});addLog(me.name,`최성보 학점반영 ${s} ${rooms.join(',')}`);save();render();alertBox('알림','학기말성적반영이 되었습니다.');});}
-function msbClose(s){const rooms=roomsOf();confirmBox('확인',`마감하시겠습니까?`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.closed={by:me.name,at:nowStr()};});addLog(me.name,`최성보 마감 ${s} ${rooms.join(',')}`);save();render();alertBox('알림','마감되었습니다.');});}
+function msbClose(s){const rooms=roomsOf();confirmBox('확인',`마감하시겠습니까?`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.closed={by:me.name,at:nowStr()};});addLog(me.name,`최성보 마감 ${s} ${rooms.join(',')}`);save();render();alertBox('알림',SUBJECTS.every(x=>CLASSES.every(c=>msbOf(x.id,c).closed))?'마감되었습니다.\n\n※ 실제 업무에서는 과목마다 3~6단계(대상자 가져오기 → 예외처리 → 이수관리 → 학점반영·마감)를 반복합니다.\n연수에서는 공통국어2·공통영어2를 미리 마감해 두었으니, 다음은 7단계(학생부 자료반영)예요.':'마감되었습니다.');});}
 function msbUnclose(s){confirmBox('확인','마감을 취소하시겠습니까? 학점반영도 함께 취소됩니다.',()=>{roomsOf().forEach(c=>{const m=msbOf(s,c);m.closed=null;m.creditApplied=null;});addLog(me.name,`최성보 마감취소 ${s}`);save();render();});}
 
 /* 조회 */
@@ -915,19 +951,19 @@ function nextAction(){
     seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[성적산출전체마감]',b:'b-calcall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-calcreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.calcAll.req)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 승인요청',role:'업무담당자',ok:true,menu:'calc-close',why:'전체마감이 끝났어요. 조회조건 옆 [승인요청]을 누르면 기안문서상신 창이 떠요. [결재자지정] → [상신] 순서예요.',seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[승인요청]',b:'b-calcreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.calcAll.approved)return apprAction(2,'성적산출 전체마감','calc-close');
-  for(const s of SUBJECTS){const sid=s.id;const role='업무담당자';const ok=true;const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
+  for(const s of SUBJECTS){const sid=s.id;const role='업무담당자';const ok=true;if(sid!==PRACTICE_SUBJ&&CLASSES.every(c=>msbOf(sid,c).closed))continue;const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
     if(ms.some(m=>!m.targets))return Object.assign(base,{step:3,title:'[3단계] 대상자 가져오기',tab:'target',why:`${subjLabel(sid)}의 학점이수 기준 미도달 학생을 가져옵니다. {지필/수행 학업성취율 현황}·{과목별출결현황}으로 근거 자료도 확인해 보세요.`,
       seq:[{t:'[대상자] 탭',tab:'target'},{t:`조회조건: 과목 <b>${subjLabel(sid)}</b> · 강의실 <b>전체</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='target'},{t:'[대상자가져오기]',b:'b-fetch'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
-    if(ms.some(m=>!m.excSaved))return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택합니다. 없더라도 {저장}을 눌러 확인 처리합니다.`,
-      seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},{t:'예외 대상 학생의 [예외] 선택 (기타는 사유 입력 · 해당 학생이 없으면 바로 [저장])',cell:'exc-cell',hdr:'th-exc',done:CLASSES.some(c=>Object.keys(msbOf(sid,c).exc).length)},{t:'[저장]',b:'b-save'}]});
-    if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{role:`교과담임(${userName(s.teacher)})`,step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다. 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정돼요. 실제로는 교과담임 선생님이 입력하고, 연수에서는 업무담당자가 대신 입력해 봐요.`,
+    if(ms.some(m=>!m.excSaved)){const es=sid===PRACTICE_SUBJ?scenStu('exc'):null;return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택해요.${es?` 연수 시나리오: <b>${stuLabel(es)}</b> 학생은 <b>특수교육대상자</b>예요.`:' 없더라도 {저장}을 눌러 확인 처리해요.'}`,
+      seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},es?{t:`${stuLabel(es)}의 [예외]에서 '특수교육대상자' 선택`,cell:'exc-cell',hdr:'th-exc',done:!!(msbOf(sid,es.cls).exc[es.id])}:{t:'예외 대상 학생의 [예외] 선택 (기타는 사유 입력 · 해당 학생이 없으면 바로 [저장])',cell:'exc-cell',hdr:'th-exc',done:CLASSES.some(c=>Object.keys(msbOf(sid,c).exc).length)},{t:'[저장]',b:'b-save'}]});}
+    if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{role:`교과담임(${userName(s.teacher)})`,step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다.${sid===PRACTICE_SUBJ&&scenStu('un')?` 연수 시나리오: <b>${stuLabel(scenStu('un'))}</b>은 <b>${S.scen.unHours}시수</b>(미이수), 나머지는 <b>8~12시수</b>를 입력해요.`:''} 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정돼요. 실제로는 교과담임 선생님이 입력하고, 연수에서는 업무담당자가 대신 입력해 봐요.`,
       seq:[{t:'[이수관리] 탭',tab:'hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:`참여시수 입력 (미입력 ${CLASSES.reduce((n,c)=>n+msbRoomStats(sid,c).pending,0)}명 남음) · 필요시 비고`,cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'}]});
     if(ms.some(m=>!m.creditApplied))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 학점반영',tab:'close',why:`${subjLabel(sid)}의 이수/미이수 결과를 학점에 반영합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[학점반영]',b:'b-credit'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[마감]',b:'b-close'}]});
     if(ms.some(m=>!m.closed))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 마감',tab:'close',why:`${subjLabel(sid)} 학점반영이 끝났습니다. 마감합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[마감]',b:'b-close'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
   }
-  for(const c of CLASSES)if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'rec-reflect',tab:'reflect',set:{cls:c,rtab:'reflect'},why:`${clsName(c)} 학생들의 학교생활기록부를 생성해요. 이수/미이수 결과는 [교과학습발달상황]에 반영돼요. 학기말이라 [전체] 항목을 그대로 두고 반영하면 돼요. 실제로는 학급담임 선생님이 하는 일이고, 연수에서는 업무담당자가 대신 눌러 봐요.`,
+  for(const c of CLASSES)if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'rec-reflect',tab:'reflect',set:{cls:c,rtab:'reflect'},why:`${CLASSES.every(x=>!S.recReflect[x])?'공통수학2 마감까지 끝났어요! 실제 업무에서는 과목마다 3~6단계를 반복해요(연수에서는 공통국어2·공통영어2를 미리 마감해 두었어요). ':''}${clsName(c)} 학생들의 학교생활기록부를 생성해요. 이수/미이수 결과는 [교과학습발달상황]에 반영돼요. 학기말이라 [전체] 항목을 그대로 두고 반영하면 돼요. 실제로는 학급담임 선생님이 하는 일이고, 연수에서는 업무담당자가 대신 눌러 봐요.`,
     seq:[{t:'[학생부반영] 탭',tab:'reflect'},{t:`조회조건: 반 <b>${c.split('-')[1]}</b>`,f:'f-cls'},{t:'[조회]',b:'b-query',done:Q('rec-reflect')},{t:'[전체반영]',b:'b-reflect'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
   if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부' 확인",done:Q('msb-mgmt')},{t:'[마감정보저장]',b:'b-mgmtsave'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-mgmtreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'마감정보가 저장되었어요. [승인요청] → 기안문서상신 창에서 [결재자지정] → [상신] 순서예요.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[승인요청]',b:'b-mgmtreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
@@ -945,16 +981,16 @@ const BOT_SVG=(mood)=>`<svg viewBox="0 0 80 80" width="100%" height="100%"><g><l
 let chatLog=[],chatSig='',chatIsOpen=false,botSteps=null;
 /* 최성봇 드래그 이동(위치 기억) */
 (function(){const bot=document.getElementById('bot');let st=null;
-  function place(x,y){const w=bot.offsetWidth,h=bot.offsetHeight;x=Math.max(4,Math.min(window.innerWidth-w-4,x));y=Math.max(4,Math.min(window.innerHeight-h-4,y));bot.style.left=x+'px';bot.style.top=y+'px';bot.style.right='auto';bot.style.bottom='auto';}
-  function down(e){const t=e.target.closest('#botAv,#chat .ch');if(!t||e.target.closest('button'))return;const r=bot.getBoundingClientRect();st={sx:e.clientX,sy:e.clientY,ox:r.left,oy:r.top,moved:false,t};e.preventDefault();}
+  function place(x,y){const w=bot.offsetWidth,h=bot.offsetHeight;x=Math.max(4,Math.min(window.innerWidth-w-4,x));y=Math.max(4,Math.min(window.innerHeight-h-4,y));bot.style.left=x+'px';bot.style.top=y+'px';bot.style.right='auto';bot.style.bottom='auto';layoutBot();}
+  function down(e){if(e.target.closest('#botPeek'))return;const t=e.target.closest('#botAv,#chat .ch');if(!t||e.target.closest('button'))return;const r=bot.getBoundingClientRect();st={sx:e.clientX,sy:e.clientY,ox:r.left,oy:r.top,moved:false,t};e.preventDefault();}
   function move(e){if(!st)return;const dx=e.clientX-st.sx,dy=e.clientY-st.sy;if(!st.moved&&Math.hypot(dx,dy)<6)return;st.moved=true;bot.classList.add('dragging');place(st.ox+dx,st.oy+dy);}
-  function up(e){if(!st)return;bot.classList.remove('dragging');if(st.moved){try{localStorage.setItem('neis-bot-pos',JSON.stringify({x:bot.offsetLeft,y:bot.offsetTop}));}catch(_){}}else if(st.t.id==='botAv')chatOpen();st=null;}
+  function up(e){if(!st)return;bot.classList.remove('dragging');if(st.moved){try{localStorage.setItem('neis-bot-pos2',JSON.stringify({x:bot.offsetLeft,y:bot.offsetTop}));}catch(_){}}else if(st.t.id==='botAv')chatOpen();st=null;}
   bot.addEventListener('pointerdown',down);window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);
-  window.botRestorePos=function(){try{const p=JSON.parse(localStorage.getItem('neis-bot-pos'));if(p)place(p.x,p.y);}catch(_){}};
-  window.addEventListener('resize',()=>{if(bot.style.left)place(bot.offsetLeft,bot.offsetTop);});
+  window.botRestorePos=function(){try{const p=JSON.parse(localStorage.getItem('neis-bot-pos2'));if(p)place(p.x,p.y);}catch(_){}};
+  window.addEventListener('resize',()=>{if(bot.style.left)place(bot.offsetLeft,bot.offsetTop);else layoutBot();});
 })();
-function chatOpen(v){chatIsOpen=v===undefined?!chatIsOpen:v;$('#chat').classList.toggle('on',chatIsOpen);$('#botPeek').style.display=chatIsOpen?'none':'';if(chatIsOpen){$('#botBadge').style.display='none';scrollChat();}}
-function scrollChat(){const m=$('#chatMsgs');m.scrollTop=m.scrollHeight;}
+function chatOpen(v){chatIsOpen=v===undefined?!chatIsOpen:v;$('#chat').classList.toggle('on',chatIsOpen);$('#botPeek').style.display=chatIsOpen?'none':'';if(chatIsOpen){$('#botBadge').style.display='none';}layoutBot();if(chatIsOpen)scrollChat();}
+function scrollChat(){const m=$('#chatMsgs');m.scrollTop=m.scrollHeight;const last=m.lastElementChild;if(last){const d=last.getBoundingClientRect().top-m.getBoundingClientRect().top-6;if(d<0)m.scrollTop+=d;}}
 function say(html,who){chatLog.push({who:who||'bot',html,t:new Date()});if(chatLog.length>60)chatLog.shift();drawChat();if(who!=='user'&&!chatIsOpen){const b=$('#botBadge');b.style.display='';b.textContent='!';}}
 function drawChat(){const m=$('#chatMsgs');m.innerHTML=chatLog.map(x=>`<div class="msg ${x.who}">${x.who==='bot'?`<span class="mini">${BOT_SVG()}</span>`:''}<div class="bub">${x.html}</div><span class="time">${String(x.t.getHours()).padStart(2,'0')}:${String(x.t.getMinutes()).padStart(2,'0')}</span></div>`).join('');scrollChat();}
 const roleLine=na=>na.role==='업무담당자'?'<span style="color:#667">담당: 업무담당자</span>':`<span style="color:#b25400;font-weight:bold">👤 실제 담당: ${na.role}</span> <span style="color:#667">(연수에서는 업무담당자가 대신 눌러 봐요)</span>`;
@@ -962,7 +998,18 @@ function stepBubble(na,items,curIdx,here,condOK){const tabName=tabNameOf(na);
   const intro=here&&!condOK?'화면은 맞는데 <b>조회조건</b>이 달라요. 조회조건을 바꾸거나 말풍선의 [🚀 데려다줘]를 눌러 주세요 👇':here?'지금 이 화면 맞아요! 번호 순서대로 눌러 보세요 👇':`다음은 <b>${na.title.replace(/^\[\d단계\] /,'')}</b>이에요. 메뉴 <code>${MENU_PATH[na.menu]}</code>${na.tab?` › <code>${tabName}</code> 탭`:''}으로 가 주세요. 말풍선의 [🚀 데려다줘]를 누르면 제가 데려다 드릴게요`;
   return `<b>${na.title}</b><br>${roleLine(na)}<br>${na.why}<br><br>${intro}<ol>${items.map((x,i)=>`<li class="${x.done?'done':''} ${i===curIdx?'cur':''}"><span class="n">${i+1}</span><span>${x.t}</span></li>`).join('')}</ol>`;}
 function peekZoom(d){let z=+(getComputedStyle($('#bot')).getPropertyValue('--pz'))||1;z=Math.round(Math.min(1.8,Math.max(.7,z+d*.15))*100)/100;$('#bot').style.setProperty('--pz',z);try{localStorage.setItem('neis-peek-zoom',z);}catch(_){}}
-function botHome(){const b=$('#bot');b.style.left='';b.style.top='';b.style.right='';b.style.bottom='';try{localStorage.removeItem('neis-bot-pos');}catch(_){}}
+function botHome(){const b=$('#bot');b.style.left='';b.style.top='';b.style.right='';b.style.bottom='';try{localStorage.removeItem('neis-bot-pos2');}catch(_){}layoutBot();}
+/* 말풍선·채팅창을 로봇 옆에 두되 항상 화면 안에 들어오게 배치 */
+function layoutBot(){const bot=$('#bot'),av=$('#botAv');if(!bot||!av||!bot.classList.contains('on'))return;const r=av.getBoundingClientRect();const W=window.innerWidth,H=window.innerHeight,g=12,m=4;
+  const right=r.left+r.width/2>W/2;bot.classList.toggle('R',right);
+  const pk=$('#botPeek');if(pk&&pk.style.display!=='none'){const w=pk.offsetWidth,h=pk.offsetHeight;
+    let L=right;if(L&&r.left-g-w<m)L=false;if(!L&&r.right+g+w>W-m&&r.left-g-w>=m)L=true;
+    let left=L?r.left-g-w:r.right+g;left=Math.max(m,Math.min(W-m-w,left));let top=r.bottom-6-h;top=Math.max(m,Math.min(H-m-h,top));
+    pk.style.left=left+'px';pk.style.top=top+'px';pk.classList.toggle('L',L);}
+  const ch=$('#chat');if(chatIsOpen&&ch){const w=ch.offsetWidth,h=ch.offsetHeight;let top,left;
+    if(r.top-g-h>=m){top=r.top-g-h;left=right?r.right-w:r.left;}else if(r.bottom+g+h<=H-m){top=r.bottom+g;left=right?r.right-w:r.left;}
+    else{top=Math.max(m,Math.min(H-m-h,r.top+r.height/2-h/2));left=right?r.left-g-w:r.right+g;if(left<m||left+w>W-m)left=right?m:W-m-w;}
+    left=Math.max(m,Math.min(W-m-w,left));top=Math.max(m,Math.min(H-m-h,top));ch.style.left=left+'px';ch.style.top=top+'px';}}
 function botAsk(t){say(esc(t==='다음'?'다음엔 뭐 해?':t==='왜'?'왜 버튼이 안 눌려?':t==='도움'?'뭘 물어볼 수 있어?':t),'user');botReply(t);}
 function chatSend(){const i=$('#chatIn');const t=i.value.trim();if(!t)return;i.value='';say(esc(t),'user');botReply(t);}
 function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
@@ -971,7 +1018,7 @@ function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(
   if(/접어|숨겨|가려/.test(t)){peekMin(true);return say2('말풍선을 접었어요. 로봇 옆 [다음 할 일 보기]를 누르면 다시 펼쳐져요 🙂');}
   if(/펼쳐|보여/.test(t)){peekMin(false);return say2('말풍선을 다시 펼쳤어요!');}
   if(/원래 자리|제자리|위치/.test(t)){botHome();return say2('원래 자리(왼쪽 아래)로 돌아갈게요 🏠');}
-  if(/초기화|리셋|다시 처음/.test(t))return say2('처음부터 다시 하려면 <code>연수도우미 › 설정·초기화·로그</code>에서 <b>[자료 초기화]</b>를 눌러 주세요. 지금 입력한 내용은 모두 지워져요! <br><button class="btn s" onclick="go(\'guide\',\'gd-setting\')">설정 화면으로</button>');
+  if(/초기화|리셋|다시 처음/.test(t))return say2('처음부터 다시 하려면 아래 버튼을 눌러 주세요. 지금 입력한 내용은 모두 지워져요! <br><button class="btn s" onclick="askReset()">처음부터 다시(초기화)</button>');
   if(/건너|스킵|3단계부터/.test(t)&&mode==='basic')return say2('기본 버전은 이미 1·2단계가 끝난 상태로 시작해요. 3단계부터 진행하면 돼요 🙂');
   if(/건너|스킵|3단계부터/.test(t))return say2('사전업무(1·2단계)를 완료 처리하고 3단계부터 연습할 수 있어요. <button class="btn s" onclick="confirmBox(\'확인\',\'1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.\',()=>skipPre())">3단계부터 시작</button>');
   if(/흐름|단계 전체|전체/.test(t))return say2('8단계 흐름이에요 📋<br>사전 ① 과목 출석률 마감 → ② 학기말 성적산출 마감<br>본업무 ③ 대상자 가져오기 → ④ 예외처리 → ⑤ 이수여부 처리 → ⑥ 학점반영·마감 → ⑦ 학생부 자료반영 → ⑧ 마감정보저장·승인요청<br><button class="btn s" onclick="go(\'guide\',\'gd-steps\')">흐름도 화면 열기</button>');
@@ -986,27 +1033,30 @@ function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(
   if(/왜|안 돼|안돼|비활성|회색|못 눌|안 눌/.test(t))return say2(`지금 단계가 막힌 이유는 이거예요 🔍<br>${na.why}<br><br>${here?'번호가 붙은 버튼을 순서대로 눌러 보세요.':'<button class="btn s" onclick="guideGo()">🚀 그 화면으로 데려다줘</button>'}`);
   if(/다음|뭐|해야|할 일|순서|어디|어떻게/.test(t)){chatSig='';return setTimeout(()=>renderGuide(true),350);}
   say2('음… 그건 아직 잘 모르겠어요 🤖 "다음", "왜", "흐름", "기준" 같은 말로 물어봐 주세요!');}
-let peekMinOn=(()=>{try{return localStorage.getItem('neis-peek-min')==='1';}catch(_){return false;}})();
-function peekMin(v){peekMinOn=v;try{localStorage.setItem('neis-peek-min',v?'1':'0');}catch(_){}renderGuide();}
+let peekMinOn=(()=>{try{return localStorage.getItem('neis-peek-open')!=='1';}catch(_){return true;}})();
+let peekLine='',peekGo=false;
+function peekMin(v){peekMinOn=v;try{if(v)localStorage.removeItem('neis-peek-open');else localStorage.setItem('neis-peek-open','1');}catch(_){}renderGuide();}
 function applyPeekMin(){const el=$('#botPeek');if(!el||!guideOn)return;el.classList.toggle('mini',peekMinOn);
-  if(peekMinOn){const na=nextAction();el.innerHTML=`<button class="pk-pill" title="말풍선 펼치기" onclick="peekMin(false)">💡 ${na?na.step+'단계 — 다음 할 일 보기':'다 끝났어요!'}</button>`;}
+  if(peekMinOn){const na=nextAction();el.innerHTML=`<span class="pk-row"><button class="pk-pill" title="말풍선 펼치기" onclick="peekMin(false)"><span class="pk-pl">${na?`💡 ${na.step}단계 · ${esc(peekLine)}`:'🎉 8단계 모두 끝났어요!'}</span><span class="pk-open">펼치기 ▴</span></button>${na?(peekGo?'<button class="pk-go" onclick="guideGo()">🚀 데려다줘</button>':''):'<button class="pk-go" onclick="askReset()">처음부터 다시</button>'}</span>`;}
   else if(!el.querySelector('.pk-x'))el.insertAdjacentHTML('afterbegin','<button class="pk-x" title="말풍선 접기" onclick="peekMin(true)">－</button>');}
-function renderGuide(force){renderGuide0(force);applyPeekMin();}
+function renderGuide(force){renderGuide0(force);applyPeekMin();layoutBot();}
 function renderGuide0(force){
   const p=$('#bot');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
   if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();try{const z=+localStorage.getItem('neis-peek-zoom');if(z)$('#bot').style.setProperty('--pz',z);}catch(_){}}
   const na=nextAction();
-  if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="go(\'guide\',\'gd-setting\')">처음부터 다시</button><span class="pk-z"><button onclick="peekZoom(-1)">가−</button><button onclick="peekZoom(1)">가+</button></span></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}return;}
+  if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="askReset()">처음부터 다시</button><span class="pk-z"><button onclick="peekZoom(-1)">가−</button><button onclick="peekZoom(1)">가+</button></span></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}return;}
   const here=view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
   const condOK=!na.set||Object.entries(na.set).every(([k,v])=>k==='atab'||k==='tab'||k==='rtab'||(cond[k]||(k==='wdf'?'un':undefined))===v);
   let curIdx=-1;const items=na.seq.map((x,i)=>{let done=here&&!!x.done&&condOK;if(x.f)done=here&&condOK;if(x.tab&&here)done=true;if(!done&&curIdx<0)curIdx=i;return {...x,done};});
   if(!here)curIdx=-1;
   const stepName=na.title.replace(/^\[\d단계\] /,'');const tabName2=tabNameOf(na);
   const cur=items[curIdx];const peekMain=here&&cur?`<span class="n">${curIdx+1}</span>${cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.f?cur.t.replace('조회조건: ','조회조건을 바꾸세요 → ')+' <small>(또는 아래 [데려다줘])</small>':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${MENU_PATH[na.menu].split(' › ').slice(-1)[0]}</b>${na.tab?` › ${tabName2.replace('최소성취수준보장지도(추가학습)','')} 탭`:''} 화면으로 가세요`;
+  peekLine=(here&&cur?peekMain:`${tabName2?tabName2.replace('최소성취수준보장지도(추가학습)','')+' 탭':MENU_PATH[na.menu].split(' › ').slice(-1)[0].replace('최소성취수준보장지도(추가학습)','')} 화면으로 가세요`).replace(/<span class="n">(\d+)<\/span>/,'👉 ').replace(/<small>.*?<\/small>/g,'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();peekGo=!(here&&condOK);
   const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):`메뉴 ${MENU_PATH[na.menu]}`;
   $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div>${na.role==='업무담당자'?'':`<div class="pk-r">👤 실제 담당: ${na.role}</div>`}<div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 대화하기</button><span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
   const sig=`${na.title}|${here}|${condOK}|${curIdx}|${view.menu}|${curTab(na)}`;
   if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say(mode==='basic'?'안녕하세요! 저는 <b>최성봇</b>이에요 🤖 출결 마감(1단계)과 성적 마감(2단계)은 담당 부서에서 이미 끝냈어요. <b>3단계 대상자 가져오기</b>부터 업무담당자 일을 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!':'안녕하세요! 저는 <b>최성봇</b>이에요 🤖 심화 버전이라 출결·성적 마감에 일부러 빠진 곳이 있어요. 어디서 막히는지 찾아가며 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
+  document.querySelectorAll('.btn .gnum,th .gnum').forEach(e=>e.remove());document.querySelectorAll('.btn.next,.next-field,.next-cell,.next-hdr').forEach(e=>e.classList.remove('next','next-field','next-cell','next-hdr'));
   if(here){items.forEach((x,i)=>{if(x.b&&x.b!=='b-modal-ok'){const el=document.getElementById(x.b);if(el){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=i+1;el.appendChild(n);if(i===curIdx)el.classList.add('next');}}
       if(x.f&&i===curIdx){const el=document.getElementById(x.f);if(el)el.classList.add('next-field');}
       if(x.cell&&i===curIdx){document.querySelectorAll('.'+x.cell).forEach(td=>td.classList.add('next-cell'));}
@@ -1016,7 +1066,7 @@ function renderGuide0(force){
 function steps(){return [
   {pre:1,t:'[1단계] 과목 출석률 마감',d:'① 교과담임: <code>학적 › 출결관리 › 과목별출결관리</code>의 [학기별 과목 출결 마감] 탭에서 강의실별 {학기별과목마감} (과목교시마감수 = 반별일출결마감수 = 시간표총수업수일 때만 가능) ② 업무담당자: <code>과목 전체 마감</code> 탭에서 {전체마감} → {승인요청} → 기안문서상신 창 {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]).',ok:()=>attAllApproved(),go:['hak','att-subj']},
   {pre:1,t:'[2단계] 학기말 성적 산출 마감',d:'<code>성적 › 성적처리 › 성적산출마감관리</code>에서 {성적산출전체마감} → 조회조건 옆 {승인요청} → {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]). (1단계와 순서 무관)',ok:()=>calcAllApproved(),go:['score','calc-close']},
-  {t:'[3단계] 대상자 가져오기',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)이수관리 › 대상자</code>에서 {조회} → {대상자가져오기} → {확인}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).targets)),go:['score','msb-manage']},
+  {t:'[3단계] 대상자 가져오기',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)이수관리 › 대상자</code>에서 {조회} → {대상자가져오기} → {확인}.<br>※ 연수에서는 <b>공통수학2</b>로 3~6단계를 실습해요. 공통국어2·공통영어2는 마감된 상태예요(실제로는 과목마다 반복).',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).targets)),go:['score','msb-manage']},
   {t:'[4단계] 예외처리 대상자 등록',d:'<code>› 예외처리</code> 탭에서 예외사유(특수교육대상자·학교외 장소 수강·기타) 선택 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).excSaved)),go:['score','msb-manage']},
   {t:'[5단계] 대상자 이수여부 처리',who:'교과담임',d:'<code>› 이수관리</code> 탭에서 참여시수 입력 → 이수여부 자동 판정 → 비고 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).hoursSaved&&!msbRoomStats(s.id,c).pending)),go:['score','msb-manage']},
   {t:'[6단계] 최성보 마감 관리',d:'<code>› 마감</code> 탭에서 {학점반영} → {마감}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed)),go:['score','msb-manage']},
@@ -1024,7 +1074,7 @@ function steps(){return [
   {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청} → 기안문서상신 창 {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]).',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
 ];}
 SCREENS['gd-steps']=()=>{const st=steps();const done=st.filter(s=>s.ok()).length;const na=nextAction();
-  return pageHead('최소 성취수준 보장지도 관리 업무 흐름도')+`<div class="note info"><b>연수 버전: ${MODE_NAME[mode]}</b> · ${done} / ${st.length} 단계 완료<br>${mode==='basic'?'<b>1·2단계(출결 마감·성적 마감)는 담당 부서에서 이미 끝낸 상태</b>로 시작해요. 업무담당자는 <b>3단계부터 8단계까지</b> 직접 눌러 봐요.':'<b>사전업무</b>(보라색 1·2단계, 순서 무관)에 일부러 빠진 마감이 있어요. 어디서 막히는지 찾아가며 <b>보장지도 관리</b>(3~8단계)까지 진행해요.'} 각 단계의 조건이 안 맞으면 실제 나이스처럼 버튼이 비활성화되거나 알림이 떠요. <b>버튼을 누르는 순서가 중요</b>하니, 모르겠으면 왼쪽 아래 <b>최성봇</b>에게 물어보고 ①②③ 순서대로 누르세요.</div>
+  return pageHead('최소 성취수준 보장지도 관리 업무 흐름도')+`<div class="note info" style="display:flex;gap:12px;align-items:flex-start"><div style="flex:1"><b>연수 버전: ${MODE_NAME[mode]}</b> · ${done} / ${st.length} 단계 완료<br>${mode==='basic'?'<b>1·2단계(출결 마감·성적 마감)는 담당 부서에서 이미 끝낸 상태</b>로 시작해요. 업무담당자는 <b>3단계부터 8단계까지</b> 직접 눌러 봐요.':'<b>사전업무</b>(보라색 1·2단계, 순서 무관)에 일부러 빠진 마감이 있어요. 어디서 막히는지 찾아가며 <b>보장지도 관리</b>(3~8단계)까지 진행해요.'} 각 단계의 조건이 안 맞으면 실제 나이스처럼 버튼이 비활성화되거나 알림이 떠요. <b>버튼을 누르는 순서가 중요</b>하니, 모르겠으면 오른쪽 아래 <b>최성봇</b>에게 물어보고 ①②③ 순서대로 누르세요.</div><button class="btn w s" id="b-reset" style="flex:none" onclick="askReset()">↺ 처음부터 다시(초기화)</button></div>
   <ol class="steps">${st.map((s,i)=>`<li class="${s.ok()?'done':''} ${s.pre?'pre':''} ${na&&na.step===i+1?'cur':''}"><span class="no">${s.ok()?'✓':i+1}</span><div><div class="t">${s.t}${s.pre&&mode==='basic'?' <span class="chip ok">담당 부서 완료 상태로 시작</span>':''}${s.who?` <span class="chip warn">실제 담당: ${s.who}</span>`:''}</div><div class="d">${s.d}</div></div><button class="btn w s go" onclick="go('${s.go[0]}','${s.go[1]}')">이동</button></li>`).join('')}</ol>`;};
 SCREENS['gd-rule']=()=>pageHead('학점이수 기준 및 최소 성취수준 보장지도 변경 안내')
   +`<div class="rem-l">※ 2025학년도 2학기부터 적용 (고교학점제 적용 고등학교)</div><div class="grid-wrap auto"><table class="grid"><thead><tr><th>구분</th><th class="l">항목</th><th class="l">당초</th><th class="l">변경</th></tr></thead><tbody>
@@ -1037,7 +1087,7 @@ SCREENS['gd-rule']=()=>pageHead('학점이수 기준 및 최소 성취수준 보
   <div class="note info" style="margin-top:10px">이 시뮬레이터의 판정: <b>출석 미도달</b> = 출석시수 &lt; 총수업시수×2/3, <b>학업 미도달</b> = 학기말 성취율 40% 미만(E). 이수기준 시수 = (학점 × 학점당 시수)의 2/3. 실제 기준은 교육청 지침·학교 학업성적관리규정을 따르세요.</div>`;
 SCREENS['gd-setting']=()=>pageHead('설정·초기화·로그')
   +`<div class="card" style="max-width:760px;margin-bottom:12px"><p><b>시뮬레이션 기준일</b> <input type="date" value="${S.simDate}" onchange="S.simDate=this.value;save();go(view.top,view.menu)"> <span class="status">(처리 이력의 날짜로만 쓰입니다)</span></p>
-  <p><button class="btn n" onclick="confirmBox('확인','모든 마감·예외처리·시수·결재 내용을 지우고 가상 자료를 다시 만듭니다. 되돌릴 수 없습니다.',()=>{seedData();addLog(me.name,'자료 초기화');save();queried={};toast('초기화했습니다.');go('guide','gd-steps');})">자료 초기화</button>
+  <p><button class="btn n" onclick="askReset()">자료 초기화</button>
   ${mode==='full'?`<button class="btn" onclick="confirmBox('확인','1·2단계(출결 마감·성적산출 마감·결재)를 모두 완료 처리하고 3단계부터 연습합니다.',()=>{skipPre();})">사전업무(1·2단계) 완료 처리하고 3단계부터</button>`:''}
   <button class="btn w" onclick="exportJson()">자료 내려받기(JSON)</button> <label class="btn w" style="display:inline-flex">자료 불러오기<input type="file" accept="application/json" style="display:none" onchange="importJson(this.files[0])"></label></p></div>
   <div class="sec">처리 이력(로그)</div>${logGrouped()}`;
@@ -1055,6 +1105,9 @@ SCREENS['gd-admin']=()=>{
   <div style="height:14px"></div>${logGrouped(true)}`;
 };
 function setMode(m){if(m===mode)return;mode=m;try{localStorage.setItem('neis-mode',m);}catch(e){}if(location.hash){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}if(!load())seedData();queried={};chatLog=[];chatSig='';toast(`연수 버전을 [${MODE_NAME[m]}]으로 바꿨어요.`);go('guide','gd-admin');}
+function askReset(){confirmBox('확인','모든 실습 내용(마감·예외처리·시수·결재)을 지우고 처음 상태로 되돌립니다.\n최성봇 위치·대화·열린 탭도 처음처럼 돌아갑니다. 진행하시겠습니까?',fullReset);}
+function fullReset(){seedData();addLog(me.name,'자료 초기화');save();queried={};openTabs=[];chatLog=[];chatSig='';drawChat();chatOpen(false);$('#botBadge').style.display='none';
+  try{localStorage.removeItem('neis-peek-open');}catch(_){}peekMinOn=true;botHome();openGrp={};cond={cls:'1-1',subj:'mat',room:'all',tab:'target',wdf:'un',rtab:'reflect'};toast('초기화했습니다. 처음부터 연습할 수 있어요.');go('guide','gd-steps');}
 function adminLogin(){if($('#adminCode').value===ADMIN_CODE){cond.adminOK=true;render();}else alertBox('알림','관리자 코드가 올바르지 않습니다.');}
 function adminDelDate(d){confirmBox('확인',`${d} 기록 ${allLogs().filter(e=>logDate(e)===d).length}건을 모두 삭제하시겠습니까?`,()=>{S.log=S.log.filter(e=>logDate(e)!==d);save();const o=otherState();if(o){o.log=(o.log||[]).filter(e=>logDate(e)!==d);saveOther(o);}toast('삭제했습니다.');render();});}
 function adminDelAll(){confirmBox('확인',`전체 로그 ${allLogs().length}건을 모두 삭제하시겠습니까?`,()=>{S.log=[];save();const o=otherState();if(o){o.log=[];saveOther(o);}toast('전체 로그를 삭제했습니다.');render();});}
