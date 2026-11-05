@@ -597,7 +597,7 @@ const MENUS={
 /* 전체 메뉴판(실제 나이스 메뉴판 구성). 연수 범위 밖은 이름만 */
 const MEGA=[['경영지원',['경영지원']],['학교정보',['학교정보','성적/학생부수정이력','2차인증']],['교육과정',null,'cur'],['학적',null,'hak'],['학생생활',null,'life'],['성적',null,'score'],['학생부',null,'rec'],
   ['개별화교육계획',['인적사항관리','개별화교육계획영역관리','개별화교육계획관리','개별화교육조회','전입생개별화교육추가','개별화교육계획전송관리']],['대입전형',['전형자료생성','제공현황조회']],['보건',['학생건강검사관리','예방접종연계관리','건강검진연계관리','건강기록부관리','감염병환자관리']]];
-const ROLES=['업무분장설정업무','부서장(정보공시부)','부서장(교무업무)','학급담임','교과담임'];
+const ROLES=['업무분장설정업무','최성보업무','학급담임','교과담임'];
 const MENU_PATH={},MENU_GRP={};Object.entries(MENUS).forEach(([top,groups])=>{const tn=TOP.find(t=>t.id===top).name;groups.forEach(g=>g.items.forEach(i=>{if(typeof i==='object'){MENU_PATH[i.id]=`${tn} › ${g.grp} › ${i.name}`;MENU_GRP[i.id]=g.grp;}}));});
 /* 연수에 쓰지 않는 메뉴는 왼쪽 메뉴·전체메뉴에서 숨김(기본 버전은 1·2단계 마감 화면도 숨김) */
 const HIDE_ALWAYS=[];
@@ -613,7 +613,7 @@ function go(top,menu){
   if(view.menu&&view.menu!=='gd-steps'&&!openTabs.includes(view.menu)){openTabs.push(view.menu);if(openTabs.length>7)openTabs.shift();}
   megaOpen(false);
   const na=guideOn?nextAction():null;
-  $('#roles').innerHTML=ROLES.map(r=>`<button class="${(cond.role||'부서장(교무업무)')===r?'on':''}" onclick="roleClick('${r}')">${r}</button>`).join('');
+  $('#roles').innerHTML=ROLES.map(r=>`<button class="${(cond.role||'최성보업무')===r?'on':''}" onclick="roleClick('${r}')">${r}</button>`).join('');
   $('#rail').innerHTML=RAIL.map(([k,svg,t])=>`<button title="${k==='bell'?'최성보 업무진행':t}" id="rail-${k}" class="${(leftMode==='flow'?k==='bell':k==='menu')?'on':''}" onclick="railClick('${k}')"><svg viewBox="0 0 24 24">${svg}</svg>${k==='bell'?'<span class="dot"></span>':''}</button>`).join('')+'<button class="mj" onclick="toast(\'맞춤 메뉴는 연수 범위 밖입니다.\')">맞춤</button>';
   const mod=top==='guide'?'score':top;
   $('#tree').innerHTML=(leftMode==='flow'?'<div id="flowBox"></div>':MENUS[mod].map(g=>`<div class="grp ${openGrp[mod]===g.grp?'open':''}" onclick="toggleGrp('${mod}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${g.items.map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" title="${i.name}" onclick="go('${mod}','${i.id}')">${i.name.replace(')',')<wbr>')}</button>`:`<button class="it" onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`).join(''))+'<div class="fold" title="메뉴 접기/펼치기" onclick="treeFold()">'+($('#tree').classList.contains('folded')?'▶':'◀')+'</div>';
@@ -627,7 +627,7 @@ function renderTabbar(){
 }
 function closeTab(id){const i=openTabs.indexOf(id);if(i<0)return;openTabs.splice(i,1);if(view.menu===id){const n=openTabs[i]||openTabs[i-1];n?go(topOf(n),n):go('guide','gd-steps');}else renderTabbar();}
 function tabStep(d){const i=openTabs.indexOf(view.menu);const n=openTabs[i+d];if(n)go(topOf(n),n);}
-function roleClick(r){if(r!=='부서장(교무업무)'){toast('연수에서는 업무담당자[부서장(교무업무)] 권한으로 교과담임·학급담임 메뉴까지 모두 처리해요.');}cond.role='부서장(교무업무)';}
+function roleClick(r){if(r!=='최성보업무'){toast('연수에서는 업무담당자[최성보업무] 권한으로 교과담임·학급담임 메뉴까지 모두 처리해요.');}cond.role='최성보업무';}
 function railClick(k){if(k==='bell'){leftMode=leftMode==='flow'?'menu':'flow';go(view.top,view.menu);return;}if(k==='menu'){if(leftMode==='flow'){leftMode='menu';go(view.top,view.menu);}else megaOpen();return;} toast('연수 범위 밖 기능입니다. 메뉴는 [전체메뉴] 아이콘이나 왼쪽 메뉴에서 고르세요.');}
 function megaOpen(v){const m=$('#mega');if(!m)return;const on=v===undefined?!m.classList.contains('on'):v;m.classList.toggle('on',on);if(!on)return;
   const na=guideOn?nextAction():null;const naGrp=na?MENU_GRP[na.menu]:null;
