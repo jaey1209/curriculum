@@ -43,6 +43,7 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
     const go = await p.$('#botPeek button:has-text("데려다줘")'); if (go) { await go.click(); await W(); return true; }
     const rt = await p.$('#roles button.next'); if (rt) { await rt.click(); await W(); return true; }
     const nx = await p.$('#main .btn.next'); if (nx) { await nx.click(); await W(); return true; }
+    const hh = await p.$('th.next-hdr#th-mgmt-closed'); if (hh) { await hh.click(); await W(); return true; }
     return false;
   };
   const followUntil = async (cond, max = 60) => { for (let i = 0; i < max; i++) { if (await cond()) return true; if (!(await follow())) return await cond(); } return await cond(); };

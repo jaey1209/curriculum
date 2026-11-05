@@ -43,6 +43,8 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
       if(inp){for(const c of cells){const i=await c.$('input[type=number]');if(i){const un=await i.evaluate(el=>{const m=(el.getAttribute('oninput')||'').match(/'(\d{8,})'/);return !!(m&&S.scen&&m[1]===S.scen.un);});await i.fill(String(un?5:[8,7,9,12][Math.floor(Math.random()*4)]));await i.dispatchEvent('change');await p.waitForTimeout(40);break;}}continue;}
       if(sel){await sel.selectOption({index:1});await sel.dispatchEvent('change');await p.waitForTimeout(60);continue;}
     }
+    // 주황색 열 제목(강의실별 마감여부 확인)은 눌러서 확인한다
+    const hh=await p.$('th.next-hdr#th-mgmt-closed');if(hh){await hh.click({force:true});await p.waitForTimeout(80);continue;}
     // 점선 조회조건이 있으면 그 값은 [데려다줘]가 맞춰 줬다고 가정, 라디오 선택 항목
     const radio=await p.$('table.grid input[type=radio]:not(:checked)');
     if(bubble.includes('학생 선택')&&radio){await radio.click();await p.waitForTimeout(80);continue;}

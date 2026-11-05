@@ -408,6 +408,9 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .hm h1{font-size:28px;color:#1f2d4d;margin:10px 0 6px}
 .hm p{font-size:17px;color:#444;margin:0 0 28px}
 .hm .big{height:56px;padding:0 34px;font-size:20px;border-radius:10px}
+.hm .todo{display:inline-block;font-size:19px;color:#1f2d4d;border-left:4px solid #2b63c6;background:#f4f7fd;padding:10px 18px;text-align:left;line-height:1.5}
+.hm .todo b{color:#1d4fb3}
+.hm .todo span{display:block;font-size:13px;color:#667;margin-top:2px}
 .hm .hint{margin-top:26px;font-size:14px;color:#8b9099}
 /* 연수도우미 */
 .steps{list-style:none;margin:0;padding:0}
@@ -988,6 +991,10 @@ SCREENS['msb-view']=()=>{
 };
 
 /* 마감관리 */
+/* 8단계: 강의실별 마감여부가 모두 O인지 확인한 뒤 마감정보저장 */
+function mgmtOpenRooms(){const a=[];SUBJECTS.forEach(s=>CLASSES.forEach(c=>{if(!msbOf(s.id,c).closed)a.push({label:`${subjLabel(s.id)} ${c.split('-')[1]}반(담당 ${userName(s.teacher)})`});}));return a;}
+function mgmtCheck(){const open=mgmtOpenRooms();if(open.length){alertBox('알림',`강의실별 마감여부가 X인 강의실이 있어요.\n${open.map(x=>'· '+x.label).join('\n')}\n\n담당 교과 교사에게 [이수관리 › 마감]에서 학점반영 → 마감을 해 달라고 이야기해야 해요.`);return;}S.mgmtChecked=true;save();toast('강의실별 마감여부가 모두 O예요. 이제 [마감정보저장]을 누르세요.');render();}
+function mgmtReady(){const open=mgmtOpenRooms();if(open.length){mgmtCheck();return false;}if(!S.mgmtChecked){alertBox('알림',"먼저 표의 '강의실별 마감여부'가 모두 O인지 확인하세요.\n확인했으면 '강의실별 마감여부' 열 제목을 누르세요.");return false;}return true;}
 SCREENS['msb-mgmt']=()=>{
   const q=queried[view.menu];const M=S.msbMgmt;
   const lnk=(n,s,c)=>n?`<span class="lnk" onclick="cond.subj='${s}';cond.room='${c}';queried['msb-view2']=true;go('score','msb-view2')">${n}</span>`:n;
@@ -995,9 +1002,9 @@ SCREENS['msb-mgmt']=()=>{
   const allClosed=SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed));
   return pageHead('최소성취수준보장지도(추가학습)마감관리')+condBar(fixedCond(),qbtn())
   +(q?`<div class="rem-l">※ 수강생이 없는 강의실의 경우 학점반영없이 마감 처리 가능합니다.</div>`
-  +tbar(SUBJECTS.length*CLASSES.length,`<button class="btn" id="b-mgmtsave" ${can.admin()&&allClosed&&!M.saved?'':'disabled'} onclick="if(!roleOK('최성보업무'))return;confirmBox('확인','1학년 최소성취수준보장지도(추가학습) 마감정보를 저장하시겠습니까?',()=>{S.msbMgmt.saved={by:me.name,at:nowStr()};S.msbMgmt.done=S.msbMgmt.saved;addLog(me.name,'최성보 마감정보저장');save();toast('저장되었습니다. 이어서 {승인요청}하세요.');render();})">마감정보저장</button><button class="btn" id="b-mgmtreq" ${can.admin()&&M.saved&&!M.req?'':'disabled'} onclick="requestApproval(S.msbMgmt,'msb','${YEAR}학년도 ${SEM}학기 1학년 최소성취수준보장지도(추가학습) 마감')">승인요청</button>${approveBtn(M,'msb')}`,`※ 전체마감상태 : ${approvalText(M)}`)
-  +(allClosed?'':'<div class="note">강의실별 마감여부가 X인 강의실이 있습니다. 해당 교과담임이 [최소성취수준보장지도(추가학습)이수관리 › 마감]에서 {학점반영} → {마감}해야 합니다.</div>')
-  +`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" checked disabled></th>${th('계열')}${th('학과')}${th('과목명(학점)')}${th('강의실/편성반')}${th('담당교사')}${th('보장지도대상인원')}${th('예외처리인원')}${th('이수처리인원')}${th('미이수 처리인원')}${th('학점반영 인원')}${th('강의실별<br>마감여부')}</tr></thead><tbody>${rows}</tbody></table></div>`:needQuery());
+  +tbar(SUBJECTS.length*CLASSES.length,`<button class="btn" id="b-mgmtsave" ${can.admin()&&!M.saved?'':'disabled'} onclick="if(!roleOK('최성보업무'))return;if(!mgmtReady())return;confirmBox('확인','강의실별 마감여부가 모두 O(마감)인 것을 확인했습니다.\\n1학년 최소성취수준보장지도(추가학습) 마감정보를 저장하시겠습니까?',()=>{S.msbMgmt.saved={by:me.name,at:nowStr()};S.msbMgmt.done=S.msbMgmt.saved;addLog(me.name,'최성보 마감정보저장');save();toast('저장되었습니다. 이어서 {승인요청}하세요.');render();})">마감정보저장</button><button class="btn" id="b-mgmtreq" ${can.admin()&&M.saved&&!M.req?'':'disabled'} onclick="requestApproval(S.msbMgmt,'msb','${YEAR}학년도 ${SEM}학기 1학년 최소성취수준보장지도(추가학습) 마감')">승인요청</button>${approveBtn(M,'msb')}`,`※ 전체마감상태 : ${approvalText(M)}`)
+  +(allClosed?'':`<div class="note crit">강의실별 마감여부가 <b>X</b>인 강의실이 있어 마감정보를 저장할 수 없어요. <b>담당 교과 교사에게</b> [최소성취수준보장지도(추가학습)이수관리 › 마감]에서 {학점반영} → {마감}을 해 달라고 이야기해야 해요.<br>· ${mgmtOpenRooms().map(x=>x.label).join(' · ')}</div>`)
+  +`<div class="grid-wrap auto"><table class="grid"><thead><tr><th><input type="checkbox" checked disabled></th>${th('계열')}${th('학과')}${th('과목명(학점)')}${th('강의실/편성반')}${th('담당교사')}${th('보장지도대상인원')}${th('예외처리인원')}${th('이수처리인원')}${th('미이수 처리인원')}${th('학점반영 인원')}${th('강의실별<br>마감여부','id="th-mgmt-closed" style="cursor:pointer" title="모두 O인지 확인하고 누르세요" onclick="mgmtCheck()"')}</tr></thead><tbody>${rows}</tbody></table></div>`:needQuery());
 };
 
 /* ═════════════════ 학생부 ═════════════════ */
@@ -1069,9 +1076,9 @@ function nextAction(){
   }
   for(const c of [PRACTICE_CLS])if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'rec-reflect',tab:'reflect',set:{cls:c,rtab:'reflect'},why:`공통수학2 마감까지 끝났어요! 이제 <b>${clsName(c)} 학급담임</b>으로 자기 반 학생부를 반영해요(다른 반은 각 반 담임 선생님이 반영한 상태예요). ${clsName(c)} 학생들의 학교생활기록부를 생성해요. 이수/미이수 결과는 [교과학습발달상황]에 반영돼요. 학기말이라 [전체] 항목을 그대로 두고 반영하면 돼요. 실제로는 학급담임 선생님이 하는 일이고, 연수에서는 업무담당자가 대신 눌러 봐요.`,
     seq:[{t:'[학생부반영] 탭',tab:'reflect'},{t:`조회조건: 반 <b>${c.split('-')[1]}</b>`,f:'f-cls'},{t:'[조회]',b:'b-query',done:Q('rec-reflect')},{t:'[전체반영]',b:'b-reflect'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
-  if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:flowSeq([{t:'[조회]',b:'b-query',done:Q('msb-mgmt')}],{t:'[마감정보저장]',b:'b-mgmtsave'},'b-mgmtreq',0)};
-  if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'마감정보가 저장되었어요. [승인요청] → 기안문서상신 창에서 [결재자지정] → [상신] 순서예요.',seq:flowSeq([{t:'[조회]',b:'b-query',done:Q('msb-mgmt')}],{t:'[마감정보저장]',b:'b-mgmtsave'},'b-mgmtreq',1)};
-  if(!S.msbMgmt.approved)return apprAction(8,'최소성취수준보장지도(추가학습) 마감','msb-mgmt',undefined,flowSeq([{t:'[조회]',b:'b-query',done:Q('msb-mgmt')}],{t:'[마감정보저장]',b:'b-mgmtsave'},'b-mgmtreq',2));
+  if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:flowSeq([{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부'가 모두 O인지 확인하고 그 열 제목을 누르세요 (X가 있으면 담당 교과 교사에게 마감 요청)",s:"'강의실별 마감여부' 모두 O인지 확인 → 열 제목 누르기",hdr:'th-mgmt-closed',done:!!S.mgmtChecked}],{t:'[마감정보저장]',b:'b-mgmtsave'},'b-mgmtreq',0)};
+  if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'마감정보가 저장되었어요. [승인요청] → 기안문서상신 창에서 [결재자지정] → [상신] 순서예요.',seq:flowSeq([{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부'가 모두 O인지 확인하고 그 열 제목을 누르세요 (X가 있으면 담당 교과 교사에게 마감 요청)",s:"'강의실별 마감여부' 모두 O인지 확인 → 열 제목 누르기",hdr:'th-mgmt-closed',done:!!S.mgmtChecked}],{t:'[마감정보저장]',b:'b-mgmtsave'},'b-mgmtreq',1)};
+  if(!S.msbMgmt.approved)return apprAction(8,'최소성취수준보장지도(추가학습) 마감','msb-mgmt',undefined,flowSeq([{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부'가 모두 O인지 확인하고 그 열 제목을 누르세요 (X가 있으면 담당 교과 교사에게 마감 요청)",s:"'강의실별 마감여부' 모두 O인지 확인 → 열 제목 누르기",hdr:'th-mgmt-closed',done:!!S.mgmtChecked}],{t:'[마감정보저장]',b:'b-mgmtsave'},'b-mgmtreq',2));
   return null;
 }
 /* 승인까지 이어지는 흐름: 단계 안에서 번호가 바뀌지 않도록 전체 순서를 유지(phase 0 마감 → 1 승인요청 → 2 결재) */
@@ -1220,7 +1227,7 @@ function steps(){return [
 SCREENS['gd-steps']=()=>{const na=nextAction();const nm=na?FLOW_NAME[na.step-1][0]:'';
   return `<div class="hm"><div class="sc">${SCHOOL} · ${YEAR}학년도 ${SEM}학기 · 업무담당자</div><h1>최소 성취수준 보장지도 마감 연습</h1>
   <p>${mode==='basic'?'출결·성적 마감은 끝났어요. <b style="color:#b25400">3단계부터 8단계까지</b> 실습해 봅시다.':'심화 연습이에요. 출결·성적 마감에 빠진 곳을 찾아 <b style="color:#b25400">1단계부터</b> 진행해 봐요.'}</p>
-  ${na?`<button class="btn big" id="b-start" onclick="startGuide()">▶ ${na.step}단계 ${nm} ${steps().filter(x=>x.ok()).length<=(mode==='basic'?2:0)?'시작하기':'이어서 하기'}</button>`:'<p style="font-size:20px">🎉 8단계를 모두 마쳤어요!</p><button class="btn big" onclick="askReset()">↺ 처음부터 다시</button>'}
+  ${na?`<div class="todo" id="b-start">${steps().filter(x=>x.ok()).length<=(mode==='basic'?2:0)?'처음 할 일':'이어서 할 일'} · <b>${na.step}단계 ${nm}</b><span>${tabRole(na.role)} 탭 › ${MENU_PATH[na.menu].split(' › ').join(' › ')}</span></div>`:'<p style="font-size:20px">🎉 8단계를 모두 마쳤어요!</p><button class="btn big" onclick="askReset()">↺ 처음부터 다시</button>'}
   <div class="hint">왼쪽 🔔 아이콘을 누르면 진행 현황이 보이고, 단계를 누르면 그 화면으로 이동해요.</div></div>`;};
 SCREENS['gd-rule']=()=>pageHead('학점이수 기준 및 최소 성취수준 보장지도 변경 안내')
   +`<div class="rem-l">※ 2025학년도 2학기부터 적용 (고교학점제 적용 고등학교)</div><div class="grid-wrap auto"><table class="grid"><thead><tr><th>구분</th><th class="l">항목</th><th class="l">당초</th><th class="l">변경</th></tr></thead><tbody>

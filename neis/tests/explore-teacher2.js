@@ -106,6 +106,7 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
     const g = await p.$('#botPeek button:has-text("데려다줘")'); if (g) { await g.click(); await W(); continue; }
     const rt = await p.$('#roles button.next'); if (rt) { await rt.click(); await W(); continue; }
     const nx = await p.$('#main .btn.next'); if (nx) { await nx.click(); await W(); continue; }
+    const hh = await p.$('th.next-hdr#th-mgmt-closed'); if (hh) { await hh.click(); await W(); continue; }
     break;
   }
   log(`마무리 후 단계 ${await step()} (0이면 완료)`); await overflow('8단계'); await S('done');

@@ -18,7 +18,7 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
   const pill = () => p.$eval('#botPeek', e => e.innerText.replace(/\s+/g, ' ').trim());
   const pop = async () => (await p.evaluate(() => document.getElementById('scrim').classList.contains('on'))) ? p.$eval('#mBody', e => e.innerText.replace(/\s+/g, ' ').trim()) : null;
   const ok = async () => { await p.click('#mFoot .btn >> nth=0'); await W(); };
-  const tree = async t => { await p.evaluate(() => { const g = [...document.querySelectorAll('#tree .grp')].find(x => x.textContent.replace('▼', '').trim() === '성적처리'); if (g && !g.classList.contains('open')) g.click(); }); await W(); await p.click(`#tree .it[title="최소성취수준보장지도(추가학습)${t}"]`); await W(); };
+  const tree = async t => { if (!(await p.$('#tree .grp'))) { if (!(await p.evaluate(() => document.getElementById('mega').classList.contains('on')))) { await p.click('#rail-menu'); await W(); } await p.click('#mega a:text-is("성적처리")'); await W(); } await p.evaluate(() => { const g = [...document.querySelectorAll('#tree .grp')].find(x => x.textContent.replace('▼', '').trim() === '성적처리'); if (g && !g.classList.contains('open')) g.click(); }); await W(); await p.click(`#tree .it[title="최소성취수준보장지도(추가학습)${t}"]`); await W(); };
   const wiz = async t => { await p.click(`.wiz .wt:has-text("${t}")`); await W(); };
   const role = async r => { await p.click(`#roles button:text-is("${r}")`); await W(); };
   const step = () => p.evaluate(() => { const n = nextAction(); return n ? n.step : 0; });
@@ -30,15 +30,14 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
   await p.click('#rail-bell'); await W(); log(`🔔 진행 현황: ${await p.$eval('#noti .h', e => e.innerText.replace(/\s+/g, ' '))}`); await S('bell'); await p.keyboard.press('Escape'); await W();
 
   // 역할별 최성보 메뉴
-  await p.click('#rail-menu'); await W(); await p.click('#mega a:text-is("성적처리")'); await W();
-  for (const r of ['최성보업무', '교과담임', '학급담임']) { await role(r); await p.evaluate(() => { const g = [...document.querySelectorAll('#tree .grp')].find(x => x.textContent.replace('▼', '').trim() === '성적처리'); if (g && !g.classList.contains('open')) g.click(); }); await W(); log(`[${r}] 최성보 메뉴: ${await p.$$eval('#tree .it[title^="최소성취수준"]', a => a.map(x => x.title.replace('최소성취수준보장지도(추가학습)', '')).join(', '))}`); }
+  for (const r of ['최성보업무', '교과담임', '학급담임']) { await role(r); await p.click('#mega a:text-is("성적처리")'); await W(); await p.evaluate(() => { const g = [...document.querySelectorAll('#tree .grp')].find(x => x.textContent.replace('▼', '').trim() === '성적처리'); if (g && !g.classList.contains('open')) g.click(); }); await W(); log(`[${r}] 최성보 메뉴: ${await p.$$eval('#tree .it[title^="최소성취수준"]', a => a.map(x => x.title.replace('최소성취수준보장지도(추가학습)', '')).join(', '))}`); }
   await role('최성보업무');
   // 2. 3단계 — 메뉴로 직접 이동(아직 최성보업무 탭)
   await tree('이수관리'); await S('3-wrong-role');
   log(`이수관리 화면(최성보업무 탭) 말풍선: ${await pill()}`);
   await p.click('#b-query'); await W();
-  await p.click('#b-fetch'); await W(); log(`최성보업무 탭에서 [대상자가져오기]: ${await pop()}`); await ok();
-  await role('교과담임'); log(`[교과담임] 누른 뒤 말풍선: ${await pill()}`);
+  await p.click('#b-fetch'); await W(); log(`최성보업무 탭에서 [대상자가져오기](최성보업무는 모든 작업 가능): ${(await pop() || '').slice(0, 30)}…`); await p.click('#mFoot .btn >> nth=1'); await W();
+  await role('교과담임'); await p.keyboard.press('Escape'); await W(); if (!(await p.evaluate(() => view.menu === 'msb-manage'))) await tree('이수관리'); log(`[교과담임] 누른 뒤 말풍선: ${await pill()}`);
   await p.click('#b-query'); await W(); await p.click('#b-fetch'); await W(); log(`확인창: ${(await pop() || '').slice(0, 40)}…`); await p.click('#b-modal-ok'); await W();
   log(`알림: ${await pop()}`); await ok(); await S('3-done');
   if ((await step()) !== 4) bad('3단계 뒤 4단계로 안 넘어감');
@@ -80,10 +79,10 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
   await p.click('#rail-bell'); await W(); log(`🔔: ${await p.$eval('#noti .h', e => e.innerText.replace(/\s+/g, ' '))}`); await p.keyboard.press('Escape'); await W();
 
   // 6. 7단계 — 전체메뉴에서 학생부 찾기
-  await p.click('#rail-menu'); await W(); await S('7-mega');
+  await role('학급담임'); await S('7-mega');
   await p.click('#mega a:has-text("학교생활기록부")'); await W();
+  await p.click('#tree .it[title="학교생활기록부"]'); await W();
   log(`학생부 메뉴 열림: ${await p.evaluate(() => view.menu)} / 말풍선: ${await pill()}`);
-  await role('학급담임');
   log(`[학급담임] 반 목록: ${await p.$$eval('#f-cls option', o => o.map(x => x.textContent).join(','))} / 말풍선: ${await pill()}`);
   await p.click('#b-query'); await W(); await S('7-reflect');
   await p.click('#b-reflect'); await W(); await p.click('#b-modal-ok'); await W(); log(`전체반영 알림: ${await pop()}`); await ok();
@@ -93,8 +92,10 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
   log(`학생부 조회에서 미이수 학생(${un}) 공통수학2 줄: ${(doc.split('\n').find(l => /공통수학2/.test(l)) || '없음').replace(/\s+/g, ' ')}`); await S('7-view');
 
   // 7. 8단계 — 마감관리
-  await role('최성보업무'); await p.click('#rail-menu'); await W(); await p.click('#mega a:text-is("성적처리")'); await W(); await tree('마감관리'); log(`마감관리 말풍선: ${await pill()}`);
+  await role('최성보업무'); await p.click('#mega a:text-is("성적처리")'); await W(); await tree('마감관리'); log(`마감관리 말풍선: ${await pill()}`);
   await p.click('#b-query'); await W(); await S('8-mgmt');
+  await p.click('#b-mgmtsave'); await W(); log(`확인 전 [마감정보저장]: ${await pop()}`); await ok();
+  await p.click('#th-mgmt-closed'); await W(); log(`'강의실별 마감여부' 열 제목 누른 뒤: ${await pill()}`);
   await p.click('#b-mgmtsave'); await W(); await p.click('#b-modal-ok'); await W(); const a1 = await pop(); log(`마감정보저장: ${a1}`); if (a1) await ok();
   await p.click('#b-mgmtreq'); await W(); await S('8-apv');
   await p.click('#b-apv-ok'); await W(); log(`결재자 없이 [상신]: ${await p.$eval('#mBody .err', e => e.innerText).catch(() => '오류 표시 없음')}`);
