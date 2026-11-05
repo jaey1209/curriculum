@@ -1090,7 +1090,7 @@ let peekLine='',peekGo=false;
 function scenLine(na){if(!S.scen||!na||!na.set||na.set.subj!==PRACTICE_SUBJ)return '';const e=scenStu('exc'),u=scenStu('un');
   if(na.step===3)return '이번 연수는 <b>공통수학2</b>로 실습해요. 공통국어2·공통영어2는 이미 마감된 상태예요.';
   if(na.step===4)return `<b>${stuLabel(e)}</b>은 <b>특수교육대상자</b>예요.<br>→ [예외]에서 <b>특수교육대상자</b>를 골라요.`;
-  if(na.step===5)return `<b>${stuLabel(u)}</b>은 보장지도에 <b>${S.scen.unHours}시수</b>만 참여했어요 → <b>미이수</b><br>나머지 학생은 <b>8~12시수</b>를 입력해요 → 이수`;
+  if(na.step===5)return `<b>${stuLabel(u)}</b>은 보장지도에 <b>${S.scen.unHours}시수</b>만 참여했어요 → <b>미이수</b><br>나머지 학생은 <b>0~12시수</b>를 자유롭게 입력해요<br><b>0~7시수</b> → 미이수 · <b>8~12시수</b> → 이수`;
   if(na.step===6)return '실제 업무에서는 과목마다 3~6단계를 반복해요.';return '';}
 let autoPeek=0;
 /* 시나리오로 저절로 펼친 말풍선은 표를 누르기 시작하면 한 줄로 접힘 */
