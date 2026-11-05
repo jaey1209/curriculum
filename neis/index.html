@@ -928,7 +928,8 @@ const hpcOf=(m,sid)=>(m.hpcStu&&m.hpcStu[sid])||m.hpc;
 function hpcSet(s,c,sid,v,el){const m=msbOf(s,c);m.hpcStu=m.hpcStu||{};m.hpcStu[sid]=+v||3;m.hoursSaved=false;save();if(!el){render();return;}hoursRow(s,c,sid,el.closest('tr'));renderGuide();}
 function hpcApply(s){const v=+($('#hpcIn')||{}).value;const ck=[...document.querySelectorAll('.hck:checked')];if(!ck.length){alertBox('알림','선택된 내역이 없습니다.');return;}if(!(v>0)){alertBox('알림','학점당 시수를 입력해주세요.');return;}
   ck.forEach(x=>{const m=msbOf(s,x.dataset.c);m.hpcStu=m.hpcStu||{};m.hpcStu[x.dataset.sid]=v;m.hoursSaved=false;});save();render();alertBox('알림',`선택한 ${ck.length}명에게 학점당 ${v}시수를 적용했습니다.`);}
-function hoursSet(s,c,sid,k,v,el){const m=msbOf(s,c);m.hours[sid]=m.hours[sid]||{};m.hours[sid][k]=k==='h'?(v===''?null:+v):v;m.hoursSaved=false;save();
+function hoursSet(s,c,sid,k,v,el){const m=msbOf(s,c);m.hours[sid]=m.hours[sid]||{};
+  if(k==='h'&&v!==''){const need=subj(s).credit*hpcOf(m,sid);let n=Math.round(+v);if(isNaN(n))n=0;if(n<0){n=0;toast('참여시수는 0보다 작을 수 없어요.');}else if(n>need){n=need;toast(`참여시수는 필요시수(${need})까지만 입력할 수 있어요.`);}if(String(n)!==String(v)){v=String(n);if(el)el.value=v;}}m.hours[sid][k]=k==='h'?(v===''?null:+v):v;m.hoursSaved=false;save();
   if(!el){render();return;}if(k==='h'){hoursRow(s,c,sid,el.closest('tr'));renderGuide();}}
 /* 참여시수 행만 갱신(필요시수·이수기준·이수여부·점선 표시) */
 function hoursRow(s,c,sid,tr){if(!tr)return;const m=msbOf(s,c);const need=subj(s).credit*hpcOf(m,sid),base=Math.ceil(need*2/3);const h=(m.hours[sid]||{}).h;
@@ -951,7 +952,7 @@ function msbCloseTab(s){
 }
 function creditApply(s){const rooms=roomsOf();confirmBox('확인',`학점반영 하시겠습니까?\n\n· 이수자·예외처리자 → 이수\n· 미이수자 → 미이수`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.creditApplied={by:me.name,at:nowStr()};});addLog(me.name,`최성보 학점반영 ${s} ${rooms.join(',')}`);save();render();alertBox('알림','학기말성적반영이 되었습니다.');});}
 function msbClose(s){const rooms=roomsOf();confirmBox('확인',`마감하시겠습니까?`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.closed={by:me.name,at:nowStr()};});addLog(me.name,`최성보 마감 ${s} ${rooms.join(',')}`);if(SUBJECTS.every(x=>CLASSES.every(c=>msbOf(x.id,c).closed)))CLASSES.forEach(c=>{if(c!==PRACTICE_CLS&&!S.recReflect[c])S.recReflect[c]={by:`${clsName(c)} 담임`,at:nowStr(),items:REC_ITEMS.slice()};});save();render();alertBox('알림',SUBJECTS.every(x=>CLASSES.every(c=>msbOf(x.id,c).closed))?'마감되었습니다.\n\n※ 실제 업무에서는 과목마다 3~6단계(대상자 가져오기 → 예외처리 → 이수관리 → 학점반영·마감)를 반복합니다.\n연수에서는 공통국어2·공통영어2를 미리 마감해 두었으니, 다음은 7단계(학생부 자료반영)예요.':'마감되었습니다.');});}
-function msbUnclose(s){confirmBox('확인','마감을 취소하시겠습니까? 학점반영도 함께 취소됩니다.',()=>{roomsOf().forEach(c=>{const m=msbOf(s,c);m.closed=null;m.creditApplied=null;});addLog(me.name,`최성보 마감취소 ${s}`);save();render();});}
+function msbUnclose(s){confirmBox('확인','마감을 취소하시겠습니까? 학점반영도 함께 취소됩니다.',()=>{roomsOf().forEach(c=>{const m=msbOf(s,c);m.closed=null;m.creditApplied=null;});CLASSES.forEach(c=>{if(c!==PRACTICE_CLS&&S.recReflect[c]&&/ 담임$/.test(S.recReflect[c].by||''))delete S.recReflect[c];});addLog(me.name,`최성보 마감취소 ${s}`);save();render();});}
 
 /* 조회 */
 function msbResult(s,c,sid){const m=msbOf(s,c);if(!m.targets||!m.targets.includes(sid))return null;const hp=hpcOf(m,sid),need=subj(s).credit*hp,base=Math.ceil(need*2/3);const e=m.exc[sid];const h=(m.hours[sid]||{});return {exc:e,hpc:hp,need,base,h:h.h,note:h.note,done:e?true:(h.h!=null&&h.h>=base),pending:!e&&h.h==null,applied:!!m.creditApplied,closed:!!m.closed};}
