@@ -579,6 +579,7 @@ const attAllApproved=()=>!!S.attAll.approved;
 const calcAllApproved=()=>!!S.calcAll.approved;
 const msbOf=(s,c)=>S.msb[s][c];
 const PRACTICE_SUBJ='mat';
+const PRACTICE_CLS='1-3'; /* 학급담임 실습 반: 1학년 3반(미이수 시나리오 학생이 있는 반) */
 const scenStu=k=>S.scen&&S.scen[k]?studentById(S.scen[k]):null;
 const stuLabel=st=>`${st.c}반 ${st.no}번 ${st.name}`;
 function scenNote(s,who){if(s!==PRACTICE_SUBJ||!S.scen)return who?ACTUAL_NOTE(who[0],who[1]):'';const e=scenStu('exc'),u=scenStu('un');
@@ -684,7 +685,7 @@ function L(req,label,inner,id,nomark){return `<span class="cf" id="${id||''}"><s
 function fixedCond(noGrade){return `<span class="fixed">${L(1,'학년도',`<select disabled><option>${YEAR}</option></select>`)}${L(1,'학기',`<select disabled><option>${SEM}학기</option></select>`)}</span>${noGrade?'':L(1,'학년',`<select disabled style="min-width:90px"><option>1</option></select>`)}`;}
 function selSubj(){return L(1,'과목',`<select onchange="cond.subj=this.value;unq();render()">${SUBJECTS.map(s=>`<option value="${s.id}" ${cond.subj===s.id?'selected':''}>${subjLabel(s.id)}</option>`).join('')}</select>`,'f-subj');}
 function selRoom(all){if(!all&&cond.room==='all')cond.room=CLASSES[0];return L(1,'강의실',`<select onchange="cond.room=this.value;unq();render()">${all?`<option value="all" ${cond.room==='all'?'selected':''}>전체</option>`:''}${CLASSES.map(c=>`<option value="${c}" ${cond.room===c?'selected':''}>${c.split('-')[1]}</option>`).join('')}</select>`,'f-room');}
-function selCls(){return L(1,'반',`<select onchange="cond.cls=this.value;unq();render()">${CLASSES.map(c=>`<option value="${c}" ${cond.cls===c?'selected':''}>${c.split('-')[1]}</option>`).join('')}</select>`,'f-cls');}
+function selCls(){const mine=curRole()==='학급담임';if(mine)cond.cls=PRACTICE_CLS;return L(1,'반',`<select onchange="cond.cls=this.value;unq();render()">${(mine?[PRACTICE_CLS]:CLASSES).map(c=>`<option value="${c}" ${cond.cls===c?'selected':''}>${c.split('-')[1]}</option>`).join('')}</select>`,'f-cls');}
 function radio(name,opts,cur,key){return `<span class="radio">${opts.map(o=>`<label><input type="radio" name="${name}" ${cur===o[0]?'checked':''} onclick="cond.${key}='${o[0]}';render()"> ${o[1]}</label>`).join('')}</span>`;}
 function unq(){queried[view.menu]=false;}
 function qbtn(){return `<button class="btn q" id="b-query" onclick="queried['${view.menu}']=true;render()">${ICON.search}조회</button>`;}
@@ -928,7 +929,7 @@ function msbCloseTab(s){
   ${!fetched?'<div class="note">대상자를 가져오지 않은 강의실이 있습니다.</div>':''}`:needQuery());
 }
 function creditApply(s){const rooms=roomsOf();confirmBox('확인',`학점반영 하시겠습니까?\n\n· 이수자·예외처리자 → 이수\n· 미이수자 → 미이수`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.creditApplied={by:me.name,at:nowStr()};});addLog(me.name,`최성보 학점반영 ${s} ${rooms.join(',')}`);save();render();alertBox('알림','학기말성적반영이 되었습니다.');});}
-function msbClose(s){const rooms=roomsOf();confirmBox('확인',`마감하시겠습니까?`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.closed={by:me.name,at:nowStr()};});addLog(me.name,`최성보 마감 ${s} ${rooms.join(',')}`);save();render();alertBox('알림',SUBJECTS.every(x=>CLASSES.every(c=>msbOf(x.id,c).closed))?'마감되었습니다.\n\n※ 실제 업무에서는 과목마다 3~6단계(대상자 가져오기 → 예외처리 → 이수관리 → 학점반영·마감)를 반복합니다.\n연수에서는 공통국어2·공통영어2를 미리 마감해 두었으니, 다음은 7단계(학생부 자료반영)예요.':'마감되었습니다.');});}
+function msbClose(s){const rooms=roomsOf();confirmBox('확인',`마감하시겠습니까?`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.closed={by:me.name,at:nowStr()};});addLog(me.name,`최성보 마감 ${s} ${rooms.join(',')}`);if(SUBJECTS.every(x=>CLASSES.every(c=>msbOf(x.id,c).closed)))CLASSES.forEach(c=>{if(c!==PRACTICE_CLS&&!S.recReflect[c])S.recReflect[c]={by:`${clsName(c)} 담임`,at:nowStr(),items:REC_ITEMS.slice()};});save();render();alertBox('알림',SUBJECTS.every(x=>CLASSES.every(c=>msbOf(x.id,c).closed))?'마감되었습니다.\n\n※ 실제 업무에서는 과목마다 3~6단계(대상자 가져오기 → 예외처리 → 이수관리 → 학점반영·마감)를 반복합니다.\n연수에서는 공통국어2·공통영어2를 미리 마감해 두었으니, 다음은 7단계(학생부 자료반영)예요.':'마감되었습니다.');});}
 function msbUnclose(s){confirmBox('확인','마감을 취소하시겠습니까? 학점반영도 함께 취소됩니다.',()=>{roomsOf().forEach(c=>{const m=msbOf(s,c);m.closed=null;m.creditApplied=null;});addLog(me.name,`최성보 마감취소 ${s}`);save();render();});}
 
 /* 조회 */
@@ -1025,7 +1026,7 @@ function nextAction(){
     if(ms.some(m=>!m.closed))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 마감',tab:'close',why:`${subjLabel(sid)} 학점반영이 끝났습니다. 마감합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[마감]',b:'b-close'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
   }
-  for(const c of CLASSES)if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'rec-reflect',tab:'reflect',set:{cls:c,rtab:'reflect'},why:`${CLASSES.every(x=>!S.recReflect[x])?'공통수학2 마감까지 끝났어요! 실제 업무에서는 과목마다 3~6단계를 반복해요(연수에서는 공통국어2·공통영어2를 미리 마감해 두었어요). ':''}${clsName(c)} 학생들의 학교생활기록부를 생성해요. 이수/미이수 결과는 [교과학습발달상황]에 반영돼요. 학기말이라 [전체] 항목을 그대로 두고 반영하면 돼요. 실제로는 학급담임 선생님이 하는 일이고, 연수에서는 업무담당자가 대신 눌러 봐요.`,
+  for(const c of [PRACTICE_CLS])if(!S.recReflect[c])return {step:7,title:'[7단계] 학교생활기록부 자료반영',role:`${clsName(c)} 학급담임(${userName(homeroomOf(c))})`,ok:true,menu:'rec-reflect',tab:'reflect',set:{cls:c,rtab:'reflect'},why:`공통수학2 마감까지 끝났어요! 이제 <b>${clsName(c)} 학급담임</b>으로 자기 반 학생부를 반영해요(다른 반은 각 반 담임 선생님이 반영한 상태예요). ${clsName(c)} 학생들의 학교생활기록부를 생성해요. 이수/미이수 결과는 [교과학습발달상황]에 반영돼요. 학기말이라 [전체] 항목을 그대로 두고 반영하면 돼요. 실제로는 학급담임 선생님이 하는 일이고, 연수에서는 업무담당자가 대신 눌러 봐요.`,
     seq:[{t:'[학생부반영] 탭',tab:'reflect'},{t:`조회조건: 반 <b>${c.split('-')[1]}</b>`,f:'f-cls'},{t:'[조회]',b:'b-query',done:Q('rec-reflect')},{t:'[전체반영]',b:'b-reflect'},{t:'확인창 [확인]',b:'b-modal-ok'}]};
   if(!S.msbMgmt.saved)return {step:8,title:'[8단계] 최성보 업무 상신 — 마감정보저장',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'모든 강의실이 마감되었습니다. 마감정보를 저장하고 승인요청합니다.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:"'강의실별 마감여부' 확인",done:Q('msb-mgmt')},{t:'[마감정보저장]',b:'b-mgmtsave'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-mgmtreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.msbMgmt.req)return {step:8,title:'[8단계] 최성보 업무 상신 — 승인요청',role:'업무담당자',ok:true,menu:'msb-mgmt',why:'마감정보가 저장되었어요. [승인요청] → 기안문서상신 창에서 [결재자지정] → [상신] 순서예요.',seq:[{t:'[조회]',b:'b-query',done:Q('msb-mgmt')},{t:'[승인요청]',b:'b-mgmtreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
@@ -1165,7 +1166,7 @@ function steps(){return [
   {t:'[4단계] 예외처리 대상자 등록',who:'교과담임',d:'<code>› 예외처리</code> 탭에서 예외사유(특수교육대상자·학교외 장소 수강·기타) 선택 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).excSaved)),go:['score','msb-manage']},
   {t:'[5단계] 대상자 이수여부 처리',who:'교과담임',d:'<code>› 이수관리</code> 탭에서 참여시수 입력 → 이수여부 자동 판정 → 비고 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).hoursSaved&&!msbRoomStats(s.id,c).pending)),go:['score','msb-manage']},
   {t:'[6단계] 최성보 마감 관리',who:'교과담임',d:'<code>› 마감</code> 탭에서 {학점반영} → {마감}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed)),go:['score','msb-manage']},
-  {t:'[7단계] 학교생활기록부 자료반영',who:'학급담임',d:'<code>학생부 › 학교생활기록부 › 학교생활기록부</code>의 [학생부반영] 탭에서 반별로 {전체반영}.',ok:()=>CLASSES.every(c=>S.recReflect[c]),go:['rec','rec-reflect']},
+  {t:'[7단계] 학교생활기록부 자료반영',who:'학급담임',d:'<code>학생부 › 학교생활기록부 › 학교생활기록부</code>의 [학생부반영] 탭에서 학급담임이 자기 반을 {전체반영}. (연수: 1학년 3반)',ok:()=>!!S.recReflect[PRACTICE_CLS],go:['rec','rec-reflect']},
   {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청} → 기안문서상신 창 {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]).',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
 ];}
 SCREENS['gd-steps']=()=>{const na=nextAction();const nm=na?FLOW_NAME[na.step-1][0]:'';
