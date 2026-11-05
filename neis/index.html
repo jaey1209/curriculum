@@ -832,7 +832,7 @@ function msbSummary(s){let t=0,cr=0,at=0,ac=0,both=0;roomsOf().forEach(c=>msbTar
 function roomsCloseText(s){const un=roomsOf().filter(c=>!roomClosed(s,c));return un.length?`<span class="tip">출결이 마감되지 않은 강의실이 있습니다.<span class="tt">강의실 : ${un.map(c=>c.split('-')[1]).join(', ')}</span></span>`:'조회된 모든 강의실이 마감되었습니다.';}
 const ACTUAL_NOTE=(who,what)=>`<div class="note" style="margin:0 0 8px">👤 <b>실제 담당: ${who}</b> — ${what} 실제로는 ${who} 선생님이 하는 일이에요. 연수에서는 업무담당자가 대신 눌러 보며 흐름을 익혀요.</div>`;
 SCREENS['msb-manage']=()=>{const s=cond.subj;const t=cond.tab||'target';const na=guideOn?nextAction():null;
-  return pageHead('최소성취수준보장지도(추가학습)이수관리')+wizard(MSB_TABS,t,'msbTab',na&&na.menu==='msb-manage'?na.tab:null)+(t==='hours'?roleNote('교과담임','참여시수 입력은'):t==='exc'?roleNote('최성보업무','예외처리는'):'')+({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);};
+  return pageHead('최소성취수준보장지도(추가학습)이수관리')+wizard(MSB_TABS,t,'msbTab',na&&na.menu==='msb-manage'?na.tab:null)+(t==='hours'?roleNote('교과담임','참여시수 입력은'):t==='exc'?roleNote('교과담임','예외처리는'):'')+({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);};
 function msbTab(t){cond.tab=t;unq();render();}
 function msbTargetTab(s){
   const sm=msbSummary(s);const q=queried[view.menu];const rooms=roomsOf();
@@ -875,7 +875,7 @@ function popAtt(s){const rooms=roomsOf();const un=rooms.filter(c=>!roomClosed(s,
   modal('과목별출결현황',body(),[{t:'닫기',p:false}],{html:1});$('#pop').style.minWidth='min(1000px,94vw)';}
 
 function msbExcTab(s){
-  const q=queried[view.menu];const rooms=roomsOf();const ed=curRole()==='최성보업무';const f=cond.filter||'all';
+  const q=queried[view.menu];const rooms=roomsOf();const ed=curRole()==='교과담임';const f=cond.filter||'all';
   const rows=rooms.flatMap(c=>{const m=msbOf(s,c);const locked=!!m.closed;return msbTargets(s,c).filter(st=>f==='all'||!m.exc[st.id]).map(st=>{const e=m.exc[st.id]||{};
     return `<tr><td><input type="checkbox" disabled></td><td>${st.c}</td><td>${st.no}</td><td class="l">${st.name} ${wdMark(st.id)}</td><td>${S.withdrawn[st.id]?S.withdrawn[st.id].type:''}</td><td>${subj(s).area}</td><td>${subjLabel(s)}</td><td>${subj(s).credit}</td><td>${attOK(s,st.id)?'도달':'미도달'}</td><td>${achOK(s,st.id)?'도달':'미도달'}</td>
       <td class="${S.scen&&S.scen.exc===st.id&&s===PRACTICE_SUBJ?'exc-cell':''}"><select ${ed&&!locked?'':'disabled'} onchange="excSet('${s}','${c}','${st.id}','type',this.value,this)"><option value="">--선택--</option>${EXC_TYPES.map(t=>`<option ${e.type===t?'selected':''}>${t}</option>`).join('')}</select></td>
@@ -1013,12 +1013,12 @@ function nextAction(){
     seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[성적산출전체마감]',b:'b-calcall'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[승인요청]',b:'b-calcreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.calcAll.req)return {step:2,title:'[2단계] 학기말 성적 산출 마감 — 승인요청',role:'업무담당자',ok:true,menu:'calc-close',why:'전체마감이 끝났어요. 조회조건 옆 [승인요청]을 누르면 기안문서상신 창이 떠요. [결재자지정] → [상신] 순서예요.',seq:[{t:'[조회]',b:'b-query',done:Q('calc-close')},{t:'[승인요청]',b:'b-calcreq',done:!!apv},{t:'기안문서상신 창에서 [결재자지정]',b:'b-apv-pick',done:!!(apv&&apv.lines.some(l=>l.kind==='결재'))},{t:'[상신]',b:'b-apv-ok'}]};
   if(!S.calcAll.approved)return apprAction(2,'성적산출 전체마감','calc-close');
-  for(const s of SUBJECTS){const sid=s.id;const role='업무담당자';const ok=true;if(sid!==PRACTICE_SUBJ&&CLASSES.every(c=>msbOf(sid,c).closed))continue;const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
+  for(const s of SUBJECTS){const sid=s.id;const role=`교과담임(${userName(s.teacher)})`;const ok=true;if(sid!==PRACTICE_SUBJ&&CLASSES.every(c=>msbOf(sid,c).closed))continue;const base={role,ok,menu:'msb-manage',set:{subj:sid,room:'all'}};const ms=CLASSES.map(c=>msbOf(sid,c));
     if(ms.some(m=>!m.targets))return Object.assign(base,{step:3,title:'[3단계] 대상자 가져오기',tab:'target',why:`${subjLabel(sid)}의 학점이수 기준 미도달 학생을 가져옵니다. {지필/수행 학업성취율 현황}·{과목별출결현황}으로 근거 자료도 확인해 보세요.`,
       seq:[{t:'[대상자] 탭',tab:'target'},{t:`조회조건: 과목 <b>${subjLabel(sid)}</b> · 강의실 <b>전체</b>`,f:'f-subj'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='target'},{t:'[대상자가져오기]',b:'b-fetch'},{t:'확인창 [확인]',b:'b-modal-ok'}]});
     if(ms.some(m=>!m.excSaved)){const es=sid===PRACTICE_SUBJ?scenStu('exc'):null;return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택해요.${es?` 연수 시나리오: <b>${stuLabel(es)}</b> 학생은 <b>특수교육대상자</b>예요.`:' 없더라도 {저장}을 눌러 확인 처리해요.'}`,
       seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},es?{t:`${stuLabel(es)}의 [예외]에서 '특수교육대상자' 선택`,cell:'exc-cell',hdr:'th-exc',done:!!(msbOf(sid,es.cls).exc[es.id])}:{t:'예외 대상 학생의 [예외] 선택 (기타는 사유 입력 · 해당 학생이 없으면 바로 [저장])',cell:'exc-cell',hdr:'th-exc',done:CLASSES.some(c=>Object.keys(msbOf(sid,c).exc).length)},{t:'[저장]',b:'b-save'}]});}
-    if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{role:`교과담임(${userName(s.teacher)})`,step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다.${sid===PRACTICE_SUBJ&&scenStu('un')?` 연수 시나리오: <b>${stuLabel(scenStu('un'))}</b>은 <b>${S.scen.unHours}시수</b>(미이수), 나머지는 <b>8~12시수</b>를 입력해요.`:''} 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정돼요. 실제로는 교과담임 선생님이 입력하고, 연수에서는 업무담당자가 대신 입력해 봐요.`,
+    if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다.${sid===PRACTICE_SUBJ&&scenStu('un')?` 연수 시나리오: <b>${stuLabel(scenStu('un'))}</b>은 <b>${S.scen.unHours}시수</b>(미이수), 나머지는 <b>8~12시수</b>를 입력해요.`:''} 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정돼요. 실제로는 교과담임 선생님이 입력하고, 연수에서는 업무담당자가 대신 입력해 봐요.`,
       seq:[{t:'[이수관리] 탭',tab:'hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:`참여시수 입력 (미입력 ${CLASSES.reduce((n,c)=>n+msbRoomStats(sid,c).pending,0)}명 남음)${sid===PRACTICE_SUBJ&&scenStu('un')?` · ${scenStu('un').c}반 ${scenStu('un').no}번은 ${S.scen.unHours}시수`:' · 필요시 비고'}`,cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'}]});
     if(ms.some(m=>!m.creditApplied))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 학점반영',tab:'close',why:`${subjLabel(sid)}의 이수/미이수 결과를 학점에 반영합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[학점반영]',b:'b-credit'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[마감]',b:'b-close'}]});
@@ -1113,7 +1113,7 @@ function peekMin(v){autoPeek=0;peekMinOn=v;try{if(v)localStorage.removeItem('nei
 function applyPeekMin(){const el=$('#botPeek');if(!el||!guideOn)return;el.classList.toggle('mini',peekMinOn);
   if(peekMinOn){const na=nextAction();el.innerHTML=`<span class="pk-row"><button class="pk-pill" title="말풍선 펼치기" onclick="peekMin(false)"><span class="pk-pl">${na?`💡 ${na.step}단계 · ${esc(peekLine)}`:'🎉 8단계 모두 끝났어요!'}</span><span class="pk-open">펼치기 ▴</span></button>${na?(peekGo?'<button class="pk-go" onclick="guideGo()">🚀 데려다줘</button>':''):'<button class="pk-go" onclick="askReset()">처음부터 다시</button>'}</span>`;}
   else if(!el.querySelector('.pk-x'))el.insertAdjacentHTML('afterbegin','<button class="pk-x" title="말풍선 접기" onclick="peekMin(true)">－</button>');}
-const FLOW_NAME=[['과목출결 마감'],['성적산출 마감'],['대상자 가져오기'],['예외처리'],['이수여부 처리','교과담임'],['학점반영·마감'],['학생부 자료반영','학급담임'],['마감정보저장·상신']];
+const FLOW_NAME=[['과목출결 마감'],['성적산출 마감'],['대상자 가져오기','교과담임'],['예외처리','교과담임'],['이수여부 처리','교과담임'],['학점반영·마감','교과담임'],['학생부 자료반영','학급담임'],['마감정보저장·상신']];
 function notiShow(v){notiOpen=v;let el=document.getElementById('noti');if(!v){if(el)el.remove();}else drawNoti();
   document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',notiOpen?x.id==='rail-bell':x.id==='rail-menu'));}
 function drawNoti(){const b=document.getElementById('bellBadge');const na=S&&me?nextAction():null;if(b){b.textContent=na?na.step:'✔';b.classList.toggle('fin',!na);}
@@ -1161,10 +1161,10 @@ function renderGuide0(force){
 function steps(){return [
   {pre:1,t:'[1단계] 과목 출석률 마감',d:'① 교과담임: <code>학적 › 출결관리 › 과목별출결관리</code>의 [학기별 과목 출결 마감] 탭에서 강의실별 {학기별과목마감} (과목교시마감수 = 반별일출결마감수 = 시간표총수업수일 때만 가능) ② 업무담당자: <code>과목 전체 마감</code> 탭에서 {전체마감} → {승인요청} → 기안문서상신 창 {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]).',ok:()=>attAllApproved(),go:['hak','att-subj']},
   {pre:1,t:'[2단계] 학기말 성적 산출 마감',d:'<code>성적 › 성적처리 › 성적산출마감관리</code>에서 {성적산출전체마감} → 조회조건 옆 {승인요청} → {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]). (1단계와 순서 무관)',ok:()=>calcAllApproved(),go:['score','calc-close']},
-  {t:'[3단계] 대상자 가져오기',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)이수관리 › 대상자</code>에서 {조회} → {대상자가져오기} → {확인}.<br>※ 연수에서는 <b>공통수학2</b>로 3~6단계를 실습해요. 공통국어2·공통영어2는 마감된 상태예요(실제로는 과목마다 반복).',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).targets)),go:['score','msb-manage']},
-  {t:'[4단계] 예외처리 대상자 등록',d:'<code>› 예외처리</code> 탭에서 예외사유(특수교육대상자·학교외 장소 수강·기타) 선택 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).excSaved)),go:['score','msb-manage']},
+  {t:'[3단계] 대상자 가져오기',who:'교과담임',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)이수관리 › 대상자</code>에서 {조회} → {대상자가져오기} → {확인}.<br>※ 연수에서는 <b>공통수학2</b>로 3~6단계를 실습해요. 공통국어2·공통영어2는 마감된 상태예요(실제로는 과목마다 반복).',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).targets)),go:['score','msb-manage']},
+  {t:'[4단계] 예외처리 대상자 등록',who:'교과담임',d:'<code>› 예외처리</code> 탭에서 예외사유(특수교육대상자·학교외 장소 수강·기타) 선택 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).excSaved)),go:['score','msb-manage']},
   {t:'[5단계] 대상자 이수여부 처리',who:'교과담임',d:'<code>› 이수관리</code> 탭에서 참여시수 입력 → 이수여부 자동 판정 → 비고 → {저장}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).hoursSaved&&!msbRoomStats(s.id,c).pending)),go:['score','msb-manage']},
-  {t:'[6단계] 최성보 마감 관리',d:'<code>› 마감</code> 탭에서 {학점반영} → {마감}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed)),go:['score','msb-manage']},
+  {t:'[6단계] 최성보 마감 관리',who:'교과담임',d:'<code>› 마감</code> 탭에서 {학점반영} → {마감}.',ok:()=>SUBJECTS.every(s=>CLASSES.every(c=>msbOf(s.id,c).closed)),go:['score','msb-manage']},
   {t:'[7단계] 학교생활기록부 자료반영',who:'학급담임',d:'<code>학생부 › 학교생활기록부 › 학교생활기록부</code>의 [학생부반영] 탭에서 반별로 {전체반영}.',ok:()=>CLASSES.every(c=>S.recReflect[c]),go:['rec','rec-reflect']},
   {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청} → 기안문서상신 창 {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]).',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
 ];}
@@ -1217,7 +1217,7 @@ function importJson(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{S
 /* 작업별 업무 탭 확인 */
 const ACTION_ROLE={periodClose:'교과담임',bulkPeriodClose:'교과담임',roomCloseTry:'교과담임',roomUnclose:'교과담임',examToggle:'교과담임',hoursSave:'교과담임',hpcApply:'교과담임',
   dayClose:'학급담임',bulkDayClose:'학급담임',recReflectAll:'학급담임',
-  fetchTargets:'최성보업무',deleteTargets:'최성보업무',excSave:'최성보업무',creditApply:'최성보업무',msbClose:'최성보업무',msbUnclose:'최성보업무',requestApproval:'최성보업무',simApprove:'최성보업무'};
+  fetchTargets:'교과담임',deleteTargets:'교과담임',excSave:'교과담임',creditApply:'교과담임',msbClose:'교과담임',msbUnclose:'교과담임',requestApproval:'최성보업무',simApprove:'최성보업무'};
 Object.entries(ACTION_ROLE).forEach(([fn,r])=>{const f=window[fn];if(typeof f!=='function')return;window[fn]=function(...a){if(!roleOK(r))return;return f.apply(this,a);};});
 renderLogin();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
