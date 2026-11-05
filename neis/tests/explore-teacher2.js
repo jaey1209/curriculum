@@ -54,7 +54,7 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
 
   // 4. 5단계: 탭을 일부러 [학급담임]으로 바꿔 보고, 잘못된 값 입력
   await go(); await p.click('#b-query'); await W(250);
-  await p.click('#roles button:text-is("학급담임")'); await W();
+  await p.click('#roles button:text-is("학급담임")'); await W(); await p.keyboard.press('Escape'); await W();
   log(`이수관리 화면에서 [학급담임]으로 바꾸면: 화면 ${await p.evaluate(() => view.menu)} / 알림 ${await p.$eval('#toast', e => e.textContent)}`);
   await go(); await p.click('#b-query'); await W(250);
   const hins = await p.$$('input.hin');
@@ -80,13 +80,19 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
   log(`다시 마감 후 단계 ${await step()}`);
 
   // 6. 조회 화면 둘러보기
-  await p.click('#roles button:text-is("교과담임")'); await W();
+  await p.click('#roles button:text-is("교과담임")'); await W(); await p.keyboard.press('Escape'); await W();
+  await p.click('#rail-menu'); await W(); await p.click('#mega a:text-is("성적처리")'); await W();
   await p.evaluate(() => { const g = [...document.querySelectorAll('#tree .grp')].find(x => x.textContent.replace('▼', '').trim() === '성적처리'); if (g && !g.classList.contains('open')) g.click(); }); await W();
   await p.click('#tree .it[title="최소성취수준보장지도(추가학습)조회(교과담당)"]'); await W(); await p.click('#b-query').catch(() => { }); await W();
   log(`조회(교과담당) 줄 수: ${await p.$$eval('#main table.grid tbody tr', r => r.length).catch(() => 0)}`); await overflow('조회(교과담당)'); await S('view2');
   await p.click('#roles button:text-is("학급담임")'); await W();
-  await p.evaluate(() => { const g = [...document.querySelectorAll('#tree .grp')].find(x => x.textContent.replace('▼', '').trim() === '성적처리'); if (g && !g.classList.contains('open')) g.click(); }); await W();
-  await p.click('#tree .it[title="최소성취수준보장지도(추가학습)조회(학급담임)"]'); await W();
+  const megaCols = await p.$$eval('#mega .col h4', h => h.map(x => x.textContent).join(','));
+  log(`[학급담임] 전체메뉴 분류: ${megaCols}`);
+  await p.keyboard.press('Escape'); await W();
+  const hasView1 = await p.evaluate(() => !hiddenMenu('msb-view'));
+  log(`[학급담임]에서 조회(학급담임) 메뉴 보임: ${hasView1}`);
+  if (hasView1) { await p.click('#rail-menu'); await W(); await p.click('#mega a:text-is("성적처리")').catch(() => { }); await W(); await p.click('#tree .it[title="최소성취수준보장지도(추가학습)조회(학급담임)"]').catch(() => { }); await W(); }
+  else await p.evaluate(() => go('score', 'msb-view'));
   log(`조회(학급담임) 반 목록: ${await p.$$eval('#f-cls option', o => o.map(x => x.textContent).join(',')).catch(() => '반 선택 없음')}`);
   await p.click('#b-query').catch(() => { }); await W(); log(`조회(학급담임) 줄 수: ${await p.$$eval('#main table.grid tbody tr', r => r.length).catch(() => 0)}`); await overflow('조회(학급담임)'); await S('view1');
 

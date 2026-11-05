@@ -40,7 +40,7 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
     // 교사는 칸을 먼저 마우스로 누른다(저절로 펼친 시나리오 말풍선은 이때 접힘)
     if(cells.length){const bb2=await cells[0].boundingBox();if(bb2){await p.mouse.click(bb2.x+3,bb2.y+3);await p.waitForTimeout(60);}}
     if(cells.length){const first=cells[0];const inp=await first.$('input[type=number]');const sel=await first.$('select');
-      if(inp){for(const c of cells){const i=await c.$('input[type=number]');if(i){await i.fill(String([8,7,9,5][Math.floor(Math.random()*4)]));await i.dispatchEvent('change');await p.waitForTimeout(40);break;}}continue;}
+      if(inp){for(const c of cells){const i=await c.$('input[type=number]');if(i){const un=await i.evaluate(el=>{const m=(el.getAttribute('oninput')||'').match(/'(\d{8,})'/);return !!(m&&S.scen&&m[1]===S.scen.un);});await i.fill(String(un?5:[8,7,9,12][Math.floor(Math.random()*4)]));await i.dispatchEvent('change');await p.waitForTimeout(40);break;}}continue;}
       if(sel){await sel.selectOption({index:1});await sel.dispatchEvent('change');await p.waitForTimeout(60);continue;}
     }
     // 점선 조회조건이 있으면 그 값은 [데려다줘]가 맞춰 줬다고 가정, 라디오 선택 항목

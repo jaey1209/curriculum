@@ -74,7 +74,7 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
   await (await otherRow.$('select')).selectOption('기타'); await W();
   const rs = await otherRow.$('input.exc-rs'); await rs.click(); await p.keyboard.type('연수 테스트 사유');
   await p.click('#b-save'); await W();
-  ok('[1] 기타 사유 입력 직후 [저장] 첫 클릭에 저장', (await scrimOn()) && /저장이 완료/.test(await popText()), await popText());
+  ok('[1] 기타 사유 입력 직후 [저장] 첫 클릭에 반응(시나리오 밖 예외는 안내로 막힘)', (await scrimOn()) && /저장이 완료|골라 주세요|한 명이에요/.test(await popText()), await popText());
   await closeAlert();
   { const rows2 = await p.$$('#main table.grid tbody tr'); await (await rows2[rows2.length - 1].$('select')).selectOption(''); await W(); }
   // 시나리오 학생: 특수교육대상자
