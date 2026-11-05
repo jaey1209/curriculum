@@ -652,8 +652,8 @@ const MENUS={
   guide:[{grp:'연수도우미',items:[{id:'gd-steps',name:'업무 흐름도(8단계)'},{id:'gd-rule',name:'학점이수 기준·최성보 변경 안내'},{id:'gd-setting',name:'설정·초기화·로그'},{id:'gd-admin',name:'관리자(기록 관리)'}]}],
 };
 /* 탭별 전체 메뉴: 분류(열)와 그 안의 항목 */
-const ROLE_COLS={'교과담임':['hak','score'],'학급담임':['hak','rec'],'최성보업무':['hak','score','rec']};
-const ROLE_GRP={'교과담임':{hak:['출결관리','출결현황및통계']},'학급담임':{hak:['기본학적관리','출결관리','출결현황및통계']}};
+const ROLE_COLS={'교과담임':['hak','score'],'학급담임':['hak','score','rec'],'최성보업무':['hak','score','rec']};
+const ROLE_GRP={'교과담임':{hak:['출결관리','출결현황및통계']},'학급담임':{hak:['기본학적관리','출결관리','출결현황및통계'],score:['성적처리']}};
 const ROLE_NOGRP={'교과담임':['반편성고사/기타성적산출']};
 const TEACHER_SCORE=['성적산출관리','교양교과이수관리','과목별세부능력및특기사항','과목별독서활동'];
 const ROLES=['교과담임','학급담임','최성보업무'];
@@ -661,10 +661,10 @@ const MENU_PATH={},MENU_GRP={};Object.entries(MENUS).forEach(([top,groups])=>{co
 /* 연수에 쓰지 않는 메뉴는 왼쪽 메뉴·전체메뉴에서 숨김(기본 버전은 1·2단계 마감 화면도 숨김) */
 const HIDE_ALWAYS=[];
 /* 업무 탭별로 숨기는 화면 */
-const ROLE_HIDE={'교과담임':['msb-view','msb-mgmt','calc-close','hak-wd','hak-tt','rec-reflect'],'학급담임':['msb-manage','msb-view','msb-view2','msb-mgmt','calc-close','ex-written','ex-perf','hak-wd','hak-tt'],'최성보업무':['hak-tt']};
+const ROLE_HIDE={'교과담임':['msb-view','msb-mgmt','calc-close','hak-wd','hak-tt','rec-reflect'],'학급담임':['msb-manage','msb-view2','msb-mgmt','calc-close','ex-written','ex-perf','hak-wd','hak-tt'],'최성보업무':['hak-tt']};
 const hiddenMenu=id=>/^gd-/.test(id||'')?false:!curRole()||HIDE_ALWAYS.includes(id)||(ROLE_HIDE[curRole()]||[]).includes(id);
 const groupsFor=mod=>{const a=(ROLE_GRP[curRole()]||{})[mod],no=ROLE_NOGRP[curRole()]||[];return MENUS[mod].filter(g=>(!a||a.includes(g.grp))&&!no.includes(g.grp));};
-const itemsFor=g=>g.items.filter(i=>typeof i==='object'?!hiddenMenu(i.id):!(curRole()==='교과담임'&&g.grp==='성적처리'&&!TEACHER_SCORE.includes(i)));
+const itemsFor=g=>g.items.filter(i=>typeof i==='object'?!hiddenMenu(i.id):!(curRole()==='교과담임'&&g.grp==='성적처리'&&!TEACHER_SCORE.includes(i))&&!(curRole()==='학급담임'&&g.grp==='성적처리'));
 let leftMod=null; /* 왼쪽 메뉴에 보이는 분류. 탭만 누른 상태에서는 비어 있음 */
 let notiOpen=false; /* 🔔 업무진행 알림 창 */
 const topOf=menu=>Object.keys(MENUS).find(t=>MENUS[t].some(g=>g.items.some(i=>typeof i==='object'&&i.id===menu)));
