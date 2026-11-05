@@ -163,7 +163,7 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
   await p.click('#b-modal-ok'); await W(300);
   const st = await p.evaluate(() => ({ step: nextAction().step, tabs: openTabs.length, chat: chatLog.length, left: document.getElementById('bot').style.left, mini: document.getElementById('botPeek').classList.contains('mini'), menu: view.menu }));
   ok('[10] 초기화 후 첫 로그인과 같은 화면', st.step === 3 && st.tabs === 0 && st.chat <= 2 && st.left === '' && st.mini && st.menu === 'gd-steps', st);
-  ok('[10] 업무 흐름도에 초기화 버튼', !!(await p.$('#b-reset')));
+  await p.click('#rail-bell'); await W(); ok('[10] 🔔 업무진행에 초기화 버튼', !!(await p.$('#b-reset'))); await p.click('#rail-menu'); await W();
   await p.screenshot({ path: SP + '/pt-reset.png' });
 
   ok('페이지 오류 없음', errs.length === 0, errs);
