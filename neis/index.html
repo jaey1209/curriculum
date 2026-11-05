@@ -57,6 +57,9 @@ a{color:var(--blue)}
 .gnb .school{font-size:12px;color:var(--ink-2)}
 .gnb .who .pill{border:1px solid var(--line);border-radius:3px;padding:2px 8px;background:#fff;font-size:12px}
 .gnb .who .gbtn{border:1px solid var(--orange);background:var(--orange);color:#fff;border-radius:3px;padding:3px 10px;font-weight:bold}
+.bico{display:inline-block;width:20px;height:20px;vertical-align:-5px;margin:0 2px}
+.bico svg{width:100%;height:100%;display:block}
+.gnb .who .gbtn .bico{background:#fff;border-radius:50%;margin:0 5px 0 0;padding:1px}
 .gnb .who .gbtn.off{background:#fff;color:var(--orange)}
 .gnb .who .gdbtn{border:1px solid #f2a444;background:#fff8ee;color:#b25400;border-radius:3px;padding:2px 8px;font-weight:bold}
 
@@ -385,7 +388,7 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
     <nav class="roles" id="roles"></nav>
     <div class="sp"></div>
     <span class="copy">© 2026 Jae-Young Lee</span>
-    <div class="who"><button class="gbtn" id="gToggle" onclick="toggleGuide()">🤖 최성봇</button><button class="gdbtn" onclick="go('guide','gd-steps')">연수도우미</button><span class="pill" id="gDate"></span><span class="school" id="gSchool"></span><span id="gUser"></span><button class="pill" onclick="logout()">로그아웃</button></div>
+    <div class="who"><button class="gbtn" id="gToggle" onclick="toggleGuide()"><span class="bico" id="gBotIco"></span>최성봇</button><button class="gdbtn" onclick="go('guide','gd-steps')">연수도우미</button><span class="pill" id="gDate"></span><span class="school" id="gSchool"></span><span id="gUser"></span><button class="pill" onclick="logout()">로그아웃</button></div>
   </div>
   <div class="body">
     <nav class="rail" id="rail"></nav>
@@ -978,6 +981,7 @@ const curTab=na=>na.menu==='msb-manage'?cond.tab:na.menu==='att-subj'?(cond.atab
 const tabNameOf=na=>{const T={'msb-manage':MSB_TABS,'att-subj':ATT_TABS,'rec-reflect':REC_TABS}[na.menu];const t=T&&T.find(x=>x.id===na.tab);return t?tabPlain(t.name):'';};
 /* ── 최성봇 ── */
 const BOT_SVG=(mood)=>`<svg viewBox="0 0 80 80" width="100%" height="100%"><g><line x1="40" y1="6" x2="40" y2="14" stroke="#2f66c2" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="6" r="4" fill="#ff7a1a"/><rect x="12" y="14" width="56" height="44" rx="16" fill="#fff" stroke="#2f66c2" stroke-width="3"/><rect x="18" y="22" width="44" height="28" rx="10" fill="#2f66c2"/><g class="eye"><ellipse cx="31" cy="35" rx="4.5" ry="5.5" fill="#fff"/></g><g class="eye"><ellipse cx="49" cy="35" rx="4.5" ry="5.5" fill="#fff"/></g>${mood==='happy'?'<path d="M32 43 q8 7 16 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'<path d="M33 44 q7 4 14 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}<circle cx="22" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><circle cx="58" cy="40" r="2.5" fill="#ffb3b3" opacity=".8"/><rect x="26" y="58" width="28" height="14" rx="6" fill="#dfe8f8" stroke="#2f66c2" stroke-width="3"/><rect x="4" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/><rect x="68" y="30" width="8" height="14" rx="4" fill="#dfe8f8" stroke="#2f66c2" stroke-width="2.5"/></g></svg>`;
+const BOT_ICO=()=>`<span class="bico">${BOT_SVG()}</span>`;
 let chatLog=[],chatSig='',chatIsOpen=false,botSteps=null;
 /* 최성봇 드래그 이동(위치 기억) */
 (function(){const bot=document.getElementById('bot');let st=null;
@@ -1032,7 +1036,7 @@ function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(
   if(!na)return say2('🎉 8단계가 모두 끝났어요! 수고하셨어요. 다시 연습하려면 "초기화"라고 말해 주세요.');
   if(/왜|안 돼|안돼|비활성|회색|못 눌|안 눌/.test(t))return say2(`지금 단계가 막힌 이유는 이거예요 🔍<br>${na.why}<br><br>${here?'번호가 붙은 버튼을 순서대로 눌러 보세요.':'<button class="btn s" onclick="guideGo()">🚀 그 화면으로 데려다줘</button>'}`);
   if(/다음|뭐|해야|할 일|순서|어디|어떻게/.test(t)){chatSig='';return setTimeout(()=>renderGuide(true),350);}
-  say2('음… 그건 아직 잘 모르겠어요 🤖 "다음", "왜", "흐름", "기준" 같은 말로 물어봐 주세요!');}
+  say2('음… 그건 아직 잘 모르겠어요 '+BOT_ICO()+' "다음", "왜", "흐름", "기준" 같은 말로 물어봐 주세요!');}
 let peekMinOn=(()=>{try{return localStorage.getItem('neis-peek-open')!=='1';}catch(_){return true;}})();
 let peekLine='',peekGo=false;
 function peekMin(v){peekMinOn=v;try{if(v)localStorage.removeItem('neis-peek-open');else localStorage.setItem('neis-peek-open','1');}catch(_){}renderGuide();}
@@ -1042,7 +1046,7 @@ function applyPeekMin(){const el=$('#botPeek');if(!el||!guideOn)return;el.classL
 function renderGuide(force){renderGuide0(force);applyPeekMin();layoutBot();}
 function renderGuide0(force){
   const p=$('#bot');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
-  if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();try{const z=+localStorage.getItem('neis-peek-zoom');if(z)$('#bot').style.setProperty('--pz',z);}catch(_){}}
+  if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#gBotIco').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();try{const z=+localStorage.getItem('neis-peek-zoom');if(z)$('#bot').style.setProperty('--pz',z);}catch(_){}}
   const na=nextAction();
   if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="askReset()">처음부터 다시</button><span class="pk-z"><button onclick="peekZoom(-1)">가−</button><button onclick="peekZoom(1)">가+</button></span></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}return;}
   const here=view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
@@ -1055,7 +1059,7 @@ function renderGuide0(force){
   const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):`메뉴 ${MENU_PATH[na.menu]}`;
   $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div>${na.role==='업무담당자'?'':`<div class="pk-r">👤 실제 담당: ${na.role}</div>`}<div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 대화하기</button><span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
   const sig=`${na.title}|${here}|${condOK}|${curIdx}|${view.menu}|${curTab(na)}`;
-  if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say(mode==='basic'?'안녕하세요! 저는 <b>최성봇</b>이에요 🤖 출결 마감(1단계)과 성적 마감(2단계)은 담당 부서에서 이미 끝냈어요. <b>3단계 대상자 가져오기</b>부터 업무담당자 일을 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!':'안녕하세요! 저는 <b>최성봇</b>이에요 🤖 심화 버전이라 출결·성적 마감에 일부러 빠진 곳이 있어요. 어디서 막히는지 찾아가며 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
+  if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say(mode==='basic'?'안녕하세요! 저는 <b>최성봇</b>이에요 '+BOT_ICO()+' 출결 마감(1단계)과 성적 마감(2단계)은 담당 부서에서 이미 끝냈어요. <b>3단계 대상자 가져오기</b>부터 업무담당자 일을 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!':'안녕하세요! 저는 <b>최성봇</b>이에요 '+BOT_ICO()+' 심화 버전이라 출결·성적 마감에 일부러 빠진 곳이 있어요. 어디서 막히는지 찾아가며 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
   document.querySelectorAll('.btn .gnum,th .gnum').forEach(e=>e.remove());document.querySelectorAll('.btn.next,.next-field,.next-cell,.next-hdr').forEach(e=>e.classList.remove('next','next-field','next-cell','next-hdr'));
   if(here){items.forEach((x,i)=>{if(x.b&&x.b!=='b-modal-ok'){const el=document.getElementById(x.b);if(el){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=i+1;el.appendChild(n);if(i===curIdx)el.classList.add('next');}}
       if(x.f&&i===curIdx){const el=document.getElementById(x.f);if(el)el.classList.add('next-field');}
