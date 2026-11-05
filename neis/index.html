@@ -313,6 +313,8 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 .bot-peek .pk-m small{font-size:.68em;font-weight:normal;color:#8b9099}
 .bot-peek .pk-s{color:#555;font-size:calc(15px*var(--pz));margin-top:4px}
 .bot-peek .pk-r{margin-top:6px;display:inline-block;background:#fff3e6;border:1px solid #f2c48d;color:#b25400;border-radius:8px;padding:2px 10px;font-size:calc(14px*var(--pz));font-weight:bold}
+.bot-peek .pk-sc{margin-top:8px;background:#fff8e6;border:1px solid #f1dfae;border-radius:10px;padding:7px 11px;font-size:calc(15px*var(--pz));color:#5a3d00;line-height:1.5}
+.bot-peek .pk-sc b{color:#b25400}
 .bot-peek .pk-b{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
 .bot-peek .pk-b button{border:0;background:#2f66c2;color:#fff;border-radius:999px;padding:7px 16px;font-size:calc(15px*var(--pz));cursor:pointer;font-weight:bold}
 .bot-peek .pk-b button.w{background:#eef3fb;color:#1d4fb3}
@@ -818,7 +820,7 @@ function msbSummary(s){let t=0,cr=0,at=0,ac=0,both=0;roomsOf().forEach(c=>msbTar
 function roomsCloseText(s){const un=roomsOf().filter(c=>!roomClosed(s,c));return un.length?`<span class="tip">출결이 마감되지 않은 강의실이 있습니다.<span class="tt">강의실 : ${un.map(c=>c.split('-')[1]).join(', ')}</span></span>`:'조회된 모든 강의실이 마감되었습니다.';}
 const ACTUAL_NOTE=(who,what)=>`<div class="note" style="margin:0 0 8px">👤 <b>실제 담당: ${who}</b> — ${what} 실제로는 ${who} 선생님이 하는 일이에요. 연수에서는 업무담당자가 대신 눌러 보며 흐름을 익혀요.</div>`;
 SCREENS['msb-manage']=()=>{const s=cond.subj;const t=cond.tab||'target';const na=guideOn?nextAction():null;
-  return pageHead('최소성취수준보장지도(추가학습)이수관리')+wizard(MSB_TABS,t,'msbTab',na&&na.menu==='msb-manage'?na.tab:null)+(t==='hours'?scenNote(s,['교과담임','참여시수 입력은']):t!=='close'?scenNote(s):'')+({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);};
+  return pageHead('최소성취수준보장지도(추가학습)이수관리')+wizard(MSB_TABS,t,'msbTab',na&&na.menu==='msb-manage'?na.tab:null)+(t==='hours'?ACTUAL_NOTE('교과담임','참여시수 입력은'):'')+({target:msbTargetTab,exc:msbExcTab,hours:msbHoursTab,close:msbCloseTab}[t])(s);};
 function msbTab(t){cond.tab=t;unq();render();}
 function msbTargetTab(s){
   const sm=msbSummary(s);const q=queried[view.menu];const rooms=roomsOf();
@@ -1005,7 +1007,7 @@ function nextAction(){
     if(ms.some(m=>!m.excSaved)){const es=sid===PRACTICE_SUBJ?scenStu('exc'):null;return Object.assign(base,{step:4,title:'[4단계] 예외처리 대상자 등록',tab:'exc',why:`${subjLabel(sid)} 대상자 중 예외 대상(특수교육대상자·학교외 장소 수강·기타)이 있으면 예외를 선택해요.${es?` 연수 시나리오: <b>${stuLabel(es)}</b> 학생은 <b>특수교육대상자</b>예요.`:' 없더라도 {저장}을 눌러 확인 처리해요.'}`,
       seq:[{t:'[예외처리] 탭',tab:'exc'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='exc'},es?{t:`${stuLabel(es)}의 [예외]에서 '특수교육대상자' 선택`,cell:'exc-cell',hdr:'th-exc',done:!!(msbOf(sid,es.cls).exc[es.id])}:{t:'예외 대상 학생의 [예외] 선택 (기타는 사유 입력 · 해당 학생이 없으면 바로 [저장])',cell:'exc-cell',hdr:'th-exc',done:CLASSES.some(c=>Object.keys(msbOf(sid,c).exc).length)},{t:'[저장]',b:'b-save'}]});}
     if(CLASSES.some(c=>msbRoomStats(sid,c).pending)||ms.some(m=>!m.hoursSaved))return Object.assign(base,{role:`교과담임(${userName(s.teacher)})`,step:5,title:'[5단계] 대상자 이수여부 처리',tab:'hours',why:`${subjLabel(sid)} 대상자의 보장지도(추가학습) 참여시수를 입력합니다.${sid===PRACTICE_SUBJ&&scenStu('un')?` 연수 시나리오: <b>${stuLabel(scenStu('un'))}</b>은 <b>${S.scen.unHours}시수</b>(미이수), 나머지는 <b>8~12시수</b>를 입력해요.`:''} 이수기준 시수(필요시수의 2/3) 이상이면 이수, 미만이면 미이수로 자동 판정돼요. 실제로는 교과담임 선생님이 입력하고, 연수에서는 업무담당자가 대신 입력해 봐요.`,
-      seq:[{t:'[이수관리] 탭',tab:'hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:`참여시수 입력 (미입력 ${CLASSES.reduce((n,c)=>n+msbRoomStats(sid,c).pending,0)}명 남음) · 필요시 비고`,cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'}]});
+      seq:[{t:'[이수관리] 탭',tab:'hours'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='hours'},{t:`참여시수 입력 (미입력 ${CLASSES.reduce((n,c)=>n+msbRoomStats(sid,c).pending,0)}명 남음)${sid===PRACTICE_SUBJ&&scenStu('un')?` · ${scenStu('un').c}반 ${scenStu('un').no}번은 ${S.scen.unHours}시수`:' · 필요시 비고'}`,cell:'hours-cell',done:!CLASSES.some(c=>msbRoomStats(sid,c).pending)},{t:'[저장]',b:'b-save'}]});
     if(ms.some(m=>!m.creditApplied))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 학점반영',tab:'close',why:`${subjLabel(sid)}의 이수/미이수 결과를 학점에 반영합니다.`,
       seq:[{t:'[마감] 탭',tab:'close'},{t:'[조회]',b:'b-query',done:Q('msb-manage')&&cond.tab==='close'},{t:'[학점반영]',b:'b-credit'},{t:'확인창 [확인]',b:'b-modal-ok'},{t:'[마감]',b:'b-close'}]});
     if(ms.some(m=>!m.closed))return Object.assign(base,{step:6,title:'[6단계] 최성보 마감 관리 — 마감',tab:'close',why:`${subjLabel(sid)} 학점반영이 끝났습니다. 마감합니다.`,
@@ -1084,7 +1086,16 @@ function botReply(t){const na=nextAction();const here=na&&view.menu===na.menu&&(
   say2('음… 그건 아직 잘 모르겠어요 '+BOT_ICO()+' "다음", "왜", "흐름", "기준" 같은 말로 물어봐 주세요!');}
 let peekMinOn=(()=>{try{return localStorage.getItem('neis-peek-open')!=='1';}catch(_){return true;}})();
 let peekLine='',peekGo=false;
-function peekMin(v){peekMinOn=v;try{if(v)localStorage.removeItem('neis-peek-open');else localStorage.setItem('neis-peek-open','1');}catch(_){}renderGuide();}
+/* 단계별 연수 시나리오(최성봇이 말해 줌) */
+function scenLine(na){if(!S.scen||!na||!na.set||na.set.subj!==PRACTICE_SUBJ)return '';const e=scenStu('exc'),u=scenStu('un');
+  if(na.step===3)return '이번 연수는 <b>공통수학2</b>로 실습해요. 공통국어2·공통영어2는 이미 마감된 상태예요.';
+  if(na.step===4)return `<b>${stuLabel(e)}</b>은 <b>특수교육대상자</b>예요.<br>→ [예외]에서 <b>특수교육대상자</b>를 골라요.`;
+  if(na.step===5)return `<b>${stuLabel(u)}</b>은 보장지도에 <b>${S.scen.unHours}시수</b>만 참여했어요 → <b>미이수</b><br>나머지 학생은 <b>8~12시수</b>를 입력해요 → 이수`;
+  if(na.step===6)return '실제 업무에서는 과목마다 3~6단계를 반복해요.';return '';}
+let autoPeek=0;
+/* 시나리오로 저절로 펼친 말풍선은 표를 누르기 시작하면 한 줄로 접힘 */
+document.addEventListener('pointerdown',e=>{if(autoPeek&&e.target.closest('#main')){autoPeek=0;peekMinOn=true;applyPeekMin();layoutBot();}},true);
+function peekMin(v){autoPeek=0;peekMinOn=v;try{if(v)localStorage.removeItem('neis-peek-open');else localStorage.setItem('neis-peek-open','1');}catch(_){}renderGuide();}
 function applyPeekMin(){const el=$('#botPeek');if(!el||!guideOn)return;el.classList.toggle('mini',peekMinOn);
   if(peekMinOn){const na=nextAction();el.innerHTML=`<span class="pk-row"><button class="pk-pill" title="말풍선 펼치기" onclick="peekMin(false)"><span class="pk-pl">${na?`💡 ${na.step}단계 · ${esc(peekLine)}`:'🎉 8단계 모두 끝났어요!'}</span><span class="pk-open">펼치기 ▴</span></button>${na?(peekGo?'<button class="pk-go" onclick="guideGo()">🚀 데려다줘</button>':''):'<button class="pk-go" onclick="askReset()">처음부터 다시</button>'}</span>`;}
   else if(!el.querySelector('.pk-x'))el.insertAdjacentHTML('afterbegin','<button class="pk-x" title="말풍선 접기" onclick="peekMin(true)">－</button>');}
@@ -1106,6 +1117,7 @@ function renderGuide0(force){
   const p=$('#bot');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
   if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#gBotIco').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();try{const z=+localStorage.getItem('neis-peek-zoom');if(z)$('#bot').style.setProperty('--pz',z);}catch(_){}}
   const na=nextAction();
+  if(autoPeek&&(!na||na.step!==autoPeek)){autoPeek=0;try{peekMinOn=localStorage.getItem('neis-peek-open')!=='1';}catch(_){peekMinOn=true;}}
   if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="askReset()">처음부터 다시</button><span class="pk-z"><button onclick="peekZoom(-1)">가−</button><button onclick="peekZoom(1)">가+</button></span></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}return;}
   const here=view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
   const condOK=!na.set||Object.entries(na.set).every(([k,v])=>k==='atab'||k==='tab'||k==='rtab'||(cond[k]||(k==='wdf'?'un':undefined))===v);
@@ -1113,9 +1125,12 @@ function renderGuide0(force){
   if(!here)curIdx=-1;
   const stepName=na.title.replace(/^\[\d단계\] /,'');const tabName2=tabNameOf(na);
   const cur=items[curIdx];const peekMain=here&&cur?`<span class="n">${curIdx+1}</span>${cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.f?cur.t.replace('조회조건: ','조회조건을 바꾸세요 → ')+' <small>(또는 아래 [데려다줘])</small>':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${MENU_PATH[na.menu].split(' › ').slice(-1)[0]}</b>${na.tab?` › ${tabName2.replace('최소성취수준보장지도(추가학습)','')} 탭`:''} 화면으로 가세요`;
+  const sc=scenLine(na);
+  /* 4·5단계 화면에 처음 들어오면 시나리오를 한 번 펼쳐서 알려 줌 */
+  if(sc&&here&&(na.step===4||na.step===5)&&queried['msb-manage']){S.scenShown=S.scenShown||{};if(!S.scenShown[na.step]){S.scenShown[na.step]=1;save();if(peekMinOn){peekMinOn=false;autoPeek=na.step;}setTimeout(()=>say(`📋 <b>연수 시나리오 (${na.step}단계)</b><br>${sc}`),0);}}
   peekLine=(here&&cur?peekMain:`${tabName2?tabName2.replace('최소성취수준보장지도(추가학습)','')+' 탭':MENU_PATH[na.menu].split(' › ').slice(-1)[0].replace('최소성취수준보장지도(추가학습)','')} 화면으로 가세요`).replace(/<span class="n">(\d+)<\/span>/,'👉 ').replace(/<small>.*?<\/small>/g,'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();peekGo=!(here&&condOK);
   const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):`메뉴 ${MENU_PATH[na.menu]}`;
-  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div>${na.role==='업무담당자'?'':`<div class="pk-r">👤 실제 담당: ${na.role}</div>`}<div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 대화하기</button><span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
+  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div><div class="pk-s">${peekSub}</div>${sc?`<div class="pk-sc">📋 <b>연수 시나리오</b><br>${sc}</div>`:''}${na.role==='업무담당자'?'':`<div class="pk-r">👤 실제 담당: ${na.role}</div>`}<div class="pk-b">${here&&condOK?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<button class="w" onclick="chatOpen(true)">💬 대화하기</button><span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
   const sig=`${na.title}|${here}|${condOK}|${curIdx}|${view.menu}|${curTab(na)}`;
   if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say(mode==='basic'?'안녕하세요! 저는 <b>최성봇</b>이에요 '+BOT_ICO()+' 출결 마감(1단계)과 성적 마감(2단계)은 담당 부서에서 이미 끝냈어요. <b>3단계 대상자 가져오기</b>부터 업무담당자 일을 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!':'안녕하세요! 저는 <b>최성봇</b>이에요 '+BOT_ICO()+' 심화 버전이라 출결·성적 마감에 일부러 빠진 곳이 있어요. 어디서 막히는지 찾아가며 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
   document.querySelectorAll('.btn .gnum,th .gnum').forEach(e=>e.remove());document.querySelectorAll('.btn.next,.next-field,.next-cell,.next-hdr').forEach(e=>e.classList.remove('next','next-field','next-cell','next-hdr'));

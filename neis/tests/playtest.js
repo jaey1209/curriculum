@@ -62,7 +62,10 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
 
   // ── 4단계: 예외처리 ──
   await followUntil(async () => p.evaluate(() => view.menu === 'msb-manage' && cond.tab === 'exc' && !!queried['msb-manage']));
-  ok('[8] 화면 상단에 시나리오 안내', await p.$eval('#main', m => /특수교육대상자/.test(m.querySelector('.scen')?.innerText || '')));
+  await W(200);
+  ok('[8] 최성봇이 시나리오를 말풍선으로 알려 줌(처음 한 번 펼침)', await p.$eval('#botPeek', e => !e.classList.contains('mini') && /특수교육대상자/.test(e.querySelector('.pk-sc')?.innerText || '')));
+  ok('[8] 시나리오가 대화창에도 남음', await p.evaluate(() => chatLog.some(x => /연수 시나리오/.test(x.html))));
+  await p.click('#botPeek .pk-x'); await W();
   await overlaps('4단계 예외처리');
   // 기타 사유 입력 직후 [저장] 1번
   const rows = await p.$$('#main table.grid tbody tr');
@@ -82,6 +85,9 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
 
   // ── 5단계: 이수관리 — 칸마다 클릭 1번 ──
   await followUntil(async () => p.evaluate(() => view.menu === 'msb-manage' && cond.tab === 'hours' && !!queried['msb-manage']));
+  ok('[8] 5단계 시나리오 말풍선(미이수 학생)', await p.$eval('#botPeek', e => /미이수/.test(e.querySelector('.pk-sc')?.innerText || '')));
+  await p.mouse.click(400, 300); await W();
+  ok('[8] 표 쪽을 누르면 시나리오 말풍선이 한 줄로 접힘', await p.$eval('#botPeek', e => e.classList.contains('mini')));
   await overlaps('5단계 이수관리');
   const hins = await p.$$('input.hin');
   const plan = await p.evaluate(() => [...document.querySelectorAll('input.hin')].map(i => { const sid = i.getAttribute('oninput').match(/'(\d{8,})'/)[1]; return { sid, v: sid === S.scen.un ? 5 : 9 }; }));
