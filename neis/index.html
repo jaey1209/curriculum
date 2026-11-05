@@ -139,15 +139,15 @@ a{color:var(--blue)}
 
 /* ───── 진행 탭(wizard) ───── */
 .wiz{display:flex;align-items:center;gap:0;margin-bottom:8px}
-.wiz .wt{flex:1;border:1px solid var(--line-3);border-radius:4px;background:#fff;padding:8px 10px;font-size:13px;color:#444;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;overflow:hidden;min-height:40px}
+.wiz .wt{flex:1;border:1px solid var(--line-3);border-radius:8px;background:#fff;padding:8px 10px;font-size:13px;color:#444;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;overflow:hidden;min-height:56px}
 .wiz .wt span{white-space:normal;line-height:1.25;text-align:center}
 .wiz .wt2{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
 .wiz .wt2 .wt{padding:4px 8px;font-size:11.5px;min-height:30px}
 .wiz .wt2 .wt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wiz .wt.on{font-weight:bold;color:#111;border:1.5px solid #4f85d6;box-shadow:0 0 0 1px #d7e4f8 inset}
+.wiz .wt.on{font-weight:bold;color:#111;border:2px solid #2f6fe8}
 .wiz .wt.next{outline:2px solid var(--orange);outline-offset:-2px}
 .wiz .arr{width:22px;text-align:center;color:#8a8f99;font-size:11px;flex:none}
-.wiz svg{width:16px;height:16px;flex:none}
+.wiz svg{width:20px;height:20px;flex:none}
 
 /* ───── 조회조건 ───── */
 .cond{background:var(--cond);padding:8px 14px;display:flex;align-items:center;gap:14px 28px;flex-wrap:wrap;min-height:44px}
@@ -196,7 +196,7 @@ a{color:var(--blue)}
 /* ───── 안내 요약 ───── */
 .sec{font-weight:bold;font-size:13px;color:#222;margin:8px 0 6px}
 .sec::before{content:"☞ ";color:#444}
-.sumtbl{border-collapse:collapse;width:100%;border-top:1px solid #b9c0cc;margin-bottom:12px}
+.sumtbl{border-collapse:collapse;width:100%;border-top:1.5px solid #444;margin-bottom:12px}
 .sumtbl td{border-bottom:1px solid var(--line-2);padding:7px 10px;font-size:13px}
 .sumtbl td.k{background:#f3f4f7;color:#444;text-align:center;width:150px}
 .sumtbl td.v{color:#333}
@@ -924,7 +924,7 @@ function msbCloseTab(s){
   const fetched=rooms.every(c=>msbOf(s,c).targets);const allApplied=rooms.every(c=>msbOf(s,c).creditApplied||!(msbOf(s,c).targets||[]).length);const allClosed=rooms.every(c=>msbOf(s,c).closed);
   return condBar(fixedCond()+selSubj()+selRoom(true),qbtn())
   +(q?`<div class="tbar"><span class="sec" style="margin:0">보장지도(추가학습) 대상은 다음과 같습니다.</span><span class="sp"></span><button class="btn" id="b-credit" ${ed&&fetched&&!agg.pending&&!allApplied?'':'disabled'} onclick="creditApply('${s}')">학점반영</button>${allClosed&&fetched?`<button class="btn w" ${ed&&!S.msbMgmt.saved?'':'disabled'} onclick="msbUnclose('${s}')">마감취소</button>`:`<button class="btn" id="b-close" ${ed&&allApplied&&fetched?'':'disabled'} onclick="msbClose('${s}')">마감</button>`}</div>
-  <table class="sumtbl"><tr><td class="k">대상자</td><td class="v">${agg.t} 명</td></tr><tr><td class="k">예외처리자</td><td class="v">${agg.ex} 명</td></tr><tr><td class="k">이수자</td><td class="v">${agg.done} 명</td></tr><tr><td class="k">미이수자</td><td class="v">${agg.un} 명</td></tr><tr><td class="k">학점반영자</td><td class="v">${agg.applied} 명</td></tr><tr><td class="k">마감여부</td><td class="v">${allClosed&&fetched?'마감':'미마감'}${agg.pending?` <span style="color:var(--crit)">(참여시수 미입력 ${agg.pending}명 — [이수관리]에서 입력 후 학점반영 가능)</span>`:''}</td></tr></table>
+  <table class="sumtbl"><tr><td class="k">대상자</td><td class="v">${agg.t} 명</td></tr><tr><td class="k">예외처리자</td><td class="v">${agg.ex} 명</td></tr><tr><td class="k">이수자</td><td class="v">${agg.done} 명</td></tr><tr><td class="k">미이수자</td><td class="v">${agg.un} 명</td></tr><tr><td class="k">학점반영자</td><td class="v">${agg.applied} 명</td></tr></table>${agg.pending?`<div class="rem-l" style="color:var(--crit)">※ 참여시수 미입력 ${agg.pending}명 — [이수관리]에서 입력한 뒤 학점반영할 수 있습니다.</div>`:''}
   ${!fetched?'<div class="note">대상자를 가져오지 않은 강의실이 있습니다.</div>':''}`:needQuery());
 }
 function creditApply(s){const rooms=roomsOf();confirmBox('확인',`학점반영 하시겠습니까?\n\n· 이수자·예외처리자 → 이수\n· 미이수자 → 미이수`,()=>{rooms.forEach(c=>{const m=msbOf(s,c);if(m.targets)m.creditApplied={by:me.name,at:nowStr()};});addLog(me.name,`최성보 학점반영 ${s} ${rooms.join(',')}`);save();render();alertBox('알림','학기말성적반영이 되었습니다.');});}
