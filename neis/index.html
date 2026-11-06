@@ -403,15 +403,59 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
   .main{padding-left:12px;padding-right:12px}
 }
 /* 초기화면 */
-.hm{max-width:760px;margin:70px auto 0;text-align:center}
-.hm .sc{font-size:15px;color:#667}
-.hm h1{font-size:28px;color:#1f2d4d;margin:10px 0 6px}
-.hm p{font-size:17px;color:#444;margin:0 0 28px}
-.hm .big{height:56px;padding:0 34px;font-size:20px;border-radius:10px}
-.hm .todo{display:inline-block;font-size:19px;color:#1f2d4d;border-left:4px solid #2b63c6;background:#f4f7fd;padding:10px 18px;text-align:left;line-height:1.5}
-.hm .todo b{color:#1d4fb3}
-.hm .todo span{display:block;font-size:13px;color:#667;margin-top:2px}
-.hm .hint{margin-top:26px;font-size:14px;color:#8b9099}
+/* 초기화면(나이스 첫 화면) */
+.hm2{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:14px;min-height:100%;align-items:start}
+.hp{background:#fff;border:1px solid var(--line);border-radius:4px;margin-bottom:12px}
+.hp>.hd{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--line-2);font-weight:bold;color:#1f2d4d;font-size:14px}
+.hp>.hd .sp{flex:1}
+.hp>.hd select,.hp>.hd input{height:24px;border:1px solid #c5ccd6;font-size:12px;padding:0 4px}
+.hp>.bd{padding:10px 12px}
+.cal-h{display:flex;align-items:center;justify-content:center;gap:16px;font-size:18px;font-weight:bold;color:#1f2d4d;padding:6px 0 10px}
+.cal-h .ar{color:#9aa3b0;font-size:14px;cursor:pointer}
+table.cal{width:100%;border-collapse:collapse;table-layout:fixed}
+table.cal th{font-size:12px;color:#555;background:#f4f6f9;border:1px solid var(--line-2);padding:5px 0}
+table.cal td{border:1px solid var(--line-2);height:62px;vertical-align:top;padding:3px 5px;font-size:12px}
+table.cal td .d{font-size:12px;color:#333}
+table.cal td.o .d{color:#c3c8d0}
+table.cal .sun .d,table.cal th.sun{color:#d33}
+table.cal .sat .d,table.cal th.sat{color:#2b63c6}
+table.cal td.today{background:#fff8e6}
+table.cal td.today .d{display:inline-block;background:#e8730c;color:#fff;border-radius:10px;padding:0 6px;font-weight:bold}
+table.cal .ev{display:block;margin-top:2px;font-size:11px;line-height:1.3;padding:1px 4px;border-radius:2px;background:#eef3fc;color:#1d4fb3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.cal .ev.hol{background:none;color:#d33;padding-left:0}
+table.cal .ev.done{background:#eef7ee;color:#2b7a2b}
+table.cal .ev.key{background:#fff0dc;color:#b25400;font-weight:bold;white-space:normal}
+table.lst{width:100%;border-collapse:collapse;font-size:12.5px}
+table.lst th{background:#f4f6f9;color:#444;font-weight:normal;border-top:1px solid #9aa3b0;border-bottom:1px solid var(--line-2);padding:6px 4px}
+table.lst td{border-bottom:1px solid var(--line-2);padding:7px 4px;text-align:center;color:#333}
+table.lst td.l{text-align:left}
+table.lst tr.lk td{cursor:pointer}table.lst tr.lk:hover td{background:#f6f8fb}
+table.lst .new{display:inline-block;font-size:10px;color:#fff;background:#e8730c;border-radius:2px;padding:0 3px;margin-left:4px;vertical-align:1px}
+.hm2 .intro{font-size:14px;color:#333;line-height:1.55}
+.hm2 .intro b.o{color:#b25400}
+.hm2 .todo{margin-top:6px;font-size:15px;color:#1f2d4d;border-left:4px solid #2b63c6;background:#f4f7fd;padding:8px 12px;line-height:1.5}
+.hm2 .todo b{color:#1d4fb3}
+.hm2 .todo span{display:block;font-size:12px;color:#667;margin-top:2px}
+.hm2 .hint{margin-top:8px;font-size:12px;color:#8b9099}
+.hl{padding:10px 10px 30px}
+.hl .tt{font-weight:bold;color:#1f2d4d;font-size:13.5px;padding:4px 2px 8px;display:flex;align-items:center;gap:6px}
+.hl .tt:before{content:'';width:4px;height:13px;background:#2b63c6;border-radius:2px}
+.hl .ap{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:16px}
+.hl .ap div{border:1px solid var(--line-2);border-radius:3px;padding:6px 7px;font-size:12px;color:#333;display:flex;align-items:center;cursor:pointer;background:#fafbfd}
+.hl .ap div:hover{border-color:#2b63c6}
+.hl .ap div b{margin-left:auto;color:#2b63c6}
+.hl .ap div b.z{color:#aab}
+.hl .bm button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px dotted var(--line-2);padding:6px 4px;font-size:12.5px;color:#333}
+.hl .bm button:hover{color:var(--menu-on)}
+#main:has(.hm2){padding-bottom:12px}
+@media (max-width:1400px),(max-height:800px){
+  .hm2{grid-template-columns:minmax(0,1fr) 330px;padding-right:50px;gap:10px;padding-top:52px}
+  table.cal td{height:42px}
+  .cal-h{padding:0 0 6px;font-size:16px}
+  .hp>.bd{padding:8px 10px}
+  .hp{margin-bottom:8px}
+  .hl{padding:6px 8px 10px}.hl .ap{margin-bottom:8px}.hl .ap div{padding:4px 6px}.hl .bm button{padding:4px}
+}
 /* 연수도우미 */
 .steps{list-style:none;margin:0;padding:0}
 .steps li{background:#fff;border:1px solid var(--line);border-radius:4px;padding:6px 12px;margin-bottom:5px;line-height:1.45;display:flex;gap:12px;align-items:flex-start;font-size:13px}
@@ -689,7 +733,7 @@ function go(top,menu){
 }
 function drawTree(){const t=$('#tree');const mod=leftMod;const na=guideOn&&S?nextAction():null;
   const fold='<div class="fold" title="메뉴 접기/펼치기" onclick="treeFold()">'+(t.classList.contains('folded')?'▶':'◀')+'</div>';
-  if(!mod||!cond.role){t.innerHTML=fold;return;}
+  if(!mod||!cond.role){t.innerHTML=(view.menu==='gd-steps'&&S&&me?homeLeft():'')+fold;return;}
   t.innerHTML=groupsFor(mod).map(g=>{const op=!!(openGrp[mod]&&openGrp[mod][g.grp]);const nx=na&&!op&&MENU_GRP[na.menu]===g.grp&&topOf(na.menu)===mod&&!hiddenMenu(na.menu);
     return `<div class="grp ${op?'open':''} ${nx?'next':''}" onclick="toggleGrp('${mod}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${itemsFor(g).map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" title="${i.name}" onclick="go('${mod}','${i.id}')">${i.name.replace(')',')<wbr>')}</button>`:`<button class="it" onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`;}).join('')+fold;}
 function renderTabbar(){
@@ -1224,11 +1268,46 @@ function steps(){return [
   {t:'[7단계] 학교생활기록부 자료반영',who:'학급담임',d:'<code>학생부 › 학교생활기록부 › 학교생활기록부</code>의 [학생부반영] 탭에서 학급담임이 자기 반을 {전체반영}. (연수: 1학년 3반)',ok:()=>!!S.recReflect[PRACTICE_CLS],go:['rec','rec-reflect']},
   {t:'[8단계] 최성보 업무 상신',d:'<code>성적 › 성적처리 › 최소성취수준보장지도(추가학습)마감관리</code>에서 {마감정보저장} → {승인요청} → 기안문서상신 창 {결재자지정} → {상신} → 결재(연수에서는 [결재완료 처리]).',ok:()=>!!S.msbMgmt.approved,go:['score','msb-mgmt']},
 ];}
-SCREENS['gd-steps']=()=>{const na=nextAction();const nm=na?FLOW_NAME[na.step-1][0]:'';
-  return `<div class="hm"><div class="sc">${SCHOOL} · ${YEAR}학년도 ${SEM}학기 · 업무담당자</div><h1>최소 성취수준 보장지도 마감 연습</h1>
-  <p>${mode==='basic'?'출결·성적 마감은 끝났어요. <b style="color:#b25400">3단계부터 8단계까지</b> 실습해 봅시다.':'심화 연습이에요. 출결·성적 마감에 빠진 곳을 찾아 <b style="color:#b25400">1단계부터</b> 진행해 봐요.'}</p>
-  ${na?`<div class="todo" id="b-start">${steps().filter(x=>x.ok()).length<=(mode==='basic'?2:0)?'처음 할 일':'이어서 할 일'} · <b>${na.step}단계 ${nm}</b><span>${tabRole(na.role)} 탭 › ${MENU_PATH[na.menu].split(' › ').join(' › ')}</span></div>`:'<p style="font-size:20px">🎉 8단계를 모두 마쳤어요!</p><button class="btn big" onclick="askReset()">↺ 처음부터 다시</button>'}
-  <div class="hint">왼쪽 🔔 아이콘을 누르면 진행 현황이 보이고, 단계를 누르면 그 화면으로 이동해요.</div></div>`;};
+/* 초기화면: 실제 나이스 첫 화면(월간일정·학교일지/전달사항·업무요청내역)을 연수용으로 */
+function homeEvents(){const st=steps(),E={};const add=(d,t,c)=>(E[d]=E[d]||[]).push({t,c:c||''});
+  const [y,mo]=TRAIN_DATE.split('-').map(Number);const last=new Date(y,mo,0).getDate();
+  for(let d=1;d<=last;d++){if(new Date(y,mo-1,d).getDay()===6)add(d,'토요휴업일','hol');}
+  add(19,'대학수학능력시험');[23,24,25].forEach(d=>add(d,'2차지필평가'));
+  add(26,st[0].ok()?'✔ 출결 마감':'출결 마감',st[0].ok()?'done':'');add(27,st[1].ok()?'✔ 성적 마감':'성적 마감',st[1].ok()?'done':'');
+  add(+TRAIN_DATE.slice(8),st.every(x=>x.ok())?'✔ 최성보 마감':'최성보 마감(연수)',st.every(x=>x.ok())?'done':'key');return E;}
+function homeCal(){const [y,mo,td]=TRAIN_DATE.split('-').map(Number);const E=homeEvents();const first=new Date(y,mo-1,1).getDay(),last=new Date(y,mo,0).getDate(),prevLast=new Date(y,mo-1,0).getDate();
+  const cells=[];for(let i=0;i<first;i++)cells.push({d:prevLast-first+1+i,o:1});for(let d=1;d<=last;d++)cells.push({d});while(cells.length%7)cells.push({d:cells.length-first-last+1,o:1});
+  const W=['일','월','화','수','목','금','토'];let h='';for(let r=0;r<cells.length;r+=7){h+='<tr>'+cells.slice(r,r+7).map((c,i)=>{const cls=[i===0?'sun':'',i===6?'sat':'',c.o?'o':'',!c.o&&c.d===td?'today':''].join(' ');const ev=c.o?[]:(E[c.d]||[]);return `<td class="${cls}"><span class="d">${c.d}</span>${ev.map(e=>`<span class="ev ${e.c}" title="${e.t}">${e.t}</span>`).join('')}</td>`;}).join('')+'</tr>';}
+  return `<div class="cal-h"><span class="ar" onclick="toast('연수에서는 ${mo}월 일정만 볼 수 있어요.')">◀</span>${y}년 ${mo}월<span class="ar" onclick="toast('연수에서는 ${mo}월 일정만 볼 수 있어요.')">▶</span></div><table class="cal"><thead><tr>${W.map((w,i)=>`<th class="${i===0?'sun':i===6?'sat':''}">${w}</th>`).join('')}</tr></thead><tbody>${h}</tbody></table>`;}
+function homeNotices(){const st=steps(),D=TRAIN_DATE.replace(/-/g,'.'),dd=n=>TRAIN_DATE.slice(0,8).replace(/-/g,'.')+String(n).padStart(2,'0');const basic=mode==='basic';
+  return [
+   {t:`${SEM}학기 최소 성취수준 보장지도(추가학습) 마감 안내`,d:D,n:1,b:`업무담당자께서는 오늘까지 ${SEM}학기 최소 성취수준 보장지도(추가학습) 마감을 진행해 주세요.\n\n① 교과담임: 대상자 가져오기 → 예외처리 → 이수여부 처리 → 학점반영·마감\n② 학급담임: 학교생활기록부 자료반영(자기 반)\n③ 최성보업무: 마감정보저장 → 승인요청 → 결재\n\n※ 연수에서는 공통수학2와 1학년 3반으로 실습해요.`},
+   {t:`[연수] 최성봇 사용 안내`,d:D,n:1,b:`화면 구석의 최성봇이 다음에 할 일을 알려 줘요.\n· 말풍선의 [데려다줘]를 누르면 그 화면으로 이동해요.\n· 로봇을 누르면 말풍선이 접히거나 펼쳐져요.\n· 위쪽 [최성봇] 스위치로 끄고 켤 수 있어요.\n· 왼쪽 🔔 아이콘을 누르면 8단계 진행 현황이 보여요.`},
+   {t:basic?`${SEM}학기 성적 마감 완료 안내`:`${SEM}학기 성적 마감 확인 요청`,d:dd(27),b:basic?`${SEM}학기 성적산출 마감과 결재가 끝났습니다.\n최소 성취수준 보장지도 대상자를 가져올 수 있어요.`:`${SEM}학기 성적산출 마감이 끝났는지 확인해 주세요.\n마감이 안 된 곳이 있으면 대상자를 가져올 수 없어요.`},
+   {t:basic?`${SEM}학기 출결 마감 완료 안내`:`${SEM}학기 출결 마감 확인 요청`,d:dd(26),b:basic?`${SEM}학기 과목 출결 마감과 결재가 끝났습니다.`:`${SEM}학기 교시·일 출결 마감이 끝났는지 확인해 주세요.`},
+   {t:`2차지필평가 시행 계획`,d:dd(16),b:`2차지필평가는 ${TRAIN_DATE.slice(5,7)*1}월 23일~25일에 시행합니다.\n(연수 범위 밖 안내입니다.)`},
+  ];}
+function homeReqs(){const st=steps(),D=TRAIN_DATE.slice(5).replace('-','.');const r=[];
+  r.push({w:'최성보',c:`1학년 최소성취수준보장지도(추가학습) 마감 상신`,d:D,ok:st[7].ok()});
+  r.push({w:'최성보',c:`1학년 3반 학교생활기록부 자료반영`,d:D,ok:st[6].ok()});
+  r.push({w:'최성보',c:`공통수학2 이수여부 처리·마감`,d:D,ok:st[5].ok()});
+  return r;}
+function homeNotice(i){const n=homeNotices()[i];if(n)alertBox(n.t,esc(n.b));}
+function homeLeft(){const ap=S.approvals||[],mine=ap.filter(a=>a.by===me.name);
+  const box=[['상신함',mine.length,'내가 승인요청(상신)한 문서예요.'],['미결/협조함',ap.filter(a=>a.status==='대기').length,'결재를 기다리는 문서예요. 연수에서는 [최성보 마감관리] 화면의 결재 버튼으로 처리해요.'],['공람함',0],['예결함',0],['기결함',ap.filter(a=>a.status!=='대기').length,'결재가 끝난 문서예요.'],['반려함',0],['메시지함',1,'전달사항은 오른쪽 [학교일지/전달사항]에서 볼 수 있어요.']];
+  const bm=['권한관리','복무','인사','급여','연말정산','호봉','연수','청렴마일리지','원격업무지원서비스','외부활동','교원능력개발평가','연계현황'];
+  return `<div class="hl"><div class="tt">승인사항</div><div class="ap">${box.map(x=>`<div onclick="toast('${x[2]||'연수 범위 밖 기능입니다. (실제 나이스에만 있음)'}')">${x[0]}<b class="${x[1]?'':'z'}">${x[1]}</b></div>`).join('')}</div>
+  <div class="tt">기본 메뉴</div><div class="bm">${bm.map(x=>`<button onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${x}</button>`).join('')}</div></div>`;}
+SCREENS['gd-steps']=()=>{const na=nextAction();const nm=na?FLOW_NAME[na.step-1][0]:'';const first=steps().filter(x=>x.ok()).length<=(mode==='basic'?2:0);
+  const intro=`<div class="intro">${mode==='basic'?'출결·성적 마감은 끝났어요. <b class="o">3단계부터 8단계까지</b> 실습해 봅시다.':'심화 연습이에요. 출결·성적 마감에 빠진 곳을 찾아 <b class="o">1단계부터</b> 진행해 봐요.'}</div>
+   ${na?`<div class="todo" id="b-start">${first?'처음 할 일':'이어서 할 일'} · <b>${na.step}단계 ${nm}</b><span>${tabRole(na.role)} 탭 › ${MENU_PATH[na.menu]}</span></div>`:'<div class="todo">🎉 8단계를 모두 마쳤어요! <a href="javascript:askReset()">처음부터 다시</a></div>'}
+   <div class="hint">왼쪽 🔔 아이콘을 누르면 진행 현황이 보이고, 단계를 누르면 그 화면으로 이동해요.</div>`;
+  const N=homeNotices(),R=homeReqs();
+  return `<div class="hm2"><div><div class="hp"><div class="hd">월간일정<span class="sp"></span></div><div class="bd">${homeCal()}</div></div>
+  <div class="hp"><div class="hd">최소 성취수준 보장지도 마감 연습<span class="sp"></span><span style="font-weight:normal;font-size:12px;color:#667">${SCHOOL}</span></div><div class="bd">${intro}</div></div></div>
+  <div>
+  <div class="hp"><div class="hd">학교일지/전달사항<span class="sp"></span><input placeholder="제목" style="width:90px" onkeydown="if(event.key==='Enter')toast('연수에서는 검색 기능을 쓰지 않아요.')"><select><option>${YEAR}</option></select></div><div class="bd"><table class="lst"><thead><tr><th style="width:38px">순번</th><th>제목</th><th style="width:82px">날짜</th></tr></thead><tbody>${N.map((n,i)=>`<tr class="lk" onclick="homeNotice(${i})"><td>${N.length-i}</td><td class="l">${n.t}${n.n?'<span class="new">N</span>':''}</td><td>${n.d}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="hp"><div class="hd">업무요청내역<span class="sp"></span></div><div class="bd"><table class="lst"><thead><tr><th style="width:56px">업무</th><th>요청내용</th><th style="width:56px">날짜</th></tr></thead><tbody>${R.map(r=>`<tr><td>${r.w}</td><td class="l">${r.c} ${r.ok?'<span style="color:#2b7a2b">(완료)</span>':''}</td><td>${r.d}</td></tr>`).join('')}</tbody></table></div></div></div></div>`;};
 SCREENS['gd-rule']=()=>pageHead('학점이수 기준 및 최소 성취수준 보장지도 변경 안내')
   +`<div class="rem-l">※ 2025학년도 2학기부터 적용 (고교학점제 적용 고등학교)</div><div class="grid-wrap auto"><table class="grid"><thead><tr><th>구분</th><th class="l">항목</th><th class="l">당초</th><th class="l">변경</th></tr></thead><tbody>
   <tr><td rowspan="3">학점이수 인정기준</td><td class="l">과목 및 창체의 출석률 충족 기준</td><td class="l">실제 수업횟수의 2/3 이상 출석</td><td class="l">1학점당 수업량(16회)의 2/3 이상 출석</td></tr>

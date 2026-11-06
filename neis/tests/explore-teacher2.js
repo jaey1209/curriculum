@@ -114,7 +114,7 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
 
   // 9. 심화 버전: 출결·성적 마감 오류 찾기
   await p.goto(F + '#%EC%8B%AC%ED%99%94'); await p.reload(); await p.click('#b-login'); await W(300);
-  log(`심화 첫 화면: ${await p.$eval('#main .hm p', e => e.innerText)} / 말풍선: ${await pill()}`);
+  log(`심화 첫 화면: ${await p.$eval('#main .hm2 .intro', e => e.innerText)} / 말풍선: ${await pill()}`);
   for (let i = 0; i < 80 && (await step()) <= 2 && (await step()) > 0; i++) {
     if (await popOn()) { const n = await p.$('#pop .btn.next'); await (n ? n.click() : p.click('#mFoot .btn >> nth=0')); await W(); continue; }
     const g = await p.$('#botPeek button:has-text("데려다줘")'); if (g) { await g.click(); await W(); continue; }
