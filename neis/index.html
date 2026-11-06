@@ -437,16 +437,17 @@ table.lst .new{display:inline-block;font-size:10px;color:#fff;background:#e8730c
 .hm2 .todo b{color:#1d4fb3}
 .hm2 .todo span{display:block;font-size:12px;color:#667;margin-top:2px}
 .hm2 .hint{margin-top:8px;font-size:12px;color:#8b9099}
-.hl{padding:10px 10px 30px}
-.hl .tt{font-weight:bold;color:#1f2d4d;font-size:13.5px;padding:4px 2px 8px;display:flex;align-items:center;gap:6px}
-.hl .tt:before{content:'';width:4px;height:13px;background:#2b63c6;border-radius:2px}
-.hl .ap{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:16px}
-.hl .ap div{border:1px solid var(--line-2);border-radius:3px;padding:6px 7px;font-size:12px;color:#333;display:flex;align-items:center;cursor:pointer;background:#fafbfd}
-.hl .ap div:hover{border-color:#2b63c6}
-.hl .ap div b{margin-left:auto;color:#2b63c6}
-.hl .ap div b.z{color:#aab}
-.hl .bm button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px dotted var(--line-2);padding:6px 4px;font-size:12.5px;color:#333}
-.hl .bm button:hover{color:var(--menu-on)}
+.hl{font-size:13px;color:#333;padding-right:12px}
+.hl .tt{display:flex;align-items:center;height:36px;padding:0 10px;background:#eef1f6;border-bottom:1px solid #d5dae2;font-weight:bold;font-size:14.5px;color:#1f2d4d}
+.hl .tt .ic{margin-left:auto;width:17px;height:17px;stroke:#9aa1ab;fill:none;stroke-width:2.2;cursor:pointer}
+.hl .tt.sep{border-top:5px solid #d5dae2}
+.hl .ap div{display:flex;align-items:center;height:32px;padding:0 10px 0 20px;border-bottom:1px solid #e3e7ed;cursor:pointer;font-size:13px}
+.hl .ap div:hover{background:#f4f7fd}
+.hl .ap div b{margin-left:auto;font-weight:normal;color:#3a4a66}
+.hl .ap div b.n{color:#2b63c6;font-weight:bold}
+.hl .bm button{display:flex;align-items:center;width:100%;height:32px;text-align:left;background:#fff;border:0;border-bottom:1px solid #e3e7ed;padding:0 10px;font-size:13px;font-weight:bold;color:#333}
+.hl .bm button:hover{background:#f4f7fd;color:var(--menu-on)}
+.hl .bm button svg{margin-left:auto;width:14px;height:14px;stroke:#3a4a66;fill:none;stroke-width:2.4}
 #main:has(.hm2){padding-bottom:12px}
 @media (max-width:1400px),(max-height:800px){
   .hm2{grid-template-columns:minmax(0,1fr) 330px;padding-right:50px;gap:10px;padding-top:52px}
@@ -454,7 +455,7 @@ table.lst .new{display:inline-block;font-size:10px;color:#fff;background:#e8730c
   .cal-h{padding:0 0 6px;font-size:16px}
   .hp>.bd{padding:8px 10px}
   .hp{margin-bottom:8px}
-  .hl{padding:6px 8px 10px}.hl .ap{margin-bottom:8px}.hl .ap div{padding:4px 6px}.hl .bm button{padding:4px}
+  .hl .tt{height:30px}.hl .ap div,.hl .bm button{height:26px}
 }
 /* 연수도우미 */
 .steps{list-style:none;margin:0;padding:0}
@@ -726,16 +727,16 @@ function go(top,menu){
   if(view.menu&&view.menu!=='gd-steps'&&!openTabs.includes(view.menu)){openTabs.push(view.menu);if(openTabs.length>7)openTabs.shift();}
   megaOpen(false);
   $('#roles').innerHTML=ROLES.map(r=>`<button class="${cond.role===r?'on':''}" onclick="roleClick('${r}')">${r}</button>`).join('');
-  $('#rail').innerHTML=RAIL.map(([k,svg,t])=>`<button title="${k==='bell'?'최성보 업무진행':k==='set'?'관리(연수 담당자)':t}" id="rail-${k}" class="${(notiOpen?k==='bell':k==='menu')?'on':''}${k==='menu'&&!cond.role?' dis':''}" onclick="railClick('${k}')"><svg viewBox="0 0 24 24">${svg}</svg>${k==='bell'?'<span class="bbadge" id="bellBadge"></span>':''}</button>`).join('')+'<button class="mj" onclick="toast(\'맞춤 메뉴는 연수 범위 밖입니다.\')">맞춤</button>';
+  $('#rail').innerHTML=RAIL.map(([k,svg,t])=>`<button title="${k==='bell'?'최성보 업무진행':k==='set'?'관리(연수 담당자)':t}" id="rail-${k}" class="${railOn(k)?'on':''}${k==='menu'&&!cond.role?' dis':''}" onclick="railClick('${k}')"><svg viewBox="0 0 24 24">${svg}</svg>${k==='bell'?'<span class="bbadge" id="bellBadge"></span>':''}</button>`).join('')+'<button class="mj" onclick="toast(\'맞춤 메뉴는 연수 범위 밖입니다.\')">맞춤</button>';
   renderTabbar();
   $('#gDate').textContent=`기준일 ${fmt(new Date())}`;
   render();
 }
 function drawTree(){const t=$('#tree');const mod=leftMod;const na=guideOn&&S?nextAction():null;
   const fold='<div class="fold" title="메뉴 접기/펼치기" onclick="treeFold()">'+(t.classList.contains('folded')?'▶':'◀')+'</div>';
-  if(!mod||!cond.role){t.innerHTML=(view.menu==='gd-steps'&&S&&me?homeLeft():'')+fold;return;}
+  if(!mod||!cond.role){t.innerHTML=(S&&me?homeLeft():'')+fold;railMark();return;}
   t.innerHTML=groupsFor(mod).map(g=>{const op=!!(openGrp[mod]&&openGrp[mod][g.grp]);const nx=na&&!op&&MENU_GRP[na.menu]===g.grp&&topOf(na.menu)===mod&&!hiddenMenu(na.menu);
-    return `<div class="grp ${op?'open':''} ${nx?'next':''}" onclick="toggleGrp('${mod}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${itemsFor(g).map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" title="${i.name}" onclick="go('${mod}','${i.id}')">${i.name.replace(')',')<wbr>')}</button>`:`<button class="it" onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`;}).join('')+fold;}
+    return `<div class="grp ${op?'open':''} ${nx?'next':''}" onclick="toggleGrp('${mod}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${itemsFor(g).map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" title="${i.name}" onclick="go('${mod}','${i.id}')">${i.name.replace(')',')<wbr>')}</button>`:`<button class="it" onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`;}).join('')+fold;railMark();}
 function renderTabbar(){
   $('#tabbar').innerHTML=`<button class="home" onclick="go('guide','gd-steps')">초기화면</button>`+openTabs.map(id=>`<div class="tb ${view.menu===id?'on':''}" onclick="go(topOf('${id}'),'${id}')"><span>📄 ${menuName(id)}</span><button class="x" title="닫기" onclick="event.stopPropagation();closeTab('${id}')">✕</button></div>`).join('')
    +`<span class="sp"></span><button class="ctl" onclick="tabStep(-1)">‹</button><button class="ctl" onclick="tabStep(1)">›</button><button class="ctl" title="현재 탭 닫기" onclick="closeTab(view.menu)">✕</button><button class="ctl" title="모든 탭 닫기" onclick="openTabs=[];go('guide','gd-steps')">⨯</button><button class="ctl"><span class="cnt">${openTabs.length}</span>목록보기</button><button class="ctl" onclick="toast('전체화면은 브라우저의 F11 키를 이용하세요.')">⇱ 전체화면</button>`;
@@ -743,7 +744,7 @@ function renderTabbar(){
 function closeTab(id){const i=openTabs.indexOf(id);if(i<0)return;openTabs.splice(i,1);if(view.menu===id){const n=openTabs[i]||openTabs[i-1];n?go(topOf(n),n):go('guide','gd-steps');}else renderTabbar();}
 function tabStep(d){const i=openTabs.indexOf(view.menu);const n=openTabs[i+d];if(n)go(topOf(n),n);}
 function roleClick(r){if(curRole()===r){megaOpen(true);return;}cond.role=r;leftMod=null;openGrp={};const gone=view.menu&&hiddenMenu(view.menu);openTabs=openTabs.filter(x=>!hiddenMenu(x));toast(gone?`[${r}] 업무로 바꿨어요. 이 업무에는 [${menuName(view.menu)}] 메뉴가 없어요.`:`[${r}] 업무로 바꿨어요.`);if(gone)go('guide','gd-steps');else go(view.top,view.menu);leftMod=null;drawTree();megaOpen(true);}
-function railClick(k){if(k==='bell'){notiShow(!notiOpen);return;}if(k==='set'){notiShow(false);go('guide','gd-admin');return;}if(k==='menu'){notiShow(false);if(!cond.role){toast('먼저 상단의 탭을 눌러 주세요.');return;}megaOpen();return;} toast('연수 범위 밖 기능입니다. 메뉴는 [전체메뉴] 아이콘이나 왼쪽 메뉴에서 고르세요.');}
+function railClick(k){if(k==='me'){notiShow(false);leftMod=null;drawTree();return;}if(k==='bell'){notiShow(!notiOpen);return;}if(k==='set'){notiShow(false);go('guide','gd-admin');return;}if(k==='menu'){notiShow(false);if(!cond.role){toast('먼저 상단의 탭을 눌러 주세요.');return;}megaOpen();return;} toast('연수 범위 밖 기능입니다. 메뉴는 [전체메뉴] 아이콘이나 왼쪽 메뉴에서 고르세요.');}
 function megaOpen(v){const m=$('#mega');if(!m)return;const on=v===undefined?!m.classList.contains('on'):v;m.classList.toggle('on',on);if(!on)return;
   const na=guideOn?nextAction():null;const naGrp=na&&!hiddenMenu(na.menu)?MENU_GRP[na.menu]:null;
   const col=mod=>`<div class="col"><h4>${TOP.find(t=>t.id===mod).name}</h4>${groupsFor(mod).map(g=>{const live=g.items.some(i=>typeof i==='object'&&!hiddenMenu(i.id));return `<a class="${live?'live':''} ${naGrp===g.grp&&topOf(na.menu)===mod?'next':''}" onclick="megaPick('${mod}','${g.grp}')">${g.grp}</a>`;}).join('')}</div>`;
@@ -1212,7 +1213,8 @@ function applyPeekMin(){const el=$('#botPeek');if(!el||!guideOn)return;el.classL
   else if(!el.querySelector('.pk-x'))el.insertAdjacentHTML('afterbegin','<button class="pk-x" title="말풍선 접기" onclick="peekMin(true)">－</button>');}
 const FLOW_NAME=[['과목출결 마감'],['성적산출 마감'],['대상자 가져오기','교과담임'],['예외처리','교과담임'],['이수여부 처리','교과담임'],['학점반영·마감','교과담임'],['학생부 자료반영','학급담임'],['마감정보저장·상신']];
 function notiShow(v){notiOpen=v;let el=document.getElementById('noti');if(!v){if(el)el.remove();}else drawNoti();
-  document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',notiOpen?x.id==='rail-bell':x.id==='rail-menu'));}
+  railMark();}
+function railMark(){document.querySelectorAll('#rail button[id]').forEach(x=>x.classList.toggle('on',railOn(x.id.slice(5))));}
 function drawNoti(){const b=document.getElementById('bellBadge');const na=S&&me?nextAction():null;if(b){b.textContent=na?na.step:'✔';b.classList.toggle('fin',!na);}
   if(!notiOpen||!S)return;let el=document.getElementById('noti');if(!el){el=document.createElement('div');el.id='noti';document.body.appendChild(el);}
   const st=steps();const done=st.filter(x=>x.ok()).length;const cur=na?na.step:0;
@@ -1294,10 +1296,16 @@ function homeReqs(){const st=steps(),D=TRAIN_DATE.slice(5).replace('-','.');cons
   return r;}
 function homeNotice(i){const n=homeNotices()[i];if(n)alertBox(n.t,esc(n.b));}
 function homeLeft(){const ap=S.approvals||[],mine=ap.filter(a=>a.by===me.name);
-  const box=[['상신함',mine.length,'내가 승인요청(상신)한 문서예요.'],['미결/협조함',ap.filter(a=>a.status==='대기').length,'결재를 기다리는 문서예요. 연수에서는 [최성보 마감관리] 화면의 결재 버튼으로 처리해요.'],['공람함',0],['예결함',0],['기결함',ap.filter(a=>a.status!=='대기').length,'결재가 끝난 문서예요.'],['반려함',0],['메시지함',1,'전달사항은 오른쪽 [학교일지/전달사항]에서 볼 수 있어요.']];
+  /* 실제 나이스처럼 상신함·기결함은 숫자 없이, 나머지는 건수 표시 */
+  const box=[['상신함',null,mine.length?`내가 승인요청(상신)한 문서가 ${mine.length}건 있어요.`:'내가 승인요청(상신)한 문서가 모이는 곳이에요.'],['미결/협조함',ap.filter(a=>a.status==='대기').length,'결재를 기다리는 문서예요. 연수에서는 [최성보 마감관리] 화면의 결재 버튼으로 처리해요.'],['공람함',0],['예결함',0],['기결함',null,'결재가 끝난 문서가 모이는 곳이에요.'],['반려함',0],['메시지함',0]];
   const bm=['권한관리','복무','인사','급여','연말정산','호봉','연수','청렴마일리지','원격업무지원서비스','외부활동','교원능력개발평가','연계현황'];
-  return `<div class="hl"><div class="tt">승인사항</div><div class="ap">${box.map(x=>`<div onclick="toast('${x[2]||'연수 범위 밖 기능입니다. (실제 나이스에만 있음)'}')">${x[0]}<b class="${x[1]?'':'z'}">${x[1]}</b></div>`).join('')}</div>
-  <div class="tt">기본 메뉴</div><div class="bm">${bm.map(x=>`<button onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${x}</button>`).join('')}</div></div>`;}
+  const out='연수 범위 밖 기능입니다. (실제 나이스에만 있음)';
+  return `<div class="hl"><div class="tt">승인사항<svg class="ic" viewBox="0 0 24 24" onclick="drawTree();toast('새로 고쳤어요.')"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 21v-5h-5"/></svg></div>
+  <div class="ap">${box.map(x=>`<div onclick="toast('${x[2]||out}')">${x[0]}${x[1]===null?'':`<b class="${x[1]?'n':''}">${x[1]}</b>`}</div>`).join('')}</div>
+  <div class="tt sep">기본 메뉴<svg class="ic" viewBox="0 0 24 24" onclick="toast('${out}')"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></div>
+  <div class="bm">${bm.map(x=>`<button onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${x}<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>`).join('')}</div></div>`;}
+function homePanel(){return !leftMod||!cond.role;}
+function railOn(k){return notiOpen?k==='bell':homePanel()?k==='me':k==='menu';}
 SCREENS['gd-steps']=()=>{const na=nextAction();const nm=na?FLOW_NAME[na.step-1][0]:'';const first=steps().filter(x=>x.ok()).length<=(mode==='basic'?2:0);
   const intro=`<div class="intro">${mode==='basic'?'출결·성적 마감은 끝났어요. <b class="o">3단계부터 8단계까지</b> 실습해 봅시다.':'심화 연습이에요. 출결·성적 마감에 빠진 곳을 찾아 <b class="o">1단계부터</b> 진행해 봐요.'}</div>
    ${na?`<div class="todo" id="b-start">${first?'처음 할 일':'이어서 할 일'} · <b>${na.step}단계 ${nm}</b><span>${tabRole(na.role)} 탭 › ${MENU_PATH[na.menu]}</span></div>`:'<div class="todo">🎉 8단계를 모두 마쳤어요! <a href="javascript:askReset()">처음부터 다시</a></div>'}
