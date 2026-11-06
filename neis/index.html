@@ -40,6 +40,15 @@ a{color:var(--blue)}
 #lgAdm button{height:34px;padding:0 14px;border:0;border-radius:4px;background:#3a4a66;color:#fff;font-weight:bold}
 #lgAdm .lg-hint{flex-basis:100%}
 .roles button.adm{color:#8a3d00}
+.gt{display:flex;align-items:center;gap:8px;margin:6px 4px 2px;padding-top:7px;border-top:1px dashed #c9d5ea;font-size:calc(13px*var(--pz,1));color:#556;cursor:pointer;user-select:none}
+.gt .sw{position:relative;width:34px;height:19px;border-radius:10px;background:#c3c8d0;flex:none;transition:.2s}.gt .sw i{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:.2s}
+.gt.on .sw{background:#22a86a}.gt.on .sw i{left:17px}.gt .st{font-size:11px;font-weight:bold;color:#888;min-width:22px}.gt.on .st{color:#1a7f37}
+.gt.lock{color:#999;cursor:default}.gt.lock .sw{opacity:.5}
+.gt.nudge{background:#fff4e5;border:2px solid #e8730c;border-radius:10px;padding:7px 9px;margin-top:8px}
+.gt.nudge .sw{animation:pulse 1.2s infinite}
+.bot-peek b.ho{color:#b25400}
+.gt .gl-s{display:none}
+.pp-s{display:none}
 #simBar{position:fixed;left:50%;top:6px;transform:translateX(-50%);z-index:95;background:#3a4a66;color:#fff;border-radius:999px;padding:6px 8px 6px 16px;font-size:13px;display:none;align-items:center;gap:10px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
 #simBar.on{display:flex}
 #simBar button{border:0;border-radius:999px;background:#fff;color:#3a4a66;font-weight:bold;height:26px;padding:0 12px}
@@ -405,6 +414,11 @@ table.grid input[type=checkbox],table.grid input[type=radio]{width:14px;height:1
 /* 작은 화면(150% 배율 노트북 1280×720 등) */
 @media (max-width:1400px),(max-height:800px){
   #bot{top:85px;bottom:auto;right:10px}
+  .bot-peek.mini{display:flex;align-items:center;flex-wrap:wrap}
+  .pp-t{display:none}.pp-s{display:inline}
+  .bot-peek.mini .gt:not(.nudge){border-top:0;border-left:1px dashed #c9d5ea;margin:0 8px 0 2px;padding:0 0 0 8px;gap:5px}
+  .bot-peek.mini .gt:not(.nudge) .gl-l{display:none}.bot-peek.mini .gt:not(.nudge) .gl-s{display:inline;font-size:12px;white-space:nowrap}
+  .bot-peek.mini .gt.nudge{flex-basis:100%;margin:4px}
   .bot-av{width:46px;height:46px}
   .bot-av .badge{min-width:16px;height:16px;font-size:10px;top:-4px;left:-4px}
   .ph .crumb,.ph .ib,.ph .ib-grp{display:none}
@@ -742,6 +756,7 @@ let openTabs=[];
 const menuName=id=>{for(const t in MENUS)for(const g of MENUS[t])for(const i of g.items)if(typeof i==='object'&&i.id===id)return i.name;return id;};
 const RAIL=[['me','<circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-4 4-5.6 7-5.6s5.8 1.6 7 5.6"/>','사용자정보'],['menu','<circle cx="12" cy="12" r="9"/><path d="M8 9h8M8 12h8M8 15h8"/>','전체메뉴'],['bell','<path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 1.5h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/>','알림'],['find','<circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/>','메뉴검색'],['star','<path d="m12 4 2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z"/>','즐겨찾기'],['set','<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>','환경설정']];
 function go(top,menu){
+  if(me&&guideOn&&menu&&!/^gd-/.test(menu)&&!sim){const na0=nextAction();if(na0&&menu!==na0.menu)stuckWrong();}
   view.top=top;if(menu)view.menu=menu;else{const first=MENUS[top].flatMap(g=>g.items).find(i=>typeof i==='object');view.menu=first?first.id:null;}
   if(top!=='guide')leftMod=top;
   if(view.menu&&topOf(view.menu)===top&&top!=='guide')(openGrp[top]=openGrp[top]||{})[MENU_GRP[view.menu]]=true;
@@ -758,7 +773,7 @@ function drawTree(){const t=$('#tree');const mod=leftMod;const na=guideOn&&S?nex
   const fold='<div class="fold" title="메뉴 접기/펼치기" onclick="treeFold()">'+(t.classList.contains('folded')?'▶':'◀')+'</div>';
   if(!mod||!cond.role){t.innerHTML=(S&&me?homeLeft():'')+fold;railMark();return;}
   t.innerHTML=groupsFor(mod).map(g=>{const op=!!(openGrp[mod]&&openGrp[mod][g.grp]);const nx=na&&!op&&MENU_GRP[na.menu]===g.grp&&topOf(na.menu)===mod&&!hiddenMenu(na.menu);
-    return `<div class="grp ${op?'open':''} ${nx?'next':''}" onclick="toggleGrp('${mod}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${itemsFor(g).map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" title="${i.name}" onclick="go('${mod}','${i.id}')">${i.name.replace(')',')<wbr>')}</button>`:`<button class="it" onclick="toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`;}).join('')+fold;railMark();}
+    return `<div class="grp ${op?'open':''} ${nx?'next':''}" onclick="toggleGrp('${mod}','${g.grp}')">${g.grp}<span class="chev">▼</span></div><div class="items">${itemsFor(g).map(i=>typeof i==='object'?`<button class="it ${view.menu===i.id?'on':''} ${na&&na.menu===i.id?'next':''}" title="${i.name}" onclick="go('${mod}','${i.id}')">${i.name.replace(')',')<wbr>')}</button>`:`<button class="it" onclick="stuckWrong();toast('연수 범위 밖 메뉴입니다. (실제 나이스에만 있음)')">${i}</button>`).join('')}</div>`;}).join('')+fold;railMark();}
 function renderTabbar(){
   $('#tabbar').innerHTML=`<button class="home" onclick="go('guide','gd-steps')">초기화면</button>`+openTabs.map(id=>`<div class="tb ${view.menu===id?'on':''}" onclick="go(topOf('${id}'),'${id}')"><span>📄 ${menuName(id)}</span><button class="x" title="닫기" onclick="event.stopPropagation();closeTab('${id}')">✕</button></div>`).join('')
    +`<span class="sp"></span><button class="ctl" onclick="tabStep(-1)">‹</button><button class="ctl" onclick="tabStep(1)">›</button><button class="ctl" title="현재 탭 닫기" onclick="closeTab(view.menu)">✕</button><button class="ctl" title="모든 탭 닫기" onclick="openTabs=[];go('guide','gd-steps')">⨯</button><button class="ctl"><span class="cnt">${openTabs.length}</span>목록보기</button><button class="ctl" onclick="toast('전체화면은 브라우저의 F11 키를 이용하세요.')">⇱ 전체화면</button>`;
@@ -767,14 +782,14 @@ function closeTab(id){const i=openTabs.indexOf(id);if(i<0)return;openTabs.splice
 function tabStep(d){const i=openTabs.indexOf(view.menu);const n=openTabs[i+d];if(n)go(topOf(n),n);}
 function roleClick(r){if(curRole()===r){megaOpen(true);return;}cond.role=r;leftMod=null;openGrp={};const gone=view.menu&&hiddenMenu(view.menu);openTabs=openTabs.filter(x=>!hiddenMenu(x));toast(gone?`[${r}] 업무로 바꿨어요. 이 업무에는 [${menuName(view.menu)}] 메뉴가 없어요.`:`[${r}] 업무로 바꿨어요.`);if(gone)go('guide','gd-steps');else go(view.top,view.menu);leftMod=null;drawTree();megaOpen(true);}
 function railClick(k){if(k==='me'){notiShow(false);leftMod=null;drawTree();return;}if(k==='bell'){notiShow(!notiOpen);return;}if(k==='set'){notiShow(false);go('guide','gd-admin');return;}if(k==='menu'){notiShow(false);if(!cond.role){toast('먼저 상단의 탭을 눌러 주세요.');return;}megaOpen();return;} toast('연수 범위 밖 기능입니다. 메뉴는 [전체메뉴] 아이콘이나 왼쪽 메뉴에서 고르세요.');}
-function megaOpen(v){const m=$('#mega');if(!m)return;const on=v===undefined?!m.classList.contains('on'):v;m.classList.toggle('on',on);if(!on)return;
+function megaOpen(v){const m=$('#mega');if(!m)return;const on=v===undefined?!m.classList.contains('on'):v;const was=m.classList.contains('on');m.classList.toggle('on',on);if(was!==on&&me&&S)setTimeout(()=>renderGuide(),0);if(!on)return;
   const na=guideOn?nextAction():null;const naGrp=na&&!hiddenMenu(na.menu)?MENU_GRP[na.menu]:null;
   const col=mod=>`<div class="col"><h4>${TOP.find(t=>t.id===mod).name}</h4>${groupsFor(mod).map(g=>{const live=g.items.some(i=>typeof i==='object'&&!hiddenMenu(i.id));return `<a class="${live?'live':''} ${naGrp===g.grp&&topOf(na.menu)===mod?'next':''}" onclick="megaPick('${mod}','${g.grp}')">${g.grp}</a>`;}).join('')}</div>`;
   m.innerHTML=`<button class="x" onclick="megaOpen(false)">✕</button><div class="cols">${(ROLE_COLS[curRole()]||[]).map(col).join('')}</div>`;}
 /* 전체 메뉴에서 고르면: 화면은 그대로 두고 왼쪽에 그 분류의 메뉴를 보여 주며 고른 항목만 펼침 */
-function megaPick(mod,grp){leftMod=mod;(openGrp[mod]=openGrp[mod]||{})[grp]=true;megaOpen(false);drawTree();layoutBot();}
+function megaPick(mod,grp){{const na0=guideOn?nextAction():null;if(na0&&(MENU_GRP[na0.menu]!==grp||topOf(na0.menu)!==mod))stuckWrong();}leftMod=mod;(openGrp[mod]=openGrp[mod]||{})[grp]=true;megaOpen(false);drawTree();renderGuide();}
 function treeFold(){const t=$('#tree');t.classList.toggle('folded');const f=t.querySelector('.fold');if(f)f.textContent=t.classList.contains('folded')?'▶':'◀';layoutBot();}
-function toggleGrp(top,g){const o=openGrp[top]=openGrp[top]||{};o[g]=!o[g];drawTree();}
+function toggleGrp(top,g){const o=openGrp[top]=openGrp[top]||{};o[g]=!o[g];drawTree();if(me)renderGuide();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')megaOpen(false);});
 function render(){drawTree();const f=SCREENS[view.menu];$('#main').innerHTML=(f?f():'<div class="empty">연수 범위 밖 메뉴입니다.</div>');$('#main').scrollTop=0;renderGuide();}
 /* 나이스 화면 공통 조각 */
@@ -1155,7 +1170,7 @@ function apprAction(step,what,menu,tab,seq){return {step,title:`[${step}단계] 
 function examAction(s,kind){const menu=kind==='written'?'ex-written':'ex-perf';return {step:2,title:`[2단계] 학기말 성적 산출 마감 — ${kind==='written'?'정기시험':'수행평가'} 마감 보완`,role:`교과담임(${userName(s.teacher)})`,ok:true,menu,why:`${subjLabel(s.id)}의 ${kind==='written'?'정기시험':'수행평가'}이 마감되지 않아 성적산출전체마감을 할 수 없습니다.`,seq:[{t:'[조회]',b:'b-query',done:!!queried[menu]},{t:`${subjLabel(s.id)} 행의 [마감]`,b:`b-exam-${s.id}`}]};}
 function startGuide(){if(!guideOn)toggleGuide(true);peekMin(false);}
 function toggleGuide(v){guideOn=v===undefined?!guideOn:v;const g=$('#gToggle');g.classList.toggle('off',!guideOn);g.setAttribute('aria-checked',guideOn);g.querySelector('.swt').textContent=guideOn?'ON':'OFF';toast(guideOn?'최성봇을 켰어요.':'최성봇을 껐어요. 다시 켜려면 [최성봇] 스위치를 누르세요.');go(view.top,view.menu);}
-function guideGo(){const na=nextAction();if(!na)return;Object.assign(cond,na.set||{});if(!canAs(tabRole(na.role)))cond.role=tabRole(na.role);if(na.tab&&na.menu==='msb-manage')cond.tab=na.tab;unq();go(topOf(na.menu),na.menu);}
+function guideGo(src){const na=nextAction();if(!na)return;if(src==='btn'){S.goUsed=S.goUsed||{};S.goUsed[na.step]=1;save();}Object.assign(cond,na.set||{});if(!canAs(tabRole(na.role)))cond.role=tabRole(na.role);if(na.tab&&na.menu==='msb-manage')cond.tab=na.tab;unq();go(topOf(na.menu),na.menu);}
 const curTab=na=>na.menu==='msb-manage'?cond.tab:na.menu==='att-subj'?(cond.atab||'period'):na.menu==='rec-reflect'?(cond.rtab||'reflect'):null;
 const tabNameOf=na=>{const T={'msb-manage':MSB_TABS,'att-subj':ATT_TABS,'rec-reflect':REC_TABS}[na.menu];const t=T&&T.find(x=>x.id===na.tab);return t?tabPlain(t.name):'';};
 /* ── 최성봇 ── */
@@ -1231,7 +1246,7 @@ let autoPeek=0;
 document.addEventListener('pointerdown',e=>{if(autoPeek&&e.target.closest('#main')){autoPeek=0;peekMinOn=true;applyPeekMin();layoutBot();}},true);
 function peekMin(v){autoPeek=0;peekMinOn=v;try{if(v)localStorage.removeItem('neis-peek-open');else localStorage.setItem('neis-peek-open','1');}catch(_){}renderGuide();}
 function applyPeekMin(){const el=$('#botPeek');if(!el||!guideOn)return;el.classList.toggle('mini',peekMinOn);
-  if(peekMinOn){const na=nextAction();el.innerHTML=`<span class="pk-row"><button class="pk-pill" title="말풍선 펼치기" onclick="peekMin(false)"><span class="pk-pl">${na?`💡 ${na.step}단계 · ${esc(peekLine)}`:'🎉 8단계 모두 끝났어요!'}</span><span class="pk-open">펼치기 ▴</span></button>${na?(peekGo?'<button class="pk-go" onclick="guideGo()">🚀 데려다줘</button>':''):'<button class="pk-go" onclick="askReset()">처음부터 다시</button>'}</span>`;}
+  if(peekMinOn){const na=nextAction();el.innerHTML=`<span class="pk-row"><button class="pk-pill" title="말풍선 펼치기" onclick="peekMin(false)"><span class="pk-pl">${na?peekPill:`🎉 8단계 모두 끝났어요! · 직접 찾아간 단계 ${directStat().d} / ${directStat().tot}`}</span><span class="pk-open">펼치기 ▴</span></button>${na?(showGoNow?'<button class="pk-go" onclick="guideGo(\'btn\')">🚀 데려다줘</button>':''):'<button class="pk-go" onclick="askReset()">처음부터 다시</button>'}</span>${na?gtRow():''}`;}
   else if(!el.querySelector('.pk-x'))el.insertAdjacentHTML('afterbegin','<button class="pk-x" title="말풍선 접기" onclick="peekMin(true)">－</button>');}
 const FLOW_NAME=[['과목출결 마감'],['성적산출 마감'],['대상자 가져오기','교과담임'],['예외처리','교과담임'],['이수여부 처리','교과담임'],['학점반영·마감','교과담임'],['학생부 자료반영','학급담임'],['마감정보저장·상신']];
 function notiShow(v){notiOpen=v;let el=document.getElementById('noti');if(!v){if(el)el.remove();}else drawNoti();
@@ -1247,14 +1262,39 @@ function drawNoti(){const b=document.getElementById('bellBadge');const na=S&&me?
 document.addEventListener('pointerdown',e=>{if(notiOpen&&!e.target.closest('#noti,#rail-bell'))notiShow(false);});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&notiOpen)notiShow(false);});
 const STEP_ROLE=['최성보업무','최성보업무','교과담임','교과담임','교과담임','교과담임','학급담임','최성보업무'];
-function flowGo(n){notiShow(false);const na=nextAction();if(na&&na.step===n){guideGo();return;}const g=steps()[n-1].go;if(!canAs(STEP_ROLE[n-1]))cond.role=STEP_ROLE[n-1];go(topOf(g[1]),g[1]);}
+function flowGo(n){notiShow(false);if(!goOn()&&!isAdmin){toast(goLock()?'이번 연수는 메뉴를 직접 찾아가는 연습이에요. 최성봇 말풍선을 따라가 보세요.':'최성봇 말풍선을 따라 직접 찾아가 보세요. 바로 가려면 말풍선의 [데려다줘] 스위치를 켜세요.');return;}const na=nextAction();if(na&&na.step===n){guideGo('btn');return;}const g=steps()[n-1].go;if(!canAs(STEP_ROLE[n-1]))cond.role=STEP_ROLE[n-1];go(topOf(g[1]),g[1]);}
+/* ───── [데려다줘] 스위치: 연수자가 켜고 끔(처음엔 꺼짐), 관리자는 '끄기 고정' 가능 ───── */
+const lsGet=k=>{try{return localStorage.getItem(k)||'';}catch(_){return '';}};
+const lsSet=(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k);}catch(_){}};
+const goLock=()=>!isAdmin&&lsGet('neis-go-lock')==='1';
+const goOn=()=>!goLock()&&lsGet('neis-go-on')==='1';
+let showGoNow=false,peekPill='',navNeeded=false; /* navNeeded: 아직 그 화면에 도착하지 않음(메뉴를 찾아가는 중) */
+const stuck={sig:'',t0:Date.now(),wrong:0,nudge:false};
+function setGo(v){if(goLock())return;lsSet('neis-go-on',v?'1':'');stuck.nudge=false;toast(v?'[데려다줘] 버튼을 켰어요. 말풍선의 [🚀 데려다줘]를 누르면 바로 이동해요.':'[데려다줘] 버튼을 껐어요. 말풍선을 따라 직접 찾아가 보세요.');renderGuide();}
+function setGoLock(v){lsSet('neis-go-lock',v?'1':'');toast(v?'[데려다줘]를 끄기 고정했어요. 연수자는 켤 수 없어요.':'연수자가 [데려다줘]를 켜고 끌 수 있어요.');render();}
+/* 막힘 감지: 같은 단계에서 1분 넘게 진행이 없거나, 엉뚱한 메뉴를 2번 누르면 스위치 켜기를 권함 */
+function stuckWrong(){if(!me||!guideOn||sim||goOn()||goLock()||!navNeeded)return;stuck.wrong++;if(stuck.wrong>=2&&!stuck.nudge){stuck.nudge=true;setTimeout(()=>renderGuide(),0);}}
+function stuckTrack(step,sig){const st=String(step);if(stuck.sig.split('|')[0]!==st){stuck.wrong=0;stuck.nudge=false;}if(sig!==stuck.sig){stuck.sig=sig;stuck.t0=Date.now();}}
+setInterval(()=>{if(!me||!guideOn||sim||stuck.nudge||goOn()||goLock()||!navNeeded)return;if(Date.now()-stuck.t0>60000){stuck.nudge=true;renderGuide();}},3000);
+function gtRow(){if(!navNeeded)return '';if(goLock())return '<div class="gt lock"><span class="sw"><i></i></span><span class="st">OFF</span><span class="gl-l">🔒 이번 연수는 직접 찾아가기 연습이에요</span><span class="gl-s">🔒 직접 찾기</span></div>';
+  const on=goOn();if(!on&&stuck.nudge)return '<div class="gt nudge" id="goTog" role="switch" aria-checked="false" onclick="setGo(true)"><span class="sw"><i></i></span><span class="st">OFF</span><span>🤔 못 찾겠어요? 이 스위치를 켜면<br><b>[데려다줘]</b>로 바로 데려다줄게요.</span></div>';
+  return `<div class="gt ${on?'on':''}" id="goTog" role="switch" aria-checked="${on}" onclick="setGo(${!on})"><span class="sw"><i></i></span><span class="st">${on?'ON':'OFF'}</span><span class="gl-l">🚀 [데려다줘] 버튼 보이기</span><span class="gl-s">🚀 데려다줘</span></div>`;}
+/* 메뉴를 찾아가는 동안: 한 번에 클릭 하나만 알려 줌 */
+function navHint(na,tr,roleOn){const mod=topOf(na.menu),grp=MENU_GRP[na.menu],item=menuName(na.menu),modName=(TOP.find(t=>t.id===mod)||{}).name||'';const O=x=>`<b class="ho">[${x}]</b>`;
+  if(!roleOn)return {n:1,h:`위쪽 ${O(tr)} 탭을 눌러 보세요.`};
+  if(view.menu===na.menu&&na.tab&&curTab(na)!==na.tab){const tn=tabNameOf(na);return {n:4,h:`화면 위쪽의 ${O(tn)} 탭을 누르세요.`};}
+  const m=$('#mega');if(m&&m.classList.contains('on'))return {n:2,h:`전체메뉴의 <b>${modName}</b> 칸에서 ${O(grp)}${eul(grp)} 고르세요.`};
+  if(leftMod===mod&&cond.role){if($('#tree').classList.contains('folded'))return {n:3,h:'왼쪽 메뉴의 <b>▶</b>를 눌러 메뉴를 펼치세요.'};const op=openGrp[mod]&&openGrp[mod][grp];return op?{n:3,h:`왼쪽 메뉴에서 ${O(item)}${eul(item)} 누르세요.`}:{n:3,h:`왼쪽 메뉴에서 ${O(grp)}${eul(grp)} 눌러 펼치세요.`};}
+  return {n:2,h:`위쪽 ${O(curRole())} 탭을 한 번 더 눌러 <b>전체메뉴</b>를 여세요.`,cur:true};}
+/* 다 마쳤을 때: 직접 찾아간 단계 수 */
+function directStat(){const first=mode==='basic'?3:1;const used=Object.keys(S.goUsed||{}).map(Number).filter(n=>n>=first).sort((a,b)=>a-b);return {tot:9-first,d:9-first-used.length,used};}
 function renderGuide(force){drawNoti();renderGuide0(force);applyPeekMin();layoutBot();}
 function renderGuide0(force){
   const p=$('#bot');if(!guideOn||!me){p.classList.remove('on');return;}p.classList.add('on');
   if(!$('#botAv').dataset.ready){$('#botAv').insertAdjacentHTML('afterbegin',BOT_SVG());$('#botFace').innerHTML=BOT_SVG();$('#gBotIco').innerHTML=BOT_SVG();$('#botAv').dataset.ready=1;botRestorePos();try{const z=+localStorage.getItem('neis-peek-zoom');if(z)$('#bot').style.setProperty('--pz',z);}catch(_){}}
   const na=nextAction();
   if(autoPeek&&(!na||na.step!==autoPeek)){autoPeek=0;try{peekMinOn=localStorage.getItem('neis-peek-open')!=='1';}catch(_){peekMinOn=true;}}
-  if(!na){$('#botPeek').innerHTML='<div class="pk-t">완료</div><div class="pk-m">🎉 8단계가 모두 끝났어요!</div><div class="pk-s">수고하셨어요. 다시 하려면 초기화하세요.</div><div class="pk-b"><button class="w" onclick="askReset()">처음부터 다시</button><span class="pk-z"><button onclick="peekZoom(-1)">가−</button><button onclick="peekZoom(1)">가+</button></span></div>';if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}return;}
+  if(!na){const ds=directStat();showGoNow=false;navNeeded=false;$('#botPeek').innerHTML=`<div class="pk-t">🎉 8단계를 모두 마쳤어요!</div><div class="pk-m">메뉴를 <b class="ho">직접 찾아간 단계 ${ds.d} / ${ds.tot}</b> 👍</div><div class="pk-s">${ds.used.length?ds.used.join('·')+'단계에서만 [데려다줘]를 썼어요.':'[데려다줘] 없이 모두 직접 찾아갔어요!'} 실제 나이스에서도 이 순서대로 찾아가면 돼요.</div><div class="pk-b"><button class="w" onclick="askReset()">처음부터 다시</button><span class="pk-z"><button onclick="peekZoom(-1)">가−</button><button onclick="peekZoom(1)">가+</button></span></div>`;if(chatSig!=='done'){chatSig='done';say('🎉 8단계가 모두 끝났어요! 최소 성취수준 보장지도 업무 완료예요. 수고하셨어요 👏<br>다시 연습하려면 "초기화"라고 말해 주세요.');}return;}
   const here=view.menu===na.menu&&(!na.tab||curTab(na)===na.tab);
   const condOK=!na.set||Object.entries(na.set).every(([k,v])=>k==='atab'||k==='tab'||k==='rtab'||(cond[k]||(k==='wdf'?'un':undefined))===v);
   const tr=tabRole(na.role),roleOn=canAs(tr);
@@ -1264,18 +1304,21 @@ function renderGuide0(force){
   const stepName=na.title.replace(/^\[\d단계\] /,'');const tabName2=tabNameOf(na);
   const pathRole=curRole()==='최성보업무'?'최성보업무':tr;const navPath=na.menu==='msb-mgmt'?`최성보업무 > 성적 > 성적처리 > 왼쪽 메뉴의 '최소성취수준보장지도(추가학습)' 메뉴 중 맨 아래 마감관리`:`${pathRole} > ${MENU_PATH[na.menu].split(' › ').join(' > ')}${tabName2?' > '+tabName2:''}`;
   const numbered=x=>!(x.b==='b-modal-ok'||x.tab||x.f||x.role);const stepNo=i=>items.slice(0,i+1).filter(numbered).length; /* 화면에 번호가 붙는 버튼·칸만 차례로 셈 */
-  const cur=items[curIdx];const peekMain=here&&cur?`${numbered(cur)?`<span class="n">${stepNo(curIdx)}</span>`:''}${cur.role?`상단 <b>[${cur.role}]</b> 탭을 누르세요`:cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.f?cur.t.replace('조회조건: ','조회조건을 바꾸세요 → ')+' <small>(또는 아래 [데려다줘])</small>':cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${navPath}</b>`;
+  const nh=here?null:navHint(na,tr,roleOn);const cur=items[curIdx];const peekMain=nh?`${'①②③④'[nh.n-1]} ${nh.h}`:here&&cur?`${numbered(cur)?`<span class="n">${stepNo(curIdx)}</span>`:''}${cur.role?`상단 <b>[${cur.role}]</b> 탭을 누르세요`:cur.b==='b-modal-ok'?'확인창에서 <b>[확인]</b>을 누르세요':cur.f?cur.t.replace('조회조건: ','조회조건을 바꾸세요 → ')+(goOn()?' <small>(또는 아래 [데려다줘])</small>':''):cur.b?`<b>${cur.t.replace(/^\[(.+)\]$/,'[$1]')}</b> 버튼을 누르세요`:cur.t}`:`<b>${navPath}</b>`;
   const sc=scenLine(na);
   /* 4·5단계 화면에 처음 들어오면 시나리오를 한 번 펼쳐서 알려 줌 */
   if(sc&&here&&(na.step===4||na.step===5)&&queried['msb-manage']){S.scenShown=S.scenShown||{};if(!S.scenShown[na.step]){S.scenShown[na.step]=1;save();if(peekMinOn){peekMinOn=false;autoPeek=na.step;}setTimeout(()=>say(`📋 <b>연수 시나리오 (${na.step}단계)</b><br>${sc}`),0);}}
-  peekLine=(here&&cur?(cur.s?'👉 '+cur.s:peekMain):navPath).replace(/<span class="n">(\d+)<\/span>/,'👉 ').replace(/<small>.*?<\/small>/g,'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();peekGo=!(here&&condOK&&roleOn);
+  peekLine=(here&&cur?(cur.s?'👉 '+cur.s:peekMain):navPath).replace(/<span class="n">(\d+)<\/span>/,'👉 ').replace(/<small>.*?<\/small>/g,'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();peekGo=!(here&&condOK&&roleOn);showGoNow=peekGo&&goOn();navNeeded=!here;
+  peekPill=nh?`<span class="pp-t">${na.step}단계 · ${stepName}<br></span><span class="pp-s">${na.step}단계 · </span>${peekMain}`:`💡 ${na.step}단계 · ${esc(peekLine)}`;
+  {const mg=$('#mega');stuckTrack(na.step,`${na.step}|${here}|${curIdx}|${view.menu}|${curTab(na)}|${curRole()}|${leftMod}|${mg&&mg.classList.contains('on')}|${JSON.stringify(openGrp)}`);}
   const peekSub=here?(curIdx+1<items.length?`다음: ${items[curIdx+1].t.replace(/<[^>]+>/g,'')}`:'이게 이 화면의 마지막이에요'):'';
-  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div>${peekSub?`<div class="pk-s">${peekSub}</div>`:''}${sc?`<div class="pk-sc">📋 <b>연수 시나리오</b><br>${sc}</div>`:''}${tr==='최성보업무'?'':`<div class="pk-r">👤 [${tr}] 탭에서 해요 · [최성보업무] 탭에서도 할 수 있어요</div>`}<div class="pk-b">${here&&condOK&&roleOn?'':'<button onclick="guideGo()">🚀 데려다줘</button>'}<span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>`;
+  $('#botPeek').innerHTML=`<div class="pk-t">${na.step}단계 · ${stepName}</div><div class="pk-m">${peekMain}</div>${peekSub?`<div class="pk-s">${peekSub}</div>`:''}${sc?`<div class="pk-sc">📋 <b>연수 시나리오</b><br>${sc}</div>`:''}${tr==='최성보업무'?'':`<div class="pk-r">👤 [${tr}] 탭에서 해요 · [최성보업무] 탭에서도 할 수 있어요</div>`}<div class="pk-b">${showGoNow?'<button onclick="guideGo(\'btn\')">🚀 데려다줘</button>':''}<span class="pk-z"><button onclick="peekZoom(-1)" title="글자 작게">가−</button><button onclick="peekZoom(1)" title="글자 크게">가+</button></span></div>${gtRow()}`;
   const sig=`${na.title}|${here}|${condOK}|${curIdx}|${view.menu}|${curTab(na)}`;
   if(force||sig!==chatSig){chatSig=sig;if(!chatLog.length)say(mode==='basic'?'안녕하세요! 저는 <b>최성봇</b>이에요 '+BOT_ICO()+' 출결 마감(1단계)과 성적 마감(2단계)은 담당 부서에서 이미 끝냈어요. <b>3단계 대상자 가져오기</b>부터 업무담당자 일을 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!':'안녕하세요! 저는 <b>최성봇</b>이에요 '+BOT_ICO()+' 심화 버전이라 출결·성적 마감에 일부러 빠진 곳이 있어요. 어디서 막히는지 찾아가며 8단계를 순서대로 안내해 드릴게요. 헷갈리면 언제든 물어보세요!');say(stepBubble(na,items,curIdx,here,condOK));}
   document.querySelectorAll('.btn .gnum,th .gnum').forEach(e=>e.remove());document.querySelectorAll('.btn.next,.next-field,.next-cell,.next-hdr').forEach(e=>e.classList.remove('next','next-field','next-cell','next-hdr'));
   document.querySelectorAll('#roles button.next').forEach(e=>e.classList.remove('next'));
   if(!roleOn){const rb=[...document.querySelectorAll('#roles button')].find(b=>b.textContent===tr);if(rb)rb.classList.add('next');}
+  else if(nh&&nh.cur){const rb=[...document.querySelectorAll('#roles button')].find(b=>b.textContent===curRole());if(rb)rb.classList.add('next');}
   if(here){items.forEach((x,i)=>{if(x.b&&x.b!=='b-modal-ok'){const el=document.getElementById(x.b);if(el&&i<=curIdx){const n=document.createElement('span');n.className='gnum'+(x.done?' done':'');n.textContent=stepNo(i);el.appendChild(n);if(i===curIdx)el.classList.add('next');}}
       if(x.f&&i===curIdx){const el=document.getElementById(x.f);if(el)el.classList.add('next-field');}
       if(x.cell&&i===curIdx){document.querySelectorAll('.'+x.cell).forEach(td=>td.classList.add('next-cell'));}
@@ -1306,7 +1349,7 @@ function homeCal(){const [y,mo,td]=TRAIN_DATE.split('-').map(Number);const E=hom
 function homeNotices(){const st=steps(),D=TRAIN_DATE.replace(/-/g,'.'),dd=n=>TRAIN_DATE.slice(0,8).replace(/-/g,'.')+String(n).padStart(2,'0');const basic=mode==='basic';
   return [
    {t:`${SEM}학기 최소 성취수준 보장지도(추가학습) 마감 안내`,d:D,n:1,b:`업무담당자께서는 오늘까지 ${SEM}학기 최소 성취수준 보장지도(추가학습) 마감을 진행해 주세요.\n\n① 교과담임: 대상자 가져오기 → 예외처리 → 이수여부 처리 → 학점반영·마감\n② 학급담임: 학교생활기록부 자료반영(자기 반)\n③ 최성보업무: 마감정보저장 → 승인요청 → 결재\n\n※ 연수에서는 공통수학2와 1학년 3반으로 실습해요.`},
-   {t:`[연수] 최성봇 사용 안내`,d:D,n:1,b:`화면 구석의 최성봇이 다음에 할 일을 알려 줘요.\n· 말풍선의 [데려다줘]를 누르면 그 화면으로 이동해요.\n· 로봇을 누르면 말풍선이 접히거나 펼쳐져요.\n· 위쪽 [최성봇] 스위치로 끄고 켤 수 있어요.\n· 왼쪽 🔔 아이콘을 누르면 8단계 진행 현황이 보여요.`},
+   {t:`[연수] 최성봇 사용 안내`,d:D,n:1,b:`화면 구석의 최성봇이 다음에 할 일을 알려 줘요.\n· 말풍선이 다음에 누를 곳을 하나씩 알려 줘요. 주황색으로 깜빡이는 곳을 눌러 보세요.\n· 막히면 말풍선 아래 [데려다줘] 스위치를 켜면 바로 이동할 수 있어요.\n· 로봇을 누르면 말풍선이 접히거나 펼쳐져요.\n· 위쪽 [최성봇] 스위치로 끄고 켤 수 있어요.\n· 왼쪽 🔔 아이콘을 누르면 8단계 진행 현황이 보여요.`},
    {t:basic?`${SEM}학기 성적 마감 완료 안내`:`${SEM}학기 성적 마감 확인 요청`,d:dd(27),b:basic?`${SEM}학기 성적산출 마감과 결재가 끝났습니다.\n최소 성취수준 보장지도 대상자를 가져올 수 있어요.`:`${SEM}학기 성적산출 마감이 끝났는지 확인해 주세요.\n마감이 안 된 곳이 있으면 대상자를 가져올 수 없어요.`},
    {t:basic?`${SEM}학기 출결 마감 완료 안내`:`${SEM}학기 출결 마감 확인 요청`,d:dd(26),b:basic?`${SEM}학기 과목 출결 마감과 결재가 끝났습니다.`:`${SEM}학기 교시·일 출결 마감이 끝났는지 확인해 주세요.`},
    {t:`2차지필평가 시행 계획`,d:dd(16),b:`2차지필평가는 ${TRAIN_DATE.slice(5,7)*1}월 23일~25일에 시행합니다.\n(연수 범위 밖 안내입니다.)`},
@@ -1390,7 +1433,7 @@ function simLoop(){if(!sim)return;const na=nextAction(),st=na?na.step:9;const sc
 function simHit(el){if(sim&&sim.delay>=400){el.classList.add('sim-hit');setTimeout(()=>el.classList.remove('sim-hit'),Math.min(500,sim.delay-100));}}
 function simAct(){const q=x=>document.querySelector(x);const fire=(el,t)=>el.dispatchEvent(new Event(t,{bubbles:true}));
   if(q('#scrim').classList.contains('on')){const b=q('#pop .btn.next')||q('#b-modal-ok')||q('#mFoot .btn');if(b){b.click();return true;}return false;}
-  const goB=[...document.querySelectorAll('#botPeek button')].find(b=>/데려다줘/.test(b.textContent));if(goB){simHit(goB);goB.click();return true;}
+  if(peekGo&&nextAction()){guideGo('sim');return true;}
   const rt=q('#roles button.next');if(rt){rt.click();return true;}
   const nx=q('.btn.next');if(nx){if(nx.disabled)return false;simHit(nx);nx.click();return true;}
   const cell=q('td.next-cell');if(cell){const i=cell.querySelector('input[type=number]');
@@ -1406,6 +1449,9 @@ SCREENS['gd-sim']=()=>{if(!isAdmin)return pageHead('시뮬레이션 테스트')+
   const from=mode==='basic'?3:1;
   return pageHead('시뮬레이션 테스트')+`<div class="note info" style="max-width:1100px">관리자는 상단 <b>[관리자]</b> 탭에서 모든 메뉴를 열어 볼 수 있어요. 연수생처럼 <b>직접 눌러 보며</b> 확인하세요. 원하는 단계부터 시작하려면 [단계로 바로 가기]를 쓰세요. 지금 상태: <b>${MODE_NAME[mode]}</b> · ${na?`${na.step}단계 진행 중`:'8단계 모두 완료'} (완료 ${done}/8)</div>
   <div class="simg">
+   <div class="card"><h3>🚀 [데려다줘] 버튼</h3><p>말풍선의 [데려다줘] 스위치를 누가 정할지 골라요. (이 PC에 적용)</p>
+    <label style="display:block;margin:6px 0"><input type="radio" name="golock" id="r-golock0" ${lsGet('neis-go-lock')==='1'?'':'checked'} onclick="setGoLock(false)"> <b>연수자가 선택</b> <span class="status">(기본) 처음엔 꺼짐. 막히면 최성봇이 켜기를 권해요</span></label>
+    <label style="display:block;margin:6px 0"><input type="radio" name="golock" id="r-golock1" ${lsGet('neis-go-lock')==='1'?'checked':''} onclick="setGoLock(true)"> <b>끄기 고정</b> <span class="status">연수자가 켤 수 없어요. 실전처럼 스스로 찾기</span></label></div>
    <div class="card"><h3>⏭ 단계로 바로 가기</h3><p>앞 단계를 끝낸 상태로 만들고 고른 단계 화면으로 데려다 줘요. 그다음부터는 직접 눌러 보며 확인하세요.</p><div class="stp">${[1,2,3,4,5,6,7,8].filter(n=>n>=from).map(n=>`<button class="btn w s" id="b-simjump${n}" onclick="simJump(${n})" title="${FLOW_NAME[n-1][0]}">${n}단계 ${FLOW_NAME[n-1][0]}</button>`).join('')}</div></div>
    <div class="card"><h3>⚙ 연수 버전·자료</h3>${mr('basic')}${mr('full')}<p>관리자가 테스트한 내용은 이 PC의 실습 자료에 남아요. 연수생에게 넘기기 전에 되돌려 주세요.</p><div class="stp"><button class="btn n" onclick="askReset()">처음 상태로 되돌리기</button><button class="btn w" onclick="go('guide','gd-admin')">기록 관리</button><button class="btn w" onclick="go('guide','gd-setting')">설정·로그</button></div></div>
   </div>`;};

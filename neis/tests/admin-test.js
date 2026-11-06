@@ -2,7 +2,7 @@
 const { chromium } = require('playwright');const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:+(process.env.VW||1536),height:+(process.env.VH||864)}});
   const errs=[],out=[],bad=[];p.on('pageerror',e=>errs.push(e.message));const ok=(c,m)=>{(c?out:bad).push((c?'PASS ':'FAIL ')+m);};
-  await p.goto('file://'+path.resolve(__dirname,'../index.html'));await p.evaluate(()=>localStorage.clear());await p.reload();
+  await p.goto('file://'+path.resolve(__dirname,'../index.html'));await p.evaluate(()=>localStorage.clear()); await p.evaluate(() => localStorage.setItem('neis-go-on','1'));await p.reload();
   await p.click('#b-admshow');await p.fill('#lgAdmCode','0000');await p.click('#b-admlogin');await p.waitForTimeout(100);
   ok(await p.evaluate(()=>document.getElementById('scrim').classList.contains('on')&&!me),'틀린 코드는 거절');await p.click('#mFoot .btn');
   await p.fill('#lgAdmCode',process.env.ADMCODE||'');await p.press('#lgAdmCode','Enter');await p.waitForTimeout(200);

@@ -12,7 +12,7 @@ const bad = m => { issues.push(m); console.log('✗ ' + m); };
   const p = await b.newPage({ viewport: { width: VW, height: VH } });
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
   const F = 'file://' + path.resolve(__dirname, '../index.html');
-  await p.goto(F); await p.evaluate(() => localStorage.clear()); await p.reload();
+  await p.goto(F); await p.evaluate(() => localStorage.clear()); await p.evaluate(() => localStorage.setItem('neis-go-on','1')); await p.reload();
   const W = (ms = 150) => p.waitForTimeout(ms);
   let shot = 0; const S = async n => { await p.screenshot({ path: `${OUT}/e2-${VW}-${String(++shot).padStart(2, '0')}-${n}.png` }); };
   const pill = () => p.$eval('#botPeek', e => e.innerText.replace(/\s+/g, ' ').trim());

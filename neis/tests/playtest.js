@@ -13,7 +13,7 @@ const ok = (name, pass, info) => { results.push({ name, pass: !!pass, info }); c
   const p = await b.newPage({ viewport: { width: VW, height: VH } });
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto('file://' + path.resolve(__dirname, '../index.html'));
-  await p.evaluate(() => localStorage.clear()); await p.reload();
+  await p.evaluate(() => localStorage.clear()); await p.evaluate(() => localStorage.setItem('neis-go-on','1')); await p.reload();
   await p.click('#b-login'); await p.waitForTimeout(300);
   const W = (ms = 120) => p.waitForTimeout(ms);
   const clickBot = async () => { const r = await p.$eval('#botAv', e => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); await p.mouse.click(r.x, r.y); };

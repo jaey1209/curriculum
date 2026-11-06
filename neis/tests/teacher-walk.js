@@ -4,7 +4,7 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
 (async()=>{
   const b=await chromium.launch();const p=await b.newPage({viewport:{width:+(process.env.VW||1500),height:+(process.env.VH||860)}});
   const errs=[],log=[];p.on('pageerror',e=>errs.push('PAGEERROR '+e.message));p.on('console',m=>{if(m.type()==='error')errs.push('CONSOLE '+m.text());});
-  await p.goto('file://'+path.resolve(__dirname,'../index.html')+(process.env.HASH?'#'+process.env.HASH:''));await p.evaluate(()=>localStorage.clear());await p.reload();
+  await p.goto('file://'+path.resolve(__dirname,'../index.html')+(process.env.HASH?'#'+process.env.HASH:''));await p.evaluate(()=>localStorage.clear());if(process.env.GO!=='off')await p.evaluate(()=>localStorage.setItem('neis-go-on','1'));await p.reload();
   await p.click('#b-login');await p.waitForTimeout(200);
   // 드래그 테스트
   const av=await p.$('#botAv');const bb=await av.boundingBox();
@@ -17,7 +17,7 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
   await p.click('#botAv',{force:true});await p.waitForTimeout(100);
   await p.evaluate(()=>botHome());
   let guard=0,lastSig='',stall=0,shots=0;const seen=new Set();
-  while(guard++<260){
+  try{while(guard++<260){
     const bubble=(await p.textContent('#botPeek')).replace(/\s+/g,' ').trim();
     // STOPAT=n 이면 n단계 화면에 도착했을 때 스크린샷을 찍고 멈춘다
     if(process.env.STOPAT){const st=await p.evaluate(()=>{const n=nextAction();return n?n.step:99;});if(st>=+process.env.STOPAT&&!(await p.$('#botPeek button:has-text("데려다줘")'))&&!(await p.evaluate(()=>document.getElementById('scrim').classList.contains('on')))){await p.screenshot({path:SP+'/stop.png'});log.push('STOP at '+st);break;}}
@@ -32,6 +32,13 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
     if(go){await go.click({force:true});await p.waitForTimeout(80);continue;}
     // 상단 업무 탭이 주황색이면 그 탭을 누른다
     const rt=await p.$('#roles button.next');if(rt){await rt.click({force:true});await p.waitForTimeout(80);continue;}
+    // [데려다줘]가 없으면(스위치 꺼짐) 말풍선이 알려 주는 주황색 메뉴를 하나씩 직접 누른다
+    const away=await p.evaluate(()=>{const n=nextAction();return !!n&&view.menu!==n.menu;});
+    const mg=await p.$('#mega.on a.next');if(mg){await mg.click();await p.waitForTimeout(80);continue;}
+    const tg=await p.$('.tree .grp.next');if(tg){log.push('grp '+await tg.textContent());await tg.click({timeout:3000});await p.waitForTimeout(80);continue;}
+    if(away){const ti=await p.$('.tree .it.next');if(ti){log.push('ti '+await ti.textContent());await ti.click({timeout:3000});await p.waitForTimeout(80);continue;}}
+    const wt=await p.$('.wiz .wt.next:not(.on)');if(wt){log.push('wt '+await wt.textContent());await wt.click({timeout:3000});await p.waitForTimeout(80);continue;}
+    const nf=await p.$('body');if(nf){const ok=await nf.evaluate(()=>[...document.querySelectorAll('.next-field select,#f-subj select,#f-room select,#f-cls select')].some(el=>{const id=el.closest('.cf').id;const k={'f-subj':'subj','f-room':'room','f-cls':'cls'}[id];const n=nextAction();const v=k&&n.set&&n.set[k];if(!v||el.value===v)return false;el.value=v;el.dispatchEvent(new Event('change',{bubbles:true}));return true;}));if(ok){await p.waitForTimeout(80);continue;}}
     // 주황색으로 깜빡이는 버튼(.btn.next)을 누른다
     const nxt=await p.$('.btn.next');
     if(nxt){const txt=(await nxt.textContent()).trim();const dis=await nxt.isDisabled();if(dis){log.push('DISABLED next btn: '+txt+' @ '+bubble);break;}await nxt.click({force:true});await p.waitForTimeout(80);continue;}
@@ -49,8 +56,8 @@ const path=require('path');const SP=process.env.OUT||require('os').tmpdir();
     const radio=await p.$('table.grid input[type=radio]:not(:checked)');
     if(bubble.includes('학생 선택')&&radio){await radio.click();await p.waitForTimeout(80);continue;}
     log.push('NO ACTION: '+bubble+' @ '+await p.evaluate(()=>view.menu+'/'+(cond.tab||'')));break;
-  }
-  log.push('steps: '+JSON.stringify(await p.evaluate(()=>steps().map(s=>s.ok()))));
+  }}catch(e){log.push('CLICK FAIL: '+e.message.split('\n').filter(l=>/intercepts|waiting for|locator/.test(l)).slice(-2).join(' | ')+' @ '+await p.evaluate(()=>view.menu+'/'+(cond.atab||cond.tab||'')));}
+  log.push('데려다줘 사용: '+JSON.stringify(await p.evaluate(()=>S.goUsed||{}))+' / 막힘권유 '+await p.evaluate(()=>stuck.nudge));log.push('steps: '+JSON.stringify(await p.evaluate(()=>steps().map(s=>s.ok()))));
   await p.screenshot({path:SP+'/t_end.png'});
   console.log(log.join('\n'));console.log('ERRORS',errs.slice(0,10));
   await b.close();
