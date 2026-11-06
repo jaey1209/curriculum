@@ -27,11 +27,7 @@ const { chromium } = require('playwright');const path=require('path');const SP=p
   const R=await p.evaluate(()=>cond.simResult.vers.map(v=>v.m+':'+v.ok+':'+v.n+':'+v.st.join('')));ok(await p.evaluate(()=>cond.simResult.vers.every(v=>v.ok)),'자동 점검 '+R.join(' | '));
   ok(await p.evaluate(()=>mode==='basic'&&nextAction().step===3),'점검 뒤 처음 상태(기본 3단계)');
   await p.click('#mFoot .btn');await p.screenshot({path:SP+'/adm_check.png'});
-  // 자동 시연(빠르게) 중간에 멈춤
-  await p.evaluate(()=>{cond.simSpeed='fast';});await p.click('#b-simdemo');await p.click('#b-modal-ok');await p.waitForTimeout(2500);
-  ok(await p.evaluate(()=>document.getElementById('simBar').classList.contains('on')),'시연 중 막대 표시: '+await p.textContent('#simTxt'));
-  await p.screenshot({path:SP+'/adm_demo.png'});
-  await p.click('#simBar button');ok(await p.evaluate(()=>!sim),'[멈춤]');
+  ok(!(await p.$('#b-simdemo')),'자동 시연 없음');
   // 로그아웃 → 일반 로그인엔 관리자 탭 없음
   await p.evaluate(()=>logout());await p.click('#b-login');await p.waitForTimeout(150);
   ok(!(await p.$$eval('#roles button',bs=>bs.map(b=>b.textContent))).includes('관리자')&&await p.evaluate(()=>!isAdmin&&hiddenMenu('gd-sim')),'일반 로그인엔 관리자 탭·시뮬레이션 없음');

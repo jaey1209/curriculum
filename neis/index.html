@@ -44,7 +44,7 @@ a{color:var(--blue)}
 #simBar.on{display:flex}
 #simBar button{border:0;border-radius:999px;background:#fff;color:#3a4a66;font-weight:bold;height:26px;padding:0 12px}
 .sim-hit{outline:3px solid #e8730c!important;outline-offset:1px}
-.simg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;max-width:1100px}
+.simg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;max-width:1100px}
 .simg .card h3{margin:0 0 6px;font-size:15px;color:#1f2d4d}
 .simg .card p{margin:4px 0 10px;font-size:12.5px;color:#556;line-height:1.55}
 .simg .stp{display:flex;flex-wrap:wrap;gap:6px}
@@ -500,7 +500,7 @@ table.lst .new{display:inline-block;font-size:10px;color:#fff;background:#e8730c
       <button class="lg-btn" id="b-login" onclick="login()">로그인</button>
       <p class="lg-hint">※ 인증서 없이 [로그인]을 누르면 연습을 시작합니다. 입력 내용은 이 브라우저에만 저장됩니다.</p><p class="lg-hint" id="lgMode"></p>
       <div class="lg-adm"><a href="javascript:void(0)" id="b-admshow" onclick="admShow()">관리자 로그인</a>
-        <div id="lgAdm" style="display:none"><input type="password" id="lgAdmCode" placeholder="관리자 코드" onkeydown="if(event.key==='Enter')admLogin()"><button id="b-admlogin" onclick="admLogin()">관리자 로그인</button><p class="lg-hint" style="margin-top:8px">관리자는 모든 메뉴를 열어 볼 수 있고, [연수도우미 › 시뮬레이션 테스트]로 자동 시연·단계 이동·자동 점검을 할 수 있어요.</p></div></div>
+        <div id="lgAdm" style="display:none"><input type="password" id="lgAdmCode" placeholder="관리자 코드" onkeydown="if(event.key==='Enter')admLogin()"><button id="b-admlogin" onclick="admLogin()">관리자 로그인</button><p class="lg-hint" style="margin-top:8px">관리자는 모든 메뉴를 열어 볼 수 있고, [연수도우미 › 시뮬레이션 테스트]에서 원하는 단계부터 직접 테스트해 볼 수 있어요.</p></div></div>
     </div>
   </div>
 </div>
@@ -1372,7 +1372,6 @@ function fullReset(){seedData();addLog(me.name,'자료 초기화');save();querie
   try{localStorage.removeItem('neis-peek-open');}catch(_){}peekMinOn=true;notiShow(false);botHome();openGrp={};leftMod=null;cond={cls:'1-1',subj:'mat',room:'all',tab:'target',wdf:'un',rtab:'reflect',role:isAdmin?'관리자':'',adminOK:isAdmin};toast('초기화했습니다. 처음부터 연습할 수 있어요.');go('guide','gd-steps');}
 /* ───── 관리자: 시뮬레이션 테스트(화면의 버튼을 순서대로 자동으로 눌러 봄) ───── */
 let sim=null;
-const SIM_SPEED={slow:[1300,'느리게'],mid:[650,'보통'],fast:[180,'빠르게']};
 function simBar(){const b=$('#simBar');if(!b)return;b.classList.toggle('on',!!sim);if(!sim)return;const na=nextAction();
   $('#simTxt').textContent=`${sim.label} · ${na?na.step+'단계 '+FLOW_NAME[na.step-1][0]:'완료'}`;}
 function simStop(msg){if(!sim){simBar();return;}clearTimeout(sim.t);const r=sim;sim=null;simBar();
@@ -1398,23 +1397,19 @@ function simAct(){const q=x=>document.querySelector(x);const fire=(el,t)=>el.dis
   const hh=q('th.next-hdr#th-mgmt-closed');if(hh){simHit(hh);hh.click();return true;}
   const ra=q('table.grid input[type=radio]:not(:checked)');if(ra&&/학생 선택/.test(q('#botPeek').textContent)){ra.click();return true;}
   return false;}
-function simDemo(fromStart){const sp=SIM_SPEED[cond.simSpeed||'mid'];const run=()=>simStart({delay:sp[0],label:`자동 시연(${sp[1]})`,done:(r,ok)=>{if(ok)alertBox('자동 시연',`8단계까지 자동으로 처리했어요. (${r.n}번 눌렀어요)\n\n연수생이 쓸 수 있게 하려면 [시뮬레이션 테스트]의 [처음 상태로 되돌리기]를 눌러 주세요.`);}});
-  if(fromStart)confirmBox('확인','실습 자료를 처음 상태로 되돌린 뒤, 최성봇이 알려 주는 순서대로 버튼을 자동으로 눌러 봅니다.\n화면이 움직이는 것을 지켜보세요. 위쪽 [■ 멈춤]으로 언제든 멈출 수 있어요.',()=>{fullReset();run();});else run();}
 function simJump(n){confirmBox('확인',`실습 자료를 처음 상태로 되돌린 뒤, ${n}단계 직전까지 자동으로 처리하고 ${n}단계 화면으로 데려다 드려요.`,()=>{fullReset();simStart({target:n,delay:20,label:`${n}단계로 이동 중`,land:true,done:(r,ok)=>{if(ok)toast(`${n}단계부터 연습할 수 있어요.`);}});});}
 function simCheck(){const vers=[];const runOne=(m,next)=>{if(mode!==m)setMode(m);fullReset();const t0=Date.now();simStart({delay:15,label:`자동 점검(${MODE_NAME[m].split('(')[0]})`,done:(r,ok)=>{const st=steps().map(x=>x.ok());vers.push({m,ok:ok&&st.every(Boolean),st,n:r.n,errs:r.errs,sec:((Date.now()-t0)/1000).toFixed(1)});next();}});};
   confirmBox('확인','기본·심화 두 버전을 처음부터 끝까지 자동으로 처리해 보고 결과를 알려 드려요. (약 10~30초)\n끝나면 두 버전 모두 처음 상태로 되돌려요.',()=>{const back=mode;runOne('basic',()=>runOne('full',()=>{['full','basic'].forEach(m=>{if(mode!==m)setMode(m);fullReset();});if(mode!==back)setMode(back);
     cond.simResult={at:new Date().toLocaleString('sv').slice(0,16),vers};go('guide','gd-sim');alertBox('자동 점검 결과',vers.map(v=>`${MODE_NAME[v.m]}: ${v.ok?'정상 ✔':'문제 있음 ✖'} (${v.n}번 동작, ${v.sec}초${v.errs?`, 오류 ${v.errs}건`:''})`).join('\n')+'\n\n두 버전 모두 처음 상태로 되돌렸어요.');}));});}
 SCREENS['gd-sim']=()=>{if(!isAdmin)return pageHead('시뮬레이션 테스트')+'<div class="note info">관리자 로그인 후 사용할 수 있어요. (로그아웃 → [관리자 로그인])</div>';
   const na=nextAction();const done=steps().filter(x=>x.ok()).length;const R=cond.simResult;
-  const sp=Object.entries(SIM_SPEED).map(([k,v])=>`<label style="margin-right:10px"><input type="radio" name="simsp" ${(cond.simSpeed||'mid')===k?'checked':''} onclick="cond.simSpeed='${k}'"> ${v[1]}</label>`).join('');
   const mr=m=>`<label style="display:block;margin:3px 0"><input type="radio" name="simmode" ${mode===m?'checked':''} onclick="setMode('${m}');go('guide','gd-sim')"> ${MODE_NAME[m]}</label>`;
   const from=mode==='basic'?3:1;
-  return pageHead('시뮬레이션 테스트')+`<div class="note info" style="max-width:1100px">관리자는 상단 <b>[관리자]</b> 탭에서 모든 메뉴를 열어 볼 수 있어요. 아래 기능은 화면의 버튼을 최성봇이 알려 주는 순서대로 <b>자동으로 눌러</b> 확인하는 기능이에요. 지금 상태: <b>${MODE_NAME[mode]}</b> · ${na?`${na.step}단계 진행 중`:'8단계 모두 완료'} (완료 ${done}/8)</div>
+  return pageHead('시뮬레이션 테스트')+`<div class="note info" style="max-width:1100px">관리자는 상단 <b>[관리자]</b> 탭에서 모든 메뉴를 열어 볼 수 있어요. 연수생처럼 <b>직접 눌러 보며</b> 확인하세요. 원하는 단계부터 시작하려면 [단계로 바로 가기]를 쓰세요. 지금 상태: <b>${MODE_NAME[mode]}</b> · ${na?`${na.step}단계 진행 중`:'8단계 모두 완료'} (완료 ${done}/8)</div>
   <div class="simg">
-   <div class="card"><h3>▶ 자동 시연</h3><p>처음부터 8단계까지 버튼이 하나씩 눌리는 모습을 보여 줘요. 연수 시작 전에 화면을 띄워 놓고 설명할 때 써요.</p><p>${sp}</p><div class="stp"><button class="btn" id="b-simdemo" onclick="simDemo(true)">처음부터 자동 시연</button><button class="btn w" onclick="simDemo(false)">지금 단계부터</button></div></div>
-   <div class="card"><h3>⏭ 단계로 바로 가기</h3><p>앞 단계를 자동으로 끝낸 뒤 고른 단계 화면으로 데려다 줘요. 특정 단계만 다시 설명하거나 연습할 때 써요.</p><div class="stp">${[1,2,3,4,5,6,7,8].filter(n=>n>=from).map(n=>`<button class="btn w s" id="b-simjump${n}" onclick="simJump(${n})" title="${FLOW_NAME[n-1][0]}">${n}단계 ${FLOW_NAME[n-1][0]}</button>`).join('')}</div></div>
+   <div class="card"><h3>⏭ 단계로 바로 가기</h3><p>앞 단계를 끝낸 상태로 만들고 고른 단계 화면으로 데려다 줘요. 그다음부터는 직접 눌러 보며 확인하세요.</p><div class="stp">${[1,2,3,4,5,6,7,8].filter(n=>n>=from).map(n=>`<button class="btn w s" id="b-simjump${n}" onclick="simJump(${n})" title="${FLOW_NAME[n-1][0]}">${n}단계 ${FLOW_NAME[n-1][0]}</button>`).join('')}</div></div>
    <div class="card"><h3>✔ 자동 점검</h3><p>기본·심화 두 버전을 처음부터 끝까지 빠르게 처리해 보고, 8단계가 모두 정상으로 끝나는지 알려 줘요. 끝나면 처음 상태로 되돌려요.</p><div class="stp"><button class="btn" id="b-simcheck" onclick="simCheck()">자동 점검 실행</button></div>${R?`<p style="margin-top:10px">최근 점검 ${R.at}<br>${R.vers.map(v=>`${MODE_NAME[v.m].split('(')[0]}: <b style="color:${v.ok?'#2b7a2b':'#c62828'}">${v.ok?'정상':'문제 있음'}</b> · ${v.n}번 동작 · ${v.sec}초`).join('<br>')}</p>`:''}</div>
-   <div class="card"><h3>⚙ 연수 버전·자료</h3>${mr('basic')}${mr('full')}<p>자동 시연·단계 이동은 이 PC의 실습 자료를 바꿔요. 연수생에게 넘기기 전에 되돌려 주세요.</p><div class="stp"><button class="btn n" onclick="askReset()">처음 상태로 되돌리기</button><button class="btn w" onclick="go('guide','gd-admin')">기록 관리</button><button class="btn w" onclick="go('guide','gd-setting')">설정·로그</button></div></div>
+   <div class="card"><h3>⚙ 연수 버전·자료</h3>${mr('basic')}${mr('full')}<p>관리자가 테스트한 내용은 이 PC의 실습 자료에 남아요. 연수생에게 넘기기 전에 되돌려 주세요.</p><div class="stp"><button class="btn n" onclick="askReset()">처음 상태로 되돌리기</button><button class="btn w" onclick="go('guide','gd-admin')">기록 관리</button><button class="btn w" onclick="go('guide','gd-setting')">설정·로그</button></div></div>
   </div>`;};
 function adminLogin(){if($('#adminCode').value===ADMIN_CODE){cond.adminOK=true;render();}else alertBox('알림','관리자 코드가 올바르지 않습니다.');}
 function adminDelDate(d){confirmBox('확인',`${d} 기록 ${allLogs().filter(e=>logDate(e)===d).length}건을 모두 삭제하시겠습니까?`,()=>{S.log=S.log.filter(e=>logDate(e)!==d);save();const o=otherState();if(o){o.log=(o.log||[]).filter(e=>logDate(e)!==d);saveOther(o);}toast('삭제했습니다.');render();});}
