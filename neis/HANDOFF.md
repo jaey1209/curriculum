@@ -9,7 +9,7 @@
 - 브랜치: `claude/sharp-fermi-qr0s44` (교과서 선정 앱 `web/`은 원래 있던 것으로, 손대지 않음)
 - 공개 미리보기: claude.ai 아티팩트 `https://claude.ai/artifact/MYHeJ4kJhK8h3zVLHp4fBz` (소유자 비공개, 공유 메뉴로 공개 가능)
 - 저장: 서버 없이 브라우저 `localStorage`(키 `neis-msb-v7-basic`, `neis-msb-v7-full` — 버전별로 따로 저장, 선택한 버전은 `neis-mode`). 최성봇 위치·말풍선 배율·펼침은 `neis-bot-pos2`, `neis-peek-zoom`, `neis-peek-open`.
-- 관리자 코드: `1234` (`ADMIN_CODE` 상수)
+- 관리자 코드: 연수 담당자에게 문의. 소스에는 해시(`ADMIN_HASH`, FNV-1a)로만 저장되어 있음. 바꾸려면 새 코드의 해시를 계산해 `ADMIN_HASH`를 고칠 것
 
 ## 사용자(현직 교사, 연수 담당)가 정한 것
 
@@ -62,7 +62,7 @@
 
 - 초기화면(`SCREENS['gd-steps']`)은 실제 나이스 첫 화면 구성: 왼쪽 칸 승인사항(상신함·미결/협조함·공람함·예결함·기결함·반려함·메시지함)과 기본 메뉴(`homeLeft()`, 역할 메뉴를 고르기 전 `homePanel()`일 때 보임, 레일의 사용자정보 아이콘이 선택됨), 가운데 2026년 11월 월간일정(30일=연수일), 오른쪽 학교일지/전달사항·업무요청내역.
 - 로그인 화면의 [관리자 로그인](코드 `ADMIN_CODE`)으로 들어가면 `isAdmin`, 상단에 [관리자] 탭이 생기고 모든 화면이 열림(`ROLE_COLS['관리자']`, `hiddenMenu`).
-- 관리자 전용 [연수도우미 › 시뮬레이션 테스트](`gd-sim`): 관리자가 직접 눌러 보며 테스트하는 곳(자동 시연은 사용자 요청으로 뺌). 단계로 바로 가기(초기화 후 앞 단계를 자동 처리), 자동 점검(기본·심화를 끝까지 처리해 보고 결과 표시 후 초기화). 자동 실행기는 `simAct()`로, 최성봇이 가리키는 버튼을 teacher-walk와 같은 규칙으로 누름.
+- 관리자 전용 [연수도우미 › 시뮬레이션 테스트](`gd-sim`): 관리자가 직접 눌러 보며 테스트하는 곳(자동 시연은 사용자 요청으로 뺌). 단계로 바로 가기(초기화 후 앞 단계를 자동 처리)와 연수 버전·자료 되돌리기만 있음(자동 시연·자동 점검은 사용자 요청으로 뺌).
 
 ## 고칠 때 지킬 것
 
@@ -72,7 +72,7 @@
   node neis/tests/teacher-walk.js   # 마지막 줄 steps가 모두 true, ERRORS []면 통과 (HASH=심화 로 심화 버전)
   VW=1471 VH=812 node neis/tests/playtest.js   # 플레이 테스트 확인 항목 57개 (클릭 손실·Tab·가림·네 모서리·초기화)
   node neis/tests/explore-teacher.js           # 교사 관점 탐색: [데려다줘] 없이 메뉴·탭으로 진행, 일부러 실수, 단계별 말풍선 기록
-  node neis/tests/admin-test.js                # 관리자 로그인·모든 메뉴·단계 이동·자동 점검
+  node neis/tests/admin-test.js                # 관리자 로그인·모든 메뉴·단계 이동 (ADMCODE=관리자코드 로 실행)
   node neis/tests/explore-teacher2.js          # 교사 관점 탐색 2: 🔔·데려다줘 이동, 대상자삭제·마감취소, 잘못된 시수, 탭 바꾸기, 조회 화면, 로그아웃, 심화
   ```
   (Playwright 필요. 스크린샷은 OS 임시 폴더나 `OUT` 환경변수 폴더에 저장)

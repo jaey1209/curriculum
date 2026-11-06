@@ -5,7 +5,7 @@ const { chromium } = require('playwright');const path=require('path');const SP=p
   await p.goto('file://'+path.resolve(__dirname,'../index.html'));await p.evaluate(()=>localStorage.clear());await p.reload();
   await p.click('#b-admshow');await p.fill('#lgAdmCode','0000');await p.click('#b-admlogin');await p.waitForTimeout(100);
   ok(await p.evaluate(()=>document.getElementById('scrim').classList.contains('on')&&!me),'틀린 코드는 거절');await p.click('#mFoot .btn');
-  await p.fill('#lgAdmCode','1234');await p.press('#lgAdmCode','Enter');await p.waitForTimeout(200);
+  await p.fill('#lgAdmCode',process.env.ADMCODE||'');await p.press('#lgAdmCode','Enter');await p.waitForTimeout(200);
   ok(await p.evaluate(()=>isAdmin&&view.menu==='gd-sim'&&cond.role==='관리자'),'관리자 로그인 → 시뮬레이션 테스트 화면');
   const tabs=await p.$$eval('#roles button',bs=>bs.map(b=>b.textContent));ok(tabs.includes('관리자'),'관리자 탭: '+tabs.join(','));
   await p.screenshot({path:SP+'/adm_sim.png'});
@@ -21,12 +21,7 @@ const { chromium } = require('playwright');const path=require('path');const SP=p
   await p.click('#b-simjump6');await p.click('#b-modal-ok');await p.waitForFunction(()=>!sim,null,{timeout:60000});
   ok(await p.evaluate(()=>nextAction().step===6&&view.menu==='msb-manage'),'6단계로 바로 가기 → '+await p.evaluate(()=>nextAction().step+' '+view.menu+'/'+cond.tab));
   await p.screenshot({path:SP+'/adm_jump6.png'});
-  // 자동 점검
-  await p.evaluate(()=>go('guide','gd-sim'));await p.click('#b-simcheck');await p.click('#b-modal-ok');
-  await p.waitForFunction(()=>cond.simResult,null,{timeout:120000});
-  const R=await p.evaluate(()=>cond.simResult.vers.map(v=>v.m+':'+v.ok+':'+v.n+':'+v.st.join('')));ok(await p.evaluate(()=>cond.simResult.vers.every(v=>v.ok)),'자동 점검 '+R.join(' | '));
-  ok(await p.evaluate(()=>mode==='basic'&&nextAction().step===3),'점검 뒤 처음 상태(기본 3단계)');
-  await p.click('#mFoot .btn');await p.screenshot({path:SP+'/adm_check.png'});
+  ok(!(await p.$('#b-simcheck')),'자동 점검 없음');
   ok(!(await p.$('#b-simdemo')),'자동 시연 없음');
   // 로그아웃 → 일반 로그인엔 관리자 탭 없음
   await p.evaluate(()=>logout());await p.click('#b-login');await p.waitForTimeout(150);

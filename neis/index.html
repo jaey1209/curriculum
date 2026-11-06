@@ -683,7 +683,7 @@ const ICON={search:'<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-wi
 function renderLogin(){const el=document.getElementById('lgMode');if(el)el.textContent=mode==='full'?'연수 버전: 심화(1·2단계 마감 오류부터)':'';}
 let isAdmin=false;
 function admShow(){const b=$('#lgAdm');b.style.display=b.style.display==='none'?'flex':'none';if(b.style.display!=='none')$('#lgAdmCode').focus();}
-function admLogin(){if($('#lgAdmCode').value!==ADMIN_CODE){alertBox('알림','관리자 코드가 올바르지 않습니다.');return;}$('#lgAdmCode').value='';login(true);}
+function admLogin(){if(!adminCodeOK($('#lgAdmCode').value)){alertBox('알림','관리자 코드가 올바르지 않습니다.');return;}$('#lgAdmCode').value='';login(true);}
 function login(adm){
   isAdmin=!!adm;me=isAdmin?{name:'연수관리자'}:ME;if(!load())seedData();
   cond.subj='mat';cond.cls='1-1';cond.room='all';cond.wdf='un';cond.rtab='reflect';cond.role='';leftMod=null;openGrp={};queried={};openTabs=[];
@@ -1356,7 +1356,9 @@ SCREENS['gd-setting']=()=>pageHead('설정·초기화·로그')
 function allLogs(){const o=otherState();return S.log.concat(o&&o.log||[]);}
 function logGroups(src){const g={};(src||S.log).forEach(e=>{const d=logDate(e);(g[d]=g[d]||[]).push(e);});return Object.keys(g).sort().reverse().map(d=>({d,items:g[d]}));}
 function logGrouped(del){const gs=logGroups(del?allLogs():null);if(!gs.length)return '<div class="log"><div>기록 없음</div></div>';return gs.map(g=>`<div class="sec" style="display:flex;align-items:center;gap:10px">${g.d} <span class="status">${g.items.length}건</span>${del?`<button class="btn w s" onclick="adminDelDate('${g.d}')">이 날짜 기록 삭제</button>`:''}</div><div class="log" style="margin-bottom:10px">${g.items.map(e=>`<div>${logLine(e)}</div>`).join('')}</div>`).join('');}
-const ADMIN_CODE='1234';
+/* 관리자 코드는 화면 소스에 그대로 보이지 않게 해시로만 저장 */
+const ADMIN_HASH=305998394;
+const adminCodeOK=v=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(String(v||'').trim())){h^=c;h=Math.imul(h,0x01000193)>>>0;}return h===ADMIN_HASH;};
 SCREENS['gd-admin']=()=>{
   if(!cond.adminOK)return pageHead('관리자(기록 관리)')+`<div class="card" style="max-width:520px"><p><b>관리자 코드</b>를 입력하세요. 연수 담당자만 사용하는 화면입니다.</p><p style="display:flex;gap:6px"><input type="password" id="adminCode" placeholder="관리자 코드" style="border:1px solid #b9c0cc;height:30px;padding:0 10px;flex:1" onkeydown="if(event.key==='Enter')adminLogin()"><button class="btn" onclick="adminLogin()">확인</button></p><p class="status">※ 기록은 이 PC의 브라우저에만 저장됩니다. 연수실 PC마다 이 화면에서 지워 주세요.</p></div>`;
   const gs=logGroups(allLogs());const total=allLogs().length;
@@ -1398,20 +1400,16 @@ function simAct(){const q=x=>document.querySelector(x);const fire=(el,t)=>el.dis
   const ra=q('table.grid input[type=radio]:not(:checked)');if(ra&&/학생 선택/.test(q('#botPeek').textContent)){ra.click();return true;}
   return false;}
 function simJump(n){confirmBox('확인',`실습 자료를 처음 상태로 되돌린 뒤, ${n}단계 직전까지 자동으로 처리하고 ${n}단계 화면으로 데려다 드려요.`,()=>{fullReset();simStart({target:n,delay:20,label:`${n}단계로 이동 중`,land:true,done:(r,ok)=>{if(ok)toast(`${n}단계부터 연습할 수 있어요.`);}});});}
-function simCheck(){const vers=[];const runOne=(m,next)=>{if(mode!==m)setMode(m);fullReset();const t0=Date.now();simStart({delay:15,label:`자동 점검(${MODE_NAME[m].split('(')[0]})`,done:(r,ok)=>{const st=steps().map(x=>x.ok());vers.push({m,ok:ok&&st.every(Boolean),st,n:r.n,errs:r.errs,sec:((Date.now()-t0)/1000).toFixed(1)});next();}});};
-  confirmBox('확인','기본·심화 두 버전을 처음부터 끝까지 자동으로 처리해 보고 결과를 알려 드려요. (약 10~30초)\n끝나면 두 버전 모두 처음 상태로 되돌려요.',()=>{const back=mode;runOne('basic',()=>runOne('full',()=>{['full','basic'].forEach(m=>{if(mode!==m)setMode(m);fullReset();});if(mode!==back)setMode(back);
-    cond.simResult={at:new Date().toLocaleString('sv').slice(0,16),vers};go('guide','gd-sim');alertBox('자동 점검 결과',vers.map(v=>`${MODE_NAME[v.m]}: ${v.ok?'정상 ✔':'문제 있음 ✖'} (${v.n}번 동작, ${v.sec}초${v.errs?`, 오류 ${v.errs}건`:''})`).join('\n')+'\n\n두 버전 모두 처음 상태로 되돌렸어요.');}));});}
 SCREENS['gd-sim']=()=>{if(!isAdmin)return pageHead('시뮬레이션 테스트')+'<div class="note info">관리자 로그인 후 사용할 수 있어요. (로그아웃 → [관리자 로그인])</div>';
-  const na=nextAction();const done=steps().filter(x=>x.ok()).length;const R=cond.simResult;
+  const na=nextAction();const done=steps().filter(x=>x.ok()).length;
   const mr=m=>`<label style="display:block;margin:3px 0"><input type="radio" name="simmode" ${mode===m?'checked':''} onclick="setMode('${m}');go('guide','gd-sim')"> ${MODE_NAME[m]}</label>`;
   const from=mode==='basic'?3:1;
   return pageHead('시뮬레이션 테스트')+`<div class="note info" style="max-width:1100px">관리자는 상단 <b>[관리자]</b> 탭에서 모든 메뉴를 열어 볼 수 있어요. 연수생처럼 <b>직접 눌러 보며</b> 확인하세요. 원하는 단계부터 시작하려면 [단계로 바로 가기]를 쓰세요. 지금 상태: <b>${MODE_NAME[mode]}</b> · ${na?`${na.step}단계 진행 중`:'8단계 모두 완료'} (완료 ${done}/8)</div>
   <div class="simg">
    <div class="card"><h3>⏭ 단계로 바로 가기</h3><p>앞 단계를 끝낸 상태로 만들고 고른 단계 화면으로 데려다 줘요. 그다음부터는 직접 눌러 보며 확인하세요.</p><div class="stp">${[1,2,3,4,5,6,7,8].filter(n=>n>=from).map(n=>`<button class="btn w s" id="b-simjump${n}" onclick="simJump(${n})" title="${FLOW_NAME[n-1][0]}">${n}단계 ${FLOW_NAME[n-1][0]}</button>`).join('')}</div></div>
-   <div class="card"><h3>✔ 자동 점검</h3><p>기본·심화 두 버전을 처음부터 끝까지 빠르게 처리해 보고, 8단계가 모두 정상으로 끝나는지 알려 줘요. 끝나면 처음 상태로 되돌려요.</p><div class="stp"><button class="btn" id="b-simcheck" onclick="simCheck()">자동 점검 실행</button></div>${R?`<p style="margin-top:10px">최근 점검 ${R.at}<br>${R.vers.map(v=>`${MODE_NAME[v.m].split('(')[0]}: <b style="color:${v.ok?'#2b7a2b':'#c62828'}">${v.ok?'정상':'문제 있음'}</b> · ${v.n}번 동작 · ${v.sec}초`).join('<br>')}</p>`:''}</div>
    <div class="card"><h3>⚙ 연수 버전·자료</h3>${mr('basic')}${mr('full')}<p>관리자가 테스트한 내용은 이 PC의 실습 자료에 남아요. 연수생에게 넘기기 전에 되돌려 주세요.</p><div class="stp"><button class="btn n" onclick="askReset()">처음 상태로 되돌리기</button><button class="btn w" onclick="go('guide','gd-admin')">기록 관리</button><button class="btn w" onclick="go('guide','gd-setting')">설정·로그</button></div></div>
   </div>`;};
-function adminLogin(){if($('#adminCode').value===ADMIN_CODE){cond.adminOK=true;render();}else alertBox('알림','관리자 코드가 올바르지 않습니다.');}
+function adminLogin(){if(adminCodeOK($('#adminCode').value)){cond.adminOK=true;render();}else alertBox('알림','관리자 코드가 올바르지 않습니다.');}
 function adminDelDate(d){confirmBox('확인',`${d} 기록 ${allLogs().filter(e=>logDate(e)===d).length}건을 모두 삭제하시겠습니까?`,()=>{S.log=S.log.filter(e=>logDate(e)!==d);save();const o=otherState();if(o){o.log=(o.log||[]).filter(e=>logDate(e)!==d);saveOther(o);}toast('삭제했습니다.');render();});}
 function adminDelAll(){confirmBox('확인',`전체 로그 ${allLogs().length}건을 모두 삭제하시겠습니까?`,()=>{S.log=[];save();const o=otherState();if(o){o.log=[];saveOther(o);}toast('전체 로그를 삭제했습니다.');render();});}
 function adminReset(){confirmBox('확인','마감·예외처리·시수·결재 등 모든 실습 내용과 로그를 지우고 처음 상태로 되돌립니다.\n다음 연수를 위한 초기화입니다(기본·심화 두 버전 모두). 진행하시겠습니까?',()=>{try{localStorage.removeItem(keyOf(otherMode()));}catch(e){}seedData();S.log=[];save();queried={};chatLog=[];chatSig='';toast('초기화했습니다. 다음 연수를 시작할 수 있습니다.');render();});}
