@@ -33,6 +33,21 @@ a{color:var(--blue)}
 .lg-btn{width:100%;height:48px;border:0;border-radius:6px;background:var(--blue);color:#fff;font-size:17px;font-weight:bold}
 .lg-btn:hover{background:var(--blue-d)}
 .lg-hint{font-size:11px;color:var(--ink-3);margin:14px 0 0}
+.lg-adm{margin-top:16px;padding-top:12px;border-top:1px solid var(--line-2);font-size:12px}
+.lg-adm a{color:#667;text-decoration:underline}
+#lgAdm{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+#lgAdm input{flex:1;min-width:140px;height:34px;border:1px solid #b9c0cc;border-radius:4px;padding:0 10px}
+#lgAdm button{height:34px;padding:0 14px;border:0;border-radius:4px;background:#3a4a66;color:#fff;font-weight:bold}
+#lgAdm .lg-hint{flex-basis:100%}
+.roles button.adm{color:#8a3d00}
+#simBar{position:fixed;left:50%;top:6px;transform:translateX(-50%);z-index:95;background:#3a4a66;color:#fff;border-radius:999px;padding:6px 8px 6px 16px;font-size:13px;display:none;align-items:center;gap:10px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+#simBar.on{display:flex}
+#simBar button{border:0;border-radius:999px;background:#fff;color:#3a4a66;font-weight:bold;height:26px;padding:0 12px}
+.sim-hit{outline:3px solid #e8730c!important;outline-offset:1px}
+.simg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;max-width:1100px}
+.simg .card h3{margin:0 0 6px;font-size:15px;color:#1f2d4d}
+.simg .card p{margin:4px 0 10px;font-size:12.5px;color:#556;line-height:1.55}
+.simg .stp{display:flex;flex-wrap:wrap;gap:6px}
 .status{font-size:12px;color:var(--ink-3)}
 
 /* ───── 나이스 상단 ───── */
@@ -484,10 +499,13 @@ table.lst .new{display:inline-block;font-size:10px;color:#fff;background:#e8730c
       <p class="lg-desc">최소 성취수준 보장지도(추가학습) 업무 담당자 연수용 가상 나이스입니다.<br>실제 나이스와 연결되지 않으며, 학생·교사·점수는 모두 가상 자료입니다.</p>
       <button class="lg-btn" id="b-login" onclick="login()">로그인</button>
       <p class="lg-hint">※ 인증서 없이 [로그인]을 누르면 연습을 시작합니다. 입력 내용은 이 브라우저에만 저장됩니다.</p><p class="lg-hint" id="lgMode"></p>
+      <div class="lg-adm"><a href="javascript:void(0)" id="b-admshow" onclick="admShow()">관리자 로그인</a>
+        <div id="lgAdm" style="display:none"><input type="password" id="lgAdmCode" placeholder="관리자 코드" onkeydown="if(event.key==='Enter')admLogin()"><button id="b-admlogin" onclick="admLogin()">관리자 로그인</button><p class="lg-hint" style="margin-top:8px">관리자는 모든 메뉴를 열어 볼 수 있고, [연수도우미 › 시뮬레이션 테스트]로 자동 시연·단계 이동·자동 점검을 할 수 있어요.</p></div></div>
     </div>
   </div>
 </div>
 
+<div id="simBar"><span id="simTxt"></span><button onclick="simStop('자동 실행을 멈췄어요.')">■ 멈춤</button></div>
 <div id="app">
   <div class="gnb">
     <div class="logo"><span class="emb"></span><span class="moe"><b>교육행정정보시스템</b>연수용 가상 시스템</span></div>
@@ -628,7 +646,7 @@ const can={teacherOf:()=>true,homeroomOf:()=>true,admin:()=>true,approver:()=>tr
 /* 상단 업무 탭(역할): 최성보업무(업무담당자) · 교과담임 · 학급담임 — 각 작업은 맞는 탭에서만 할 수 있음 */
 const curRole=()=>cond.role||'';
 /* 최성보업무 탭은 교과담임·학급담임 업무도 모두 처리, 최성보업무 전용 작업은 그 탭에서만 */
-const canAs=r=>curRole()===r||curRole()==='최성보업무';
+const canAs=r=>curRole()===r||curRole()==='최성보업무'||curRole()==='관리자';
 const tabRole=r=>/교과담임/.test(r||'')?'교과담임':/학급담임/.test(r||'')?'학급담임':'최성보업무';
 const eul=w=>{const c=w.charCodeAt(w.length-1)-0xAC00;return c>=0&&c<11172&&c%28?'을':'를';};
 function roleOK(r){if(canAs(r))return true;alertBox('알림',`이 작업은 상단 [${r}] 탭에서 할 수 있어요.\n화면 위쪽의 [${r}]${eul(r)} 누른 뒤 다시 해 보세요.`);return false;}
@@ -663,20 +681,24 @@ const ICON={search:'<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-wi
 
 /* ═════════════════ 로그인·메뉴 ═════════════════ */
 function renderLogin(){const el=document.getElementById('lgMode');if(el)el.textContent=mode==='full'?'연수 버전: 심화(1·2단계 마감 오류부터)':'';}
-function login(){
-  me=ME;if(!load())seedData();
+let isAdmin=false;
+function admShow(){const b=$('#lgAdm');b.style.display=b.style.display==='none'?'flex':'none';if(b.style.display!=='none')$('#lgAdmCode').focus();}
+function admLogin(){if($('#lgAdmCode').value!==ADMIN_CODE){alertBox('알림','관리자 코드가 올바르지 않습니다.');return;}$('#lgAdmCode').value='';login(true);}
+function login(adm){
+  isAdmin=!!adm;me=isAdmin?{name:'연수관리자'}:ME;if(!load())seedData();
   cond.subj='mat';cond.cls='1-1';cond.room='all';cond.wdf='un';cond.rtab='reflect';cond.role='';leftMod=null;openGrp={};queried={};openTabs=[];
   $('#login').style.display='none';$('#app').classList.add('on');
   $('#gSchool').textContent=SCHOOL;sessStart();
   $('#gUser').innerHTML=`<b>${me.name}</b>`;
-  addLog(me.name,'로그인');save();
+  addLog(me.name,isAdmin?'관리자 로그인':'로그인');save();
+  if(isAdmin){cond.role='관리자';cond.adminOK=true;leftMod='guide';openGrp={guide:{'연수도우미':true}};go('guide','gd-sim');return;}
   go('guide','gd-steps');
 }
 let sessLeft=3600,sessT=null;
 function sessDraw(){const e=document.getElementById('gTimer');if(e)e.textContent=`${Math.floor(sessLeft/60)}분 ${String(sessLeft%60).padStart(2,'0')}초`;}
 function sessStart(){sessLeft=3600;sessDraw();clearInterval(sessT);sessT=setInterval(()=>{if(sessLeft>0)sessLeft--;sessDraw();},1000);}
 document.addEventListener('pointerdown',()=>{if(me){sessLeft=3600;sessDraw();}});
-function logout(){clearInterval(sessT);me=null;openTabs=[];megaOpen(false);$('#app').classList.remove('on');$('#login').style.display='flex';$('#bot').classList.remove('on');}
+function logout(){simStop();clearInterval(sessT);me=null;isAdmin=false;cond.adminOK=false;cond.role='';openTabs=[];megaOpen(false);$('#app').classList.remove('on');$('#login').style.display='flex';$('#bot').classList.remove('on');}
 
 /* 실제 나이스 메뉴 구성(연수 범위 밖 메뉴는 눌러도 안내만) */
 const TOP=[{id:'hak',name:'학적'},{id:'cur',name:'교육과정'},{id:'score',name:'성적'},{id:'life',name:'학생생활'},{id:'rec',name:'학생부'},{id:'guide',name:'연수도우미',guide:true}];
@@ -697,10 +719,10 @@ const MENUS={
          one('성적조회/통계'),one('성적/학습분석자료조회'),one('반편성고사/기타성적산출')],
   life:[one('창의적체험활동'),one('수상경력'),one('자격증취득및NCS이수상황'),one('진로정보관리'),one('독서활동상황'),one('행동특성및종합의견'),one('학교폭력조치상황관리'),one('학부모서비스승인관리')],
   rec:[{grp:'학교생활기록부',items:[{id:'rec-reflect',name:'학교생활기록부'}]},one('정정대장관리')],
-  guide:[{grp:'연수도우미',items:[{id:'gd-steps',name:'업무 흐름도(8단계)'},{id:'gd-rule',name:'학점이수 기준·최성보 변경 안내'},{id:'gd-setting',name:'설정·초기화·로그'},{id:'gd-admin',name:'관리자(기록 관리)'}]}],
+  guide:[{grp:'연수도우미',items:[{id:'gd-steps',name:'업무 흐름도(8단계)'},{id:'gd-rule',name:'학점이수 기준·최성보 변경 안내'},{id:'gd-setting',name:'설정·초기화·로그'},{id:'gd-admin',name:'관리자(기록 관리)'},{id:'gd-sim',name:'시뮬레이션 테스트'}]}],
 };
 /* 탭별 전체 메뉴: 분류(열)와 그 안의 항목 */
-const ROLE_COLS={'교과담임':['hak','score'],'학급담임':['hak','score','rec'],'최성보업무':['hak','score','rec']};
+const ROLE_COLS={'관리자':['hak','cur','score','life','rec','guide'],'교과담임':['hak','score'],'학급담임':['hak','score','rec'],'최성보업무':['hak','score','rec']};
 const ROLE_GRP={'교과담임':{hak:['출결관리','출결현황및통계']},'학급담임':{hak:['기본학적관리','출결관리','출결현황및통계'],score:['성적처리']}};
 const ROLE_NOGRP={'교과담임':['반편성고사/기타성적산출']};
 const TEACHER_SCORE=['성적산출관리','교양교과이수관리','과목별세부능력및특기사항','과목별독서활동'];
@@ -710,7 +732,7 @@ const MENU_PATH={},MENU_GRP={};Object.entries(MENUS).forEach(([top,groups])=>{co
 const HIDE_ALWAYS=[];
 /* 업무 탭별로 숨기는 화면 */
 const ROLE_HIDE={'교과담임':['msb-view','msb-mgmt','calc-close','hak-wd','hak-tt','rec-reflect'],'학급담임':['msb-manage','msb-view2','msb-mgmt','calc-close','ex-written','ex-perf','hak-wd','hak-tt'],'최성보업무':['hak-tt']};
-const hiddenMenu=id=>/^gd-/.test(id||'')?false:!curRole()||HIDE_ALWAYS.includes(id)||(ROLE_HIDE[curRole()]||[]).includes(id);
+const hiddenMenu=id=>/^gd-/.test(id||'')?(/^gd-(sim|setting|rule)$/.test(id)&&!isAdmin):curRole()==='관리자'?false:!curRole()||HIDE_ALWAYS.includes(id)||(ROLE_HIDE[curRole()]||[]).includes(id);
 const groupsFor=mod=>{const a=(ROLE_GRP[curRole()]||{})[mod],no=ROLE_NOGRP[curRole()]||[];return MENUS[mod].filter(g=>(!a||a.includes(g.grp))&&!no.includes(g.grp));};
 const itemsFor=g=>g.items.filter(i=>typeof i==='object'?!hiddenMenu(i.id):!(curRole()==='교과담임'&&g.grp==='성적처리'&&!TEACHER_SCORE.includes(i))&&!(curRole()==='학급담임'&&g.grp==='성적처리'));
 let leftMod=null; /* 왼쪽 메뉴에 보이는 분류. 탭만 누른 상태에서는 비어 있음 */
@@ -726,7 +748,7 @@ function go(top,menu){
   openTabs=openTabs.filter(x=>x===view.menu||!hiddenMenu(x));
   if(view.menu&&view.menu!=='gd-steps'&&!openTabs.includes(view.menu)){openTabs.push(view.menu);if(openTabs.length>7)openTabs.shift();}
   megaOpen(false);
-  $('#roles').innerHTML=ROLES.map(r=>`<button class="${cond.role===r?'on':''}" onclick="roleClick('${r}')">${r}</button>`).join('');
+  $('#roles').innerHTML=(isAdmin?[...ROLES,'관리자']:ROLES).map(r=>`<button class="${cond.role===r?'on':''}${r==='관리자'?' adm':''}" onclick="roleClick('${r}')">${r}</button>`).join('');
   $('#rail').innerHTML=RAIL.map(([k,svg,t])=>`<button title="${k==='bell'?'최성보 업무진행':k==='set'?'관리(연수 담당자)':t}" id="rail-${k}" class="${railOn(k)?'on':''}${k==='menu'&&!cond.role?' dis':''}" onclick="railClick('${k}')"><svg viewBox="0 0 24 24">${svg}</svg>${k==='bell'?'<span class="bbadge" id="bellBadge"></span>':''}</button>`).join('')+'<button class="mj" onclick="toast(\'맞춤 메뉴는 연수 범위 밖입니다.\')">맞춤</button>';
   renderTabbar();
   $('#gDate').textContent=`기준일 ${fmt(new Date())}`;
@@ -1347,7 +1369,53 @@ SCREENS['gd-admin']=()=>{
 function setMode(m){if(m===mode)return;mode=m;try{localStorage.setItem('neis-mode',m);}catch(e){}if(location.hash){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}if(!load())seedData();queried={};chatLog=[];chatSig='';toast(`연수 버전을 [${MODE_NAME[m]}]으로 바꿨어요.`);go('guide','gd-admin');}
 function askReset(){confirmBox('확인','모든 실습 내용(마감·예외처리·시수·결재)을 지우고 처음 상태로 되돌립니다.\n최성봇 위치·열린 탭도 처음처럼 돌아갑니다. 진행하시겠습니까?',fullReset);}
 function fullReset(){seedData();addLog(me.name,'자료 초기화');save();queried={};openTabs=[];chatLog=[];chatSig='';drawChat();chatOpen(false);$('#botBadge').style.display='none';
-  try{localStorage.removeItem('neis-peek-open');}catch(_){}peekMinOn=true;notiShow(false);botHome();openGrp={};leftMod=null;cond={cls:'1-1',subj:'mat',room:'all',tab:'target',wdf:'un',rtab:'reflect'};toast('초기화했습니다. 처음부터 연습할 수 있어요.');go('guide','gd-steps');}
+  try{localStorage.removeItem('neis-peek-open');}catch(_){}peekMinOn=true;notiShow(false);botHome();openGrp={};leftMod=null;cond={cls:'1-1',subj:'mat',room:'all',tab:'target',wdf:'un',rtab:'reflect',role:isAdmin?'관리자':'',adminOK:isAdmin};toast('초기화했습니다. 처음부터 연습할 수 있어요.');go('guide','gd-steps');}
+/* ───── 관리자: 시뮬레이션 테스트(화면의 버튼을 순서대로 자동으로 눌러 봄) ───── */
+let sim=null;
+const SIM_SPEED={slow:[1300,'느리게'],mid:[650,'보통'],fast:[180,'빠르게']};
+function simBar(){const b=$('#simBar');if(!b)return;b.classList.toggle('on',!!sim);if(!sim)return;const na=nextAction();
+  $('#simTxt').textContent=`${sim.label} · ${na?na.step+'단계 '+FLOW_NAME[na.step-1][0]:'완료'}`;}
+function simStop(msg){if(!sim){simBar();return;}clearTimeout(sim.t);const r=sim;sim=null;simBar();
+  if(typeof msg==='string'&&msg)toast(msg);return r;}
+function simStart(o){if(!me)return;if(sim)simStop();if(!guideOn)toggleGuide(true);notiShow(false);megaOpen(false);
+  sim=Object.assign({target:9,delay:650,label:'자동 시연 중',n:0,t0:Date.now(),errs:0,land:false,done:null},o||{});simBar();sim.t=setTimeout(simLoop,150);}
+window.addEventListener('error',()=>{if(sim)sim.errs++;});
+function simLoop(){if(!sim)return;const na=nextAction(),st=na?na.step:9;const scrim=$('#scrim').classList.contains('on');
+  if(st>=sim.target&&!scrim){const r=simStop();if(r.land&&na)guideGo();if(r.done)r.done(r,true);return;}
+  if(++sim.n>800){const r=simStop('자동 실행을 멈췄어요. (진행이 되지 않음)');if(r.done)r.done(r,false);return;}
+  let ok=false;try{ok=simAct();}catch(e){sim.errs++;}
+  if(!ok){const r=simStop(`다음에 누를 곳을 찾지 못해 멈췄어요. (${st}단계)`);if(r.done)r.done(r,false);return;}
+  simBar();sim.t=setTimeout(simLoop,sim.delay);}
+function simHit(el){if(sim&&sim.delay>=400){el.classList.add('sim-hit');setTimeout(()=>el.classList.remove('sim-hit'),Math.min(500,sim.delay-100));}}
+function simAct(){const q=x=>document.querySelector(x);const fire=(el,t)=>el.dispatchEvent(new Event(t,{bubbles:true}));
+  if(q('#scrim').classList.contains('on')){const b=q('#pop .btn.next')||q('#b-modal-ok')||q('#mFoot .btn');if(b){b.click();return true;}return false;}
+  const goB=[...document.querySelectorAll('#botPeek button')].find(b=>/데려다줘/.test(b.textContent));if(goB){simHit(goB);goB.click();return true;}
+  const rt=q('#roles button.next');if(rt){rt.click();return true;}
+  const nx=q('.btn.next');if(nx){if(nx.disabled)return false;simHit(nx);nx.click();return true;}
+  const cell=q('td.next-cell');if(cell){const i=cell.querySelector('input[type=number]');
+    if(i){const m=(i.getAttribute('oninput')||'').match(/'(\d{8,})'/);const un=!!(m&&S.scen&&m[1]===S.scen.un);i.focus();i.value=String(un?S.scen.unHours||5:[8,9,10,12][Math.floor(Math.random()*4)]);fire(i,'input');fire(i,'change');return true;}
+    const se=cell.querySelector('select');if(se){se.selectedIndex=1;fire(se,'change');return true;}}
+  const hh=q('th.next-hdr#th-mgmt-closed');if(hh){simHit(hh);hh.click();return true;}
+  const ra=q('table.grid input[type=radio]:not(:checked)');if(ra&&/학생 선택/.test(q('#botPeek').textContent)){ra.click();return true;}
+  return false;}
+function simDemo(fromStart){const sp=SIM_SPEED[cond.simSpeed||'mid'];const run=()=>simStart({delay:sp[0],label:`자동 시연(${sp[1]})`,done:(r,ok)=>{if(ok)alertBox('자동 시연',`8단계까지 자동으로 처리했어요. (${r.n}번 눌렀어요)\n\n연수생이 쓸 수 있게 하려면 [시뮬레이션 테스트]의 [처음 상태로 되돌리기]를 눌러 주세요.`);}});
+  if(fromStart)confirmBox('확인','실습 자료를 처음 상태로 되돌린 뒤, 최성봇이 알려 주는 순서대로 버튼을 자동으로 눌러 봅니다.\n화면이 움직이는 것을 지켜보세요. 위쪽 [■ 멈춤]으로 언제든 멈출 수 있어요.',()=>{fullReset();run();});else run();}
+function simJump(n){confirmBox('확인',`실습 자료를 처음 상태로 되돌린 뒤, ${n}단계 직전까지 자동으로 처리하고 ${n}단계 화면으로 데려다 드려요.`,()=>{fullReset();simStart({target:n,delay:20,label:`${n}단계로 이동 중`,land:true,done:(r,ok)=>{if(ok)toast(`${n}단계부터 연습할 수 있어요.`);}});});}
+function simCheck(){const vers=[];const runOne=(m,next)=>{if(mode!==m)setMode(m);fullReset();const t0=Date.now();simStart({delay:15,label:`자동 점검(${MODE_NAME[m].split('(')[0]})`,done:(r,ok)=>{const st=steps().map(x=>x.ok());vers.push({m,ok:ok&&st.every(Boolean),st,n:r.n,errs:r.errs,sec:((Date.now()-t0)/1000).toFixed(1)});next();}});};
+  confirmBox('확인','기본·심화 두 버전을 처음부터 끝까지 자동으로 처리해 보고 결과를 알려 드려요. (약 10~30초)\n끝나면 두 버전 모두 처음 상태로 되돌려요.',()=>{const back=mode;runOne('basic',()=>runOne('full',()=>{['full','basic'].forEach(m=>{if(mode!==m)setMode(m);fullReset();});if(mode!==back)setMode(back);
+    cond.simResult={at:new Date().toLocaleString('sv').slice(0,16),vers};go('guide','gd-sim');alertBox('자동 점검 결과',vers.map(v=>`${MODE_NAME[v.m]}: ${v.ok?'정상 ✔':'문제 있음 ✖'} (${v.n}번 동작, ${v.sec}초${v.errs?`, 오류 ${v.errs}건`:''})`).join('\n')+'\n\n두 버전 모두 처음 상태로 되돌렸어요.');}));});}
+SCREENS['gd-sim']=()=>{if(!isAdmin)return pageHead('시뮬레이션 테스트')+'<div class="note info">관리자 로그인 후 사용할 수 있어요. (로그아웃 → [관리자 로그인])</div>';
+  const na=nextAction();const done=steps().filter(x=>x.ok()).length;const R=cond.simResult;
+  const sp=Object.entries(SIM_SPEED).map(([k,v])=>`<label style="margin-right:10px"><input type="radio" name="simsp" ${(cond.simSpeed||'mid')===k?'checked':''} onclick="cond.simSpeed='${k}'"> ${v[1]}</label>`).join('');
+  const mr=m=>`<label style="display:block;margin:3px 0"><input type="radio" name="simmode" ${mode===m?'checked':''} onclick="setMode('${m}');go('guide','gd-sim')"> ${MODE_NAME[m]}</label>`;
+  const from=mode==='basic'?3:1;
+  return pageHead('시뮬레이션 테스트')+`<div class="note info" style="max-width:1100px">관리자는 상단 <b>[관리자]</b> 탭에서 모든 메뉴를 열어 볼 수 있어요. 아래 기능은 화면의 버튼을 최성봇이 알려 주는 순서대로 <b>자동으로 눌러</b> 확인하는 기능이에요. 지금 상태: <b>${MODE_NAME[mode]}</b> · ${na?`${na.step}단계 진행 중`:'8단계 모두 완료'} (완료 ${done}/8)</div>
+  <div class="simg">
+   <div class="card"><h3>▶ 자동 시연</h3><p>처음부터 8단계까지 버튼이 하나씩 눌리는 모습을 보여 줘요. 연수 시작 전에 화면을 띄워 놓고 설명할 때 써요.</p><p>${sp}</p><div class="stp"><button class="btn" id="b-simdemo" onclick="simDemo(true)">처음부터 자동 시연</button><button class="btn w" onclick="simDemo(false)">지금 단계부터</button></div></div>
+   <div class="card"><h3>⏭ 단계로 바로 가기</h3><p>앞 단계를 자동으로 끝낸 뒤 고른 단계 화면으로 데려다 줘요. 특정 단계만 다시 설명하거나 연습할 때 써요.</p><div class="stp">${[1,2,3,4,5,6,7,8].filter(n=>n>=from).map(n=>`<button class="btn w s" id="b-simjump${n}" onclick="simJump(${n})" title="${FLOW_NAME[n-1][0]}">${n}단계 ${FLOW_NAME[n-1][0]}</button>`).join('')}</div></div>
+   <div class="card"><h3>✔ 자동 점검</h3><p>기본·심화 두 버전을 처음부터 끝까지 빠르게 처리해 보고, 8단계가 모두 정상으로 끝나는지 알려 줘요. 끝나면 처음 상태로 되돌려요.</p><div class="stp"><button class="btn" id="b-simcheck" onclick="simCheck()">자동 점검 실행</button></div>${R?`<p style="margin-top:10px">최근 점검 ${R.at}<br>${R.vers.map(v=>`${MODE_NAME[v.m].split('(')[0]}: <b style="color:${v.ok?'#2b7a2b':'#c62828'}">${v.ok?'정상':'문제 있음'}</b> · ${v.n}번 동작 · ${v.sec}초`).join('<br>')}</p>`:''}</div>
+   <div class="card"><h3>⚙ 연수 버전·자료</h3>${mr('basic')}${mr('full')}<p>자동 시연·단계 이동은 이 PC의 실습 자료를 바꿔요. 연수생에게 넘기기 전에 되돌려 주세요.</p><div class="stp"><button class="btn n" onclick="askReset()">처음 상태로 되돌리기</button><button class="btn w" onclick="go('guide','gd-admin')">기록 관리</button><button class="btn w" onclick="go('guide','gd-setting')">설정·로그</button></div></div>
+  </div>`;};
 function adminLogin(){if($('#adminCode').value===ADMIN_CODE){cond.adminOK=true;render();}else alertBox('알림','관리자 코드가 올바르지 않습니다.');}
 function adminDelDate(d){confirmBox('확인',`${d} 기록 ${allLogs().filter(e=>logDate(e)===d).length}건을 모두 삭제하시겠습니까?`,()=>{S.log=S.log.filter(e=>logDate(e)!==d);save();const o=otherState();if(o){o.log=(o.log||[]).filter(e=>logDate(e)!==d);saveOther(o);}toast('삭제했습니다.');render();});}
 function adminDelAll(){confirmBox('확인',`전체 로그 ${allLogs().length}건을 모두 삭제하시겠습니까?`,()=>{S.log=[];save();const o=otherState();if(o){o.log=[];saveOther(o);}toast('전체 로그를 삭제했습니다.');render();});}
